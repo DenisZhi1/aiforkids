@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  //base: '/REPO_NAME/' // ← замени на имя репозитория, например '/my-landing/'
+  base: '/aiforkids/' // ← замени на имя репозитория, например '/my-landing/'
 })
