@@ -210,7 +210,7 @@ export default function App() {
               // рядом, выше разметки
               const groupSizes: Record<number, number> = {
                 5: 5,   // 6–10 в 6-й карточке (index 5)
-                13: 2,  // 14–15 в 14-й карточке (index 13)
+                9: 2,  // 14–15 в 14-й карточке (index 13)
               };
               
               const getLessonLabel = (i: number) => {
