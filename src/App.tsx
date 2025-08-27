@@ -365,9 +365,11 @@ export default function App() {
                 <h3 className="text-xl font-bold text-white mb-2">Разовая оплата</h3>
                 <p className="text-gray-300 mb-4">За весь курс (16 уроков)</p>
                 <p className="text-3xl font-bold text-purple-300">14 400 руб</p>
-                <Badge className="mt-3 mx-auto w-fit bg-purple-500/20 text-purple-200 border-purple-400/30">
-                  Экономия 1600 руб
-                </Badge>
+                <div className="mt-3 flex justify-center">
+                  <Badge className="bg-purple-500/20 text-purple-200 border-purple-400/30">
+                    Экономия 1600 руб
+                  </Badge>
+                </div>
               </Card>
             </motion.div>
             
