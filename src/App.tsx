@@ -1,3 +1,7 @@
+export default function App() {
+  return <h1>It works! 🚀</h1>;
+}
+/*
 import { motion } from 'motion/react';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
@@ -51,12 +55,12 @@ export default function App() {
 
   return (
     <div className="dark min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Hero Section */}
+      {}
       <section className="relative overflow-hidden px-4 py-20 md:py-32">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl"></div>
         <div className="container mx-auto max-w-7xl relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
+            {}
             <motion.div 
               className="space-y-8"
               variants={fadeInLeft}
@@ -90,7 +94,7 @@ export default function App() {
               </motion.div>
             </motion.div>
 
-            {/* Image */}
+            {}
             <motion.div 
               className="relative"
               variants={fadeInRight}
@@ -112,7 +116,7 @@ export default function App() {
                 </div>
               </div>
               
-              {/* Floating elements */}
+              {}
               <motion.div 
                 className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center"
                 animate={{ 
@@ -148,7 +152,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Target Audience */}
+      {}
       <section className="px-4 py-16">
         <div className="container mx-auto max-w-6xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
@@ -189,7 +193,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Course Program */}
+      {}
       <section className="px-4 py-16">
         <div className="container mx-auto max-w-6xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
@@ -228,7 +232,7 @@ export default function App() {
             })}
           </motion.div>
 
-          {/* Final Project - Highlighted */}
+          {}
           <motion.div {...fadeInUp} className="mt-12">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-xl rounded-3xl"></div>
@@ -252,7 +256,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Uniqueness */}
+      {}
       <section className="px-4 py-16">
         <div className="container mx-auto max-w-6xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
@@ -296,11 +300,11 @@ export default function App() {
         </div>
       </section>
 
-      {/* Requirements & Schedule */}
+      {}
       <section className="px-4 py-16">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12">
-            {/* Requirements */}
+            {}
             <motion.div {...fadeInUp}>
               <Card className="p-8 bg-slate-800/50 border-slate-700 h-full">
                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -320,7 +324,7 @@ export default function App() {
               </Card>
             </motion.div>
 
-            {/* Schedule */}
+            {}
             <motion.div {...fadeInUp}>
               <Card className="p-8 bg-slate-800/50 border-slate-700 h-full">
                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -343,7 +347,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {}
       <section className="px-4 py-16">
         <div className="container mx-auto max-w-4xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
@@ -384,7 +388,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* About Author */}
+      {}
       <section className="px-4 py-20 bg-gradient-to-b from-transparent to-slate-800/50">
         <div className="container mx-auto max-w-6xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
@@ -446,7 +450,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {}
       <section className="px-4 py-20">
         <div className="container mx-auto max-w-4xl">
           <motion.div 
@@ -479,12 +483,15 @@ export default function App() {
         </div>
       </section>
 
-      {/* Footer */}
+      {}
       <footer className="px-4 py-8 border-t border-slate-700">
         <div className="container mx-auto max-w-6xl text-center">
           <p className="text-gray-400">© 2025 Курс «ИИ для детей». Все права защищены.</p>
         </div>
       </footer>
     </div>
+
+
   );
 }
+*/
