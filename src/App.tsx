@@ -85,6 +85,7 @@ export default function App() {
               >
                 <Button 
                   size="lg" 
+                  onClick={() => window.open("https://vk.com/im/convo/2840329", "_blank", "noopener,noreferrer")}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl"
                 >
                   🎯 Записаться сейчас
