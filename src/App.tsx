@@ -39,7 +39,7 @@ export default function App() {
   };
 
   const courseModules = [
-    { title: "Что такое ИИ и промпт", description: "Дети узнают, где использ  ется ИИ и как он понимает команды.", benefit: "Понимание основ, чтобы не бояться технологий.", icon: Brain },
+    { title: "Что такое ИИ и промпт", description: "Дети узнают, где используется ИИ и как он понимает команды.", benefit: "Понимание основ, чтобы не бояться технологий.", icon: Brain },
     { title: "Домашка с ИИ — с умом", description: "Учимся использовать ИИ как помощника, а не решебник.", benefit: "Ребёнок станет эффективнее и самостоятельнее.", icon: Sparkles },
     { title: "Ролевые промпты", description: "ИИ в роли учителя, пирата или мультиперсонажа.", benefit: "Развитие воображения и умение проверять ответы.", icon: Users },
     { title: "Как улучшать результат", description: "Учимся «докручивать» ответы ИИ пошагово.", benefit: "Умение добиваться точного результата.", icon: Target },
@@ -207,6 +207,8 @@ export default function App() {
           >
             {courseModules.map((module, index) => {
               const Icon = module.icon;
+              const lessonLabel = (i: number) =>
+                i === 5 ? "Уроки 6–10" : `Урок ${i < 5 ? i + 1 : i + 5}`;
               return (
                 <motion.div key={index} variants={fadeInUp}>
                   <Card className="p-6 h-full bg-slate-800/50 border-slate-700 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:scale-105">
@@ -215,7 +217,10 @@ export default function App() {
                         <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                           <Icon className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-base font-medium text-purple-300">Урок {index + 1}</span>
+                        
+                        <span className="text-base font-medium text-purple-300">
+                           {lessonLabel(index)}
+                        </span>  
                       </div>
                       
                       <h3 className="text-lg md:text-xl font-bold text-white">{module.title}</h3>
@@ -332,11 +337,11 @@ export default function App() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <BookOpen className="w-5 h-5 text-purple-400" />
-                    <span className="text-gray-200">Четверг, 15:00 (МСК) — группа 4–5 класс</span>
+                    <span className="text-gray-200">Четверг, 15:00 (МСК) 45 минут урок — группа 4–5 класс</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <GraduationCap className="w-5 h-5 text-purple-400" />
-                    <span className="text-gray-200">Пятница, 15:30 (МСК) — группа 6–8 класс</span>
+                    <span className="text-gray-200">Пятница, 15:30 (МСК) 45 минут урок — группа 6–8 класс</span>
                   </div>
                 </div>
               </Card>
@@ -376,7 +381,7 @@ export default function App() {
             <motion.div variants={fadeInUp}>
               <Card className="p-8 bg-gradient-to-br from-pink-500/20 to-purple-500/20 border-pink-500/30 text-center">
                 <CreditCard className="w-12 h-12 text-pink-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Абоне  ент на месяц</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Абонемент на месяц</h3>
                 <p className="text-gray-300 mb-4">Из расчета 1000 руб за урок</p>
                 <p className="text-3xl font-bold text-pink-300">4000 руб</p>
                 <div className="mt-3 flex justify-center">
