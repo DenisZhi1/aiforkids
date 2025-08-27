@@ -379,9 +379,11 @@ export default function App() {
                 <h3 className="text-xl font-bold text-white mb-2">Абоне  ент на месяц</h3>
                 <p className="text-gray-300 mb-4">Из расчета 1000 руб за урок</p>
                 <p className="text-3xl font-bold text-pink-300">4000 руб</p>
-                <Badge className="mt-3 bg-pink-500/20 text-pink-200 border-pink-400/30">
-                  4 урока в месяц
-                </Badge>
+                <div className="mt-3 flex justify-center">
+                  <Badge className="mt-3 bg-pink-500/20 text-pink-200 border-pink-400/30">
+                    4 урока в месяц
+                  </Badge>
+                </div>
               </Card>
             </motion.div>
           </motion.div>
