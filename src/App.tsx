@@ -1,7 +1,4 @@
-export default function App() {
-  return <h1>It works! 🚀</h1>;
-}
-/*
+
 //import { motion } from 'motion/react';
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from './components/ui/button';
@@ -495,4 +492,4 @@ export default function App() {
 
   );
 }
-*/
+
