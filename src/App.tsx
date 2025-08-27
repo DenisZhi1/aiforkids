@@ -102,13 +102,13 @@ export default function App() {
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent z-10"></div>
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1628605007510-696cd5731961?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlsZHJlbiUyMHRlY2hub2xvZ3klMjBsZWFybmluZyUyMEFJfGVufDF8fHx8MTc1NjE4Mzc4NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  src="https://i.postimg.cc/hjyMr2Z7/20221223-125251.jpg"
                   alt="Дети изучают технологии и ИИ"
                   className="w-full h-96 lg:h-[500px] object-cover"
                 />
                 <div className="absolute bottom-6 left-6 right-6 z-20">
                   <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                    <p className="text-white font-medium">🎓 Более 500 довольных учеников</p>
+                    <p className="text-white font-medium">🎓 Более 500 довольных учеников на курсах для педагогов </p>
                     <p className="text-purple-200 text-sm">Первые в России курсы ИИ для детей</p>
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export default function App() {
               <Card className="p-8 bg-slate-800/50 border-slate-700 h-full">
                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                   <Laptop2 className="w-8 h-8 text-purple-400" />
-                  💻 Что потребуется
+                  Что потребуется
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -327,7 +327,7 @@ export default function App() {
               <Card className="p-8 bg-slate-800/50 border-slate-700 h-full">
                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                   <Clock className="w-8 h-8 text-purple-400" />
-                  🕒 Расписание
+                  Расписание
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -407,7 +407,7 @@ export default function App() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-2xl rounded-full"></div>
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1746513534315-caa52d3f462c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjB0ZWFjaGVyJTIwcHJvZmVzc2lvbmFsJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU2MTgzNzg1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  src="https://i.postimg.cc/sgjckdFZ/sqaure.png"
                   alt="Автор курса"
                   className="relative w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-3xl shadow-2xl mx-auto"
                 />
@@ -416,19 +416,17 @@ export default function App() {
             
             <motion.div variants={fadeInRight} className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-2xl md:text-3xl font-bold text-white">Анна Иванова</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-white">Денис Жихарев</h3>
                 <p className="text-xl text-purple-300">Эксперт по ИИ в образовании</p>
               </div>
               
               <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  Профессиональный педагог с 8-летним опытом работы в сфере IT-образования. 
-                  Автор популярных курсов по искусственному интеллекту для учителей.
+                  педагог с 5-летним опытом в IT-образовании. Автор курсов по искусственному интеллекту для учителей; за последние два года обучила более 500 педагогов внедрять ИИ в учебный процесс
                 </p>
                 
                 <p>
-                  За последние 2 года обучила более 500 педагогов эффективному использованию ИИ в учебном процессе. 
-                  Теперь делится знаниями с детьми, помогая им освоить технологии будущего.
+                  По образованию инженер-программист, преподаю английский и программирование, веду блог для преподавателей DEAL. Регулярно помогаю коллегам прокачивать цифровые компетенции — теперь делюсь этими знаниями с детьми, чтобы они уверенно осваивали технологии будущего.
                 </p>
               </div>
               
@@ -442,7 +440,7 @@ export default function App() {
                 
                 <Card className="p-4 bg-pink-500/10 border-pink-500/20">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-pink-300">4.9⭐</p>
+                    <p className="text-2xl font-bold text-pink-300">5.0⭐</p>
                     <p className="text-sm text-gray-300">Рейтинг курсов</p>
                   </div>
                 </Card>
