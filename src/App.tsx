@@ -70,12 +70,12 @@ export default function App() {
               </Badge>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent leading-tight">
-                Курс «ИИ для детей»
+                Курс «ИИ для детей» by DEAL
               </h1>
               
               <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
                 Хотите, чтобы ваш ребёнок не просто пользовался ИИ как решебником, а умел применять его с умом и для реальной пользы? 
-                Запускаем первый онлайн-курс по искусственному интеллекту для детей от автора курсов по ИИ для учителей 
+                Запускаем первый онлайн-курс по искусственному интеллекту для детей от автора курса по ИИ для учителей Дениса Жихарева 
                 (с сотнями довольных выпускников и отзывами ⭐).
               </p>
 
@@ -365,7 +365,7 @@ export default function App() {
                 <h3 className="text-xl font-bold text-white mb-2">Разовая оплата</h3>
                 <p className="text-gray-300 mb-4">За весь курс (16 уроков)</p>
                 <p className="text-3xl font-bold text-purple-300">14 400 руб</p>
-                <Badge className="mt-3 bg-purple-500/20 text-purple-200 border-purple-400/30">
+                <Badge className="mt-3 mx-auto w-fit bg-purple-500/20 text-purple-200 border-purple-400/30">
                   Экономия 1600 руб
                 </Badge>
               </Card>
