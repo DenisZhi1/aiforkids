@@ -206,9 +206,26 @@ export default function App() {
             viewport={{ once: true }}
           >
             {courseModules.map((module, index) => {
+
+              // рядом, выше разметки
+              const groupSizes: Record<number, number> = {
+                5: 5,   // 6–10 в 6-й карточке (index 5)
+                13: 2,  // 14–15 в 14-й карточке (index 13)
+              };
+              
+              const getLessonLabel = (i: number) => {
+                // сколько уроков уже «прошли» до i-й карточки
+                let start = 1;
+                for (let k = 0; k < i; k++) start += groupSizes[k] ?? 1;
+              
+                const size = groupSizes[i] ?? 1;
+                const end = start + size - 1;
+                return size > 1 ? `Уроки ${start}–${end}` : `Урок ${start}`;
+              };
+
               const Icon = module.icon;
-              const lessonLabel = (i: number) =>
-                i === 5 ? "Уроки 6–10" : `Урок ${i < 5 ? i + 1 : i + 5}`;
+             // const lessonLabel = (i: number) =>
+             //   i === 5 ? "Уроки 6–10" : `Урок ${i < 5 ? i + 1 : i + 5}`;
               return (
                 <motion.div key={index} variants={fadeInUp}>
                   <Card className="p-6 h-full bg-slate-800/50 border-slate-700 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:scale-105">
@@ -219,7 +236,7 @@ export default function App() {
                         </div>
                         
                         <span className="text-base font-medium text-purple-300">
-                           {lessonLabel(index)}
+                           {getLessonLabel(index)}
                         </span>  
                       </div>
                       
@@ -427,7 +444,7 @@ export default function App() {
               
               <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  педагог с 5-летним опытом в IT-образовании. Автор курсов по искусственному интеллекту для учителей; за последние два года обучила более 500 педагогов внедрять ИИ в учебный процесс
+                  педагог с 5-летним опытом в IT-образовании. Автор курсов по искусственному интеллекту для учителей; за последние два года обучил более 500 педагогов внедрять ИИ в учебный процесс
                 </p>
                 
                 <p>
