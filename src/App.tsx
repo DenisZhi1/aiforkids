@@ -84,26 +84,42 @@ export default function App() {
                 whileTap={{ scale: 0.95 }}
               >
 
-                const isMobile = () =>
-                  typeof navigator !== "undefined" &&
-                  (/Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent) ||
-                  (navigator.userAgentData?.mobile ?? false));
-
-                const VK_DESKTOP = "https://vk.com/im/convo/2840329";
-                const VK_MOBILE  = "https://m.vk.com/im?sel=2840329"; // мобильная веб-версия
+                const openVK = (e: React.MouseEvent) => {
+                  const ua = navigator.userAgent;
+                  const mobile = /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.userAgentData?.mobile ?? false);
+                
+                  if (!mobile) return; // на десктопе пусть работает обычный href
+                
+                  e.preventDefault(); // перехватываем клик на мобиле
+                
+                  const APP_DEEP_LINK = "vk://im?sel=2840329";       // попытаемся открыть приложение
+                  const VK_MOBILE     = "https://m.vk.com/im?sel=2840329"; // запасной вариант — мобильный веб
+                
+                  const t = Date.now();
+                  window.location.href = APP_DEEP_LINK;
+                
+                  // если приложение не открылось — через ~800мс открываем мобильную веб-страницу
+                  setTimeout(() => {
+                    if (Date.now() - t < 1500) {
+                      window.open(VK_MOBILE, "_blank", "noopener,noreferrer");
+                    }
+                  }, 800);
+                };
 
                 <Button 
+                  asChild
                   size="lg" 
                   //onClick={() => window.open("https://vk.com/im/convo/2840329", "_blank", "noopener,noreferrer")}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl"
                 >
-                  <a
-                    href={isMobile() ? VK_MOBILE : VK_DESKTOP}
+                    <a
+                    href="https://vk.com/im/convo/2840329"
+                    onClick={openVK}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label="Записаться сейчас"
-                  >
+                    >
                   🎯 Записаться сейчас
+                     </a>
                 </Button>
               </motion.div>
             </motion.div>
