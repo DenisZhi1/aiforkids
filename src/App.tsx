@@ -52,31 +52,36 @@ export default function App() {
     { title: "Создание сайтов", description: "Делаем сайт-визитку и многостраничный сайт.", benefit: "Практический опыт в цифровых профессиях.", icon: Globe }
   ];
 
-// внутри компонента, ПЕРЕД return
-const openVK: MouseEventHandler<HTMLAnchorElement> = (e) => {
-  const mobile =
-    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.userAgentData?.mobile ?? false);
+// 1) определяем мобильность
+const isMobile =
+  typeof navigator !== "undefined" &&
+  (/(Android|iPhone|iPad|iPod)/i.test(navigator.userAgent) ||
+   (navigator.userAgentData?.mobile ?? false));
 
-  if (!mobile) return; // на десктопе работаем обычным href
+// 2) ссылки
+const VK_DESKTOP = "https://vk.com/im/convo/2840329";
+const VK_MOBILE  = "https://m.vk.com/im?sel=2840329";
+const VK_APP     = "vk://im?sel=2840329"; // deep link в приложение
 
-  e.preventDefault(); // перехватываем клик на мобиле
+// 3) href по платформе
+const vkHref = isMobile ? VK_MOBILE : VK_DESKTOP;
 
-  const APP_DEEP_LINK = "vk://im?sel=2840329";            // открыть приложение VK
-  //const VK_MOBILE = "https://m.vk.com/im?sel=2840329";    // запасной вариант — мобильная веб-версия
+// 4) обработчик: на мобиле пытаемся открыть приложение, иначе — обычный href
+const onOpenVK: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+  if (!isMobile) return; // на десктопе пусть работает target+href
 
-  //const APP_DEEP_LINK = "https://vk.com/im/convo/2840329";            // открыть приложение VK
-  const VK_MOBILE = "https://t.me/D_Z_D_A";    // запасной вариант — мобильная веб-версия
-
+  e.preventDefault(); // перехватываем навигацию <a>
   const t = Date.now();
-  window.location.href = APP_DEEP_LINK;
 
-  // если приложение не открылось — открываем мобильную веб-страницу
+  // пробуем открыть приложение VK
+  window.location.href = VK_APP;
+
+  // если приложение не открылось — уходим на мобильную веб-версию
   setTimeout(() => {
     if (Date.now() - t < 1500) {
-      window.open(VK_MOBILE, "_blank", "noopener,noreferrer");
+      window.location.href = VK_MOBILE; // в той же вкладке обычно удобнее на телефоне
     }
-  }, 800);
+  }, 700);
 };
 
   
@@ -121,10 +126,11 @@ const openVK: MouseEventHandler<HTMLAnchorElement> = (e) => {
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl"
                 >
                     <a
-                    href="https://vk.com/im/convo/2840329"
-                    onClick={openVK}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                      href={vkHref}
+                      onClick={onOpenVK}
+                      target={isMobile ? undefined : "_blank"}  // десктоп — в новой вкладке; мобила — в этой
+                      rel="noopener noreferrer"
+                      aria-label="Записаться сейчас"
                     >
                   🎯 Записаться сейчас
                      </a>
