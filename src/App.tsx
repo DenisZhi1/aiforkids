@@ -6,6 +6,7 @@ import { Card } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Clock, Users, Monitor, Wifi, GraduationCap, CreditCard, Star, Sparkles, Brain, Paintbrush, Presentation, Globe, BookOpen, Laptop2, Video, Award, Target, Lightbulb, Zap } from 'lucide-react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import type { MouseEventHandler } from "react";
 
 export default function App() {
   const fadeInUp = {
@@ -51,6 +52,32 @@ export default function App() {
     { title: "Создание сайтов", description: "Делаем сайт-визитку и многостраничный сайт.", benefit: "Практический опыт в цифровых профессиях.", icon: Globe }
   ];
 
+// внутри компонента, ПЕРЕД return
+const openVK: MouseEventHandler<HTMLAnchorElement> = (e) => {
+  const mobile =
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.userAgentData?.mobile ?? false);
+
+  if (!mobile) return; // на десктопе работаем обычным href
+
+  e.preventDefault(); // перехватываем клик на мобиле
+
+  const APP_DEEP_LINK = "vk://im?sel=2840329";            // открыть приложение VK
+  const VK_MOBILE = "https://m.vk.com/im?sel=2840329";    // запасной вариант — мобильная веб-версия
+
+  const t = Date.now();
+  window.location.href = APP_DEEP_LINK;
+
+  // если приложение не открылось — открываем мобильную веб-страницу
+  setTimeout(() => {
+    if (Date.now() - t < 1500) {
+      window.open(VK_MOBILE, "_blank", "noopener,noreferrer");
+    }
+  }, 800);
+};
+
+  
+
   return (
     <div className="dark min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {}
@@ -83,28 +110,6 @@ export default function App() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-
-                const openVK = (e: React.MouseEvent) => {
-                  const ua = navigator.userAgent;
-                  const mobile = /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.userAgentData?.mobile ?? false);
-                
-                  if (!mobile) return; // на десктопе пусть работает обычный href
-                
-                  e.preventDefault(); // перехватываем клик на мобиле
-                
-                  const APP_DEEP_LINK = "vk://im?sel=2840329";       // попытаемся открыть приложение
-                  const VK_MOBILE     = "https://m.vk.com/im?sel=2840329"; // запасной вариант — мобильный веб
-                
-                  const t = Date.now();
-                  window.location.href = APP_DEEP_LINK;
-                
-                  // если приложение не открылось — через ~800мс открываем мобильную веб-страницу
-                  setTimeout(() => {
-                    if (Date.now() - t < 1500) {
-                      window.open(VK_MOBILE, "_blank", "noopener,noreferrer");
-                    }
-                  }, 800);
-                };
 
                 <Button 
                   asChild
