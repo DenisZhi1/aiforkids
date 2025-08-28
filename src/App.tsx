@@ -63,7 +63,7 @@ const openVK: MouseEventHandler<HTMLAnchorElement> = (e) => {
   e.preventDefault(); // перехватываем клик на мобиле
 
   const APP_DEEP_LINK = "vk://im?sel=2840329";            // открыть приложение VK
-  const VK_MOBILE = "https://vk.com/denis_zhikharev";    // запасной вариант — мобильная веб-версия
+  const VK_MOBILE = "https://t.me/D_Z_D_A";    // запасной вариант — мобильная веб-версия
 
   const t = Date.now();
   window.location.href = APP_DEEP_LINK;
