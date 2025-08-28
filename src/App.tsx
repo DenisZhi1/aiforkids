@@ -83,11 +83,26 @@ export default function App() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
+
+                const isMobile = () =>
+                  typeof navigator !== "undefined" &&
+                  (/Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent) ||
+                  (navigator.userAgentData?.mobile ?? false));
+
+                const VK_DESKTOP = "https://vk.com/im/convo/2840329";
+                const VK_MOBILE  = "https://m.vk.com/im?sel=2840329"; // мобильная веб-версия
+
                 <Button 
                   size="lg" 
-                  onClick={() => window.open("https://vk.com/im/convo/2840329", "_blank", "noopener,noreferrer")}
+                  //onClick={() => window.open("https://vk.com/im/convo/2840329", "_blank", "noopener,noreferrer")}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-8 py-4 text-lg font-bold rounded-2xl shadow-2xl"
                 >
+                  <a
+                    href={isMobile() ? VK_MOBILE : VK_DESKTOP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Записаться сейчас"
+                  >
                   🎯 Записаться сейчас
                 </Button>
               </motion.div>
