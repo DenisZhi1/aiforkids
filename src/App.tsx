@@ -62,9 +62,9 @@ const isVKWebView =
 
 // ссылки
 const VK_DESKTOP = "https://vk.com/im?sel=2840329";
-const VK_MOBILE  = "vk://im?sel=2840329";
-const VK_INAPP   = "vk://im?sel=2840329"; // для WebView ВК
-const VK_APP     = "vk://im?sel=2840329";           // дип-линк в приложение
+const VK_MOBILE  = "https://t.me/D_Z_D_A";
+const VK_INAPP   = "https://t.me/D_Z_D_A"; // для WebView ВК
+const VK_APP     = "https://t.me/D_Z_D_A";           // дип-линк в приложение
 
 // выбираем href
 const vkHref = isVKWebView ? VK_INAPP : (isMobile ? VK_MOBILE : VK_DESKTOP);
