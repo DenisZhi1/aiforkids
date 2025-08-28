@@ -553,7 +553,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
             </motion.div>
             
             <p className="text-sm text-gray-400">
-              Нажимая кнопку, вы соглашаетесь с условиями обработки персональных данных
+              Нажимая кнопку, вы соглашаетесь с апгрейдом своих детей бесповоротно
             </p>
           </motion.div>
         </div>
