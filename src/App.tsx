@@ -52,37 +52,44 @@ export default function App() {
     { title: "Создание сайтов", description: "Делаем сайт-визитку и многостраничный сайт.", benefit: "Практический опыт в цифровых профессиях.", icon: Globe }
   ];
 
-// 1) определяем мобильность
+// helpers
 const isMobile =
-  typeof navigator !== "undefined" &&
-  (/(Android|iPhone|iPad|iPod)/i.test(navigator.userAgent) ||
-   (navigator.userAgentData?.mobile ?? false));
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  (navigator.userAgentData?.mobile ?? false);
 
-// 2) ссылки
-const VK_DESKTOP = "https://vk.com/im/convo/2840329";
+const isVKWebView =
+  /(VKAndroidApp|VKontakte|VK|com\.vk\.vkclient)/i.test(navigator.userAgent);
+
+// ссылки
+const VK_DESKTOP = "https://vk.com/im?sel=2840329";
 const VK_MOBILE  = "https://m.vk.com/im?sel=2840329";
-const VK_APP     = "vk://im?sel=2840329"; // deep link в приложение
+const VK_INAPP   = "https://vk.com/im?sel=2840329"; // для WebView ВК
+const VK_APP     = "vk://im?sel=2840329";           // дип-линк в приложение
 
-// 3) href по платформе
-const vkHref = isMobile ? VK_MOBILE : VK_DESKTOP;
+// выбираем href
+const vkHref = isVKWebView ? VK_INAPP : (isMobile ? VK_MOBILE : VK_DESKTOP);
 
-// 4) обработчик: на мобиле пытаемся открыть приложение, иначе — обычный href
-const onOpenVK: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
-  if (!isMobile) return; // на десктопе пусть работает target+href
-
-  e.preventDefault(); // перехватываем навигацию <a>
-  const t = Date.now();
-
-  // пробуем открыть приложение VK
-  window.location.href = VK_APP;
-
-  // если приложение не открылось — уходим на мобильную веб-версию
-  setTimeout(() => {
-    if (Date.now() - t < 1500) {
-      window.location.href = VK_MOBILE; // в той же вкладке обычно удобнее на телефоне
-    }
-  }, 700);
+// обработчик клика
+const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
+  if (isVKWebView) {
+    // Внутри приложения ВК остаёмся на vk.com — откроет нативный экран
+    e.preventDefault();
+    window.location.href = VK_INAPP;
+    return;
+  }
+  if (isMobile) {
+    // Снаружи пробуем открыть приложение ВК, иначе — мобильную веб-версию
+    e.preventDefault();
+    const t = Date.now();
+    window.location.href = VK_APP;
+    setTimeout(() => {
+      if (Date.now() - t < 1500) {
+        window.location.href = VK_MOBILE;
+      }
+    }, 700);
+  }
 };
+
 
   
 
@@ -127,8 +134,8 @@ const onOpenVK: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
                 >
                     <a
                       href={vkHref}
-                      onClick={onOpenVK}
-                      target={isMobile ? undefined : "_blank"}  // десктоп — в новой вкладке; мобила — в этой
+                      onClick={handleVKClick}
+                      target={isVKWebView ? undefined : (isMobile ? undefined : "_blank")}
                       rel="noopener noreferrer"
                       aria-label="Записаться сейчас"
                     >
