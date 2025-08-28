@@ -62,7 +62,7 @@ const openVK: MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   e.preventDefault(); // перехватываем клик на мобиле
 
-  const APP_DEEP_LINK = "https://t.me/D_Z_D_A";            // открыть приложение VK
+  const APP_DEEP_LINK = "https://vk.com/im/convo/2840329";            // открыть приложение VK
   const VK_MOBILE = "https://t.me/D_Z_D_A";    // запасной вариант — мобильная веб-версия
 
   const t = Date.now();
