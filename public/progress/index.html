@@ -101,6 +101,78 @@
 				  0 0 16px rgba(125, 245, 255, 0.55);
 	}
 
+/* ===== спец-рамки для избранных ===== */
+
+	/* базовая анимация пульса */
+	@keyframes pulse-orange {
+	  0% {
+		box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.8);
+		border-color: rgba(249, 115, 22, 0.9);
+	  }
+	  50% {
+		box-shadow: 0 0 18px 6px rgba(249, 115, 22, 0.5);
+		border-color: rgba(253, 186, 116, 1);
+	  }
+	  100% {
+		box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.2);
+		border-color: rgba(249, 115, 22, 0.7);
+	  }
+	}
+
+	@keyframes pulse-purple {
+	  0% {
+		box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.8);
+		border-color: rgba(168, 85, 247, 0.9);
+	  }
+	  50% {
+		box-shadow: 0 0 20px 7px rgba(192, 132, 252, 0.6);
+		border-color: rgba(216, 180, 254, 1);
+	  }
+	  100% {
+		box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.3);
+		border-color: rgba(168, 85, 247, 0.7);
+	  }
+	}
+
+	@keyframes pulse-blue {
+	  0% {
+		box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.8);
+		border-color: rgba(56, 189, 248, 0.9);
+	  }
+	  50% {
+		box-shadow: 0 0 20px 7px rgba(59, 130, 246, 0.7);
+		border-color: rgba(191, 219, 254, 1);
+	  }
+	  100% {
+		box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.3);
+		border-color: rgba(56, 189, 248, 0.7);
+	  }
+	}
+
+	/* Денис — рыжий котик */
+	.card.special-denis {
+	  border-width: 2px;
+	  border-color: #f97316;
+	  animation: pulse-orange 1.6s infinite;
+	}
+
+	/* Анна — фиолетовые зайки */
+	.card.special-anna {
+	  border-width: 2px;
+	  border-color: #a855f7;
+	  animation: pulse-purple 1.7s infinite;
+	}
+
+	/* Динара и Люба — голубая анимация */
+	.card.special-dinara,
+	.card.special-lyuba {
+	  border-width: 2px;
+	  border-color: #38bdf8;
+	  animation: pulse-blue 1.8s infinite;
+	}
+
+
+
 	.avatar-wrap {
 	  position: relative;
 	  width: 90px;
@@ -351,9 +423,9 @@
 
 <script>
   // === НАСТРОЙКИ ===
-  const CSV_PATH = "https://docs.google.com/spreadsheets/d/1JJfgxFl6FczKSOeSQHRk20A-iQk83buj1fgbgPbRiVU/export?format=csv&gid=613453476";   // если CSV в той же папке, оставь так
-  const MAX_STARS = 12;              // максимум звёзд вокруг аватарки
-  const TASKS_PER_STAR = 1;          // 1 звезда = 1 задание (можно поменять)
+  const CSV_PATH = "https://docs.google.com/spreadsheets/d/1JJfgxFl6FczKSOeSQHRk20A-iQk83buj1fgbgPbRiVU/export?format=csv&gid=613453476";
+  const MAX_STARS = 12;
+  const TASKS_PER_STAR = 1;
 
   const statusEl = document.getElementById("status");
   const gridEl = document.getElementById("grid");
@@ -367,13 +439,13 @@
   async function loadCSV() {
     try {
       statusEl.textContent = "Загружаю данные из CSV…";
-      const res = await fetch(CSV_PATH); // анти-кеш
+      const res = await fetch(CSV_PATH);
       if (!res.ok) {
         throw new Error("Не получилось загрузить CSV: " + res.status);
       }
 
       const text = await res.text();
-	  console.log(text);
+      console.log("CSV текст:", text.slice(0, 200));
       const students = parseCSV(text);
       allStudents = students;
 
@@ -386,7 +458,7 @@
       renderAll();
     } catch (err) {
       console.error(err);
-      statusEl.textContent = "Ошибка загрузки данных. Проверь файл students.csv и его формат.";
+      statusEl.textContent = "Ошибка загрузки данных. Не удалось получить данные из таблицы.";
       gridEl.innerHTML = "";
       if (podiumEl) podiumEl.innerHTML = "";
       emptyEl.style.display = "block";
@@ -394,7 +466,6 @@
   }
 
   // ====== ПАРСЕР CSV ======
-  // ожидаем заголовки: name,completed,(опционально) avatar,profile
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/);
     if (lines.length <= 1) return [];
@@ -434,48 +505,47 @@
   }
 
   // ====== ГЛАВНЫЙ РЕНДЕР (топ-3 + список) ======
-	function renderAll(filterText = "") {
-	  const q = filterText.trim().toLowerCase();
+  function renderAll(filterText = "") {
+    const q = filterText.trim().toLowerCase();
 
-	  // 1) ПОДИУМ ВСЕГДА СЧИТАЕМ ПО ВСЕМ ДАННЫМ (allStudents)
-	  if (!allStudents || allStudents.length === 0) {
-		renderPodium([]);
-	  } else {
-		const sortedByScoreAll = allStudents
-		  .slice()
-		  .sort((a, b) => {
-			if (b.completed !== a.completed) return b.completed - a.completed;
-			return a.name.localeCompare(b.name, "ru");
-		  });
-		const top3All = sortedByScoreAll.slice(0, 3);
-		renderPodium(top3All);
-	  }
+    // 1) Подиум всегда считаем по всем ученикам
+    if (!allStudents || allStudents.length === 0) {
+      renderPodium([]);
+    } else {
+      const sortedByScoreAll = allStudents
+        .slice()
+        .sort((a, b) => {
+          if (b.completed !== a.completed) return b.completed - a.completed;
+          return a.name.localeCompare(b.name, "ru");
+        });
+      const top3All = sortedByScoreAll.slice(0, 3);
+      renderPodium(top3All);
+    }
 
-	  // 2) СПИСОК НИЖЕ — ТОЛЬКО ДЛЯ ФИЛЬТРАЦИИ / ПОИСКА
-	  let filtered = allStudents.slice();
+    // 2) Список ниже — с фильтром
+    let filtered = allStudents.slice();
 
-	  if (q) {
-		filtered = filtered.filter(st =>
-		  st.name.toLowerCase().includes(q)
-		);
-	  }
+    if (q) {
+      filtered = filtered.filter(st =>
+        st.name.toLowerCase().includes(q)
+      );
+    }
 
-	  if (filtered.length === 0) {
-		gridEl.innerHTML = "";
-		emptyEl.style.display = "block";
-		return;
-	  } else {
-		emptyEl.style.display = "none";
-	  }
+    if (filtered.length === 0) {
+      gridEl.innerHTML = "";
+      emptyEl.style.display = "block";
+      return;
+    } else {
+      emptyEl.style.display = "none";
+    }
 
-	  // 3) ДЛЯ СПИСКА: сортируем по алфавиту
-	  const listSorted = filtered.slice().sort((a, b) =>
-		a.name.localeCompare(b.name, "ru")
-	  );
+    // Список по алфавиту
+    const listSorted = filtered.slice().sort((a, b) =>
+      a.name.localeCompare(b.name, "ru")
+    );
 
-	  renderGrid(listSorted);
-	}
-
+    renderGrid(listSorted);
+  }
 
   // ====== ПОДИУМ (топ-3) ======
   function renderPodium(top3) {
@@ -490,7 +560,6 @@
       return;
     }
 
-    // слева — 2 место, центр — 1 место, справа — 3 место
     const positions = [
       { index: 1, className: "silver", place: 2 },
       { index: 0, className: "gold",   place: 1 },
@@ -513,7 +582,7 @@
     });
   }
 
-  // ====== СЕТКА ДЛЯ ОСТАЛЬНЫХ ======
+  // ====== СЕТКА ======
   function renderGrid(students) {
     gridEl.innerHTML = "";
     students.forEach(st => {
@@ -522,10 +591,16 @@
     });
   }
 
-  // ====== СОЗДАНИЕ КАРТОЧКИ УЧЕНИКА (общий конструктор) ======
+  // ====== КАРТОЧКА УЧЕНИКА ======
   function createStudentCard(st) {
     const card = document.createElement("article");
     card.className = "card";
+
+    // особые рамки
+    const specialType = getSpecialType(st.name);
+    if (specialType) {
+      card.classList.add("special-" + specialType);
+    }
 
     const wrap = document.createElement("div");
     wrap.className = "avatar-wrap";
@@ -535,28 +610,29 @@
     const starsRing = document.createElement("div");
     starsRing.className = "stars-ring";
 
-    const starCount = Math.min(
-      Math.max(0, Math.floor(st.completed / TASKS_PER_STAR)),
-      MAX_STARS
-    );
-    placeStars(starsRing, st.completed);
+    // котики/зайки для Дениса и Анны
+    if (specialType === "denis") {
+      placeEmojiRing(starsRing, st.completed, "🐱");
+    } else if (specialType === "anna") {
+      placeEmojiRing(starsRing, st.completed, "🐰");
+    } else {
+      placeStars(starsRing, st.completed);
+    }
 
     wrap.appendChild(avatarEl);
     wrap.appendChild(starsRing);
 
-	const nameEl = document.createElement("div");
-	nameEl.className = "name";
+    const nameEl = document.createElement("div");
+    nameEl.className = "name";
 
-	// Разделяем имя и фамилию
-	const parts = st.name.split(" ").filter(Boolean);
-	const firstName = parts[0] || "";
-	const lastName = parts.slice(1).join(" ") || "";
+    const parts = st.name.split(" ").filter(Boolean);
+    const firstName = parts[0] || "";
+    const lastName = parts.slice(1).join(" ") || "";
 
-	// Формируем 2 строки
-	nameEl.innerHTML = `
-	  <div>${firstName}</div>
-	  <div>${lastName}</div>
-	`;
+    nameEl.innerHTML = `
+      <div>${firstName}</div>
+      <div>${lastName}</div>
+    `;
 
     const metaEl = document.createElement("div");
     metaEl.className = "meta";
@@ -569,7 +645,7 @@
     return card;
   }
 
-  // ====== АВАТАР (картинка / инициалы + ссылка на профиль) ======
+  // ====== АВАТАР ======
   function createAvatarElement(st) {
     let core;
     if (st.avatar) {
@@ -598,7 +674,18 @@
     return core;
   }
 
-  // ====== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ======
+  // ====== ВСПОМОГАТЕЛЬНЫЕ ======
+  function getSpecialType(name) {
+    const n = name.toLowerCase();
+
+    if (n.includes("денис") && n.includes("жихар")) return "denis";
+    if (n.includes("анна") && n.includes("кудряв")) return "anna";
+    if (n.includes("динара") && n.includes("губайд")) return "dinara";
+    if (n.includes("любов") && n.includes("заруб")) return "lyuba";
+
+    return null;
+  }
+
   function getInitials(fullName) {
     const parts = fullName.split(/\s+/).filter(Boolean);
     if (parts.length === 0) return "?";
@@ -606,70 +693,129 @@
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-function placeStars(container, completed) {
-  container.innerHTML = "";
-  if (completed <= 0) return;
+  // ====== ЗВЁЗДЫ ======
+  function placeStars(container, completed) {
+    container.innerHTML = "";
+    if (completed <= 0) return;
 
-  const big = Math.floor(completed / 5); // большие
-  const small = completed % 5;           // маленькие
+    const big = Math.floor(completed / 5);
+    const small = completed % 5;
+
+    const bigRadius = 42;
+    const smallRadius = 38;
+    const bigSize = 20;
+    const smallSize = 12;
+
+    const toRad = (deg) => deg * Math.PI / 180;
+
+    // верхняя дуга — большие
+    if (big > 0) {
+      const startTop = -160;
+      const endTop   = -20;
+      const stepTop = (endTop - startTop) / (big + 1);
+
+      for (let i = 0; i < big; i++) {
+        const angleDeg = startTop + stepTop * (i + 1);
+        const angle = toRad(angleDeg);
+
+        const x = bigRadius * Math.cos(angle);
+        const y = bigRadius * Math.sin(angle);
+
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = "★";
+        star.style.fontSize = bigSize + "px";
+        star.style.transform =
+          `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+        container.appendChild(star);
+      }
+    }
+
+    // нижняя дуга — маленькие
+    if (small > 0) {
+      const startBottom = 20;
+      const endBottom   = 160;
+      const stepBottom = (endBottom - startBottom) / (small + 1);
+
+      for (let i = 0; i < small; i++) {
+        const angleDeg = startBottom + stepBottom * (i + 1);
+        const angle = toRad(angleDeg);
+
+        const x = smallRadius * Math.cos(angle);
+        const y = smallRadius * Math.sin(angle);
+
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = "★";
+        star.style.fontSize = smallSize + "px";
+        star.style.transform =
+          `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+        container.appendChild(star);
+      }
+    }
+  }
+
+  // ====== КОЛЬЦО С ЭМОДЗИ (КОТИКИ / ЗАЙКИ) ======
+function placeEmojiRing(container, completed, emoji) {
+  container.innerHTML = "";
+
+  // Анна и Денис — показываем эмодзи всегда
+  const big = 3;   // ВСЕГДА три крупных сверху
+  const small = 3; // ВСЕГДА три мелких снизу
 
   const bigRadius = 42;
   const smallRadius = 38;
-  const bigSize = 20;
-  const smallSize = 12;
+  const bigSize = 22;
+  const smallSize = 16;
 
   const toRad = (deg) => deg * Math.PI / 180;
 
-  // ===== ВЕРХНЯЯ ДУГА (БОЛЬШИЕ ЗВЁЗДЫ) =====
-  if (big > 0) {
-    const startTop = -160;  // в градусах
-    const endTop   = -20;
-    const stepTop = (endTop - startTop) / (big + 1);
+  // ВЕРХНЯЯ ДУГА — большие эмодзи
+  const startTop = -160;
+  const endTop   = -20;
+  const stepTop = (endTop - startTop) / (big + 1);
 
-    for (let i = 0; i < big; i++) {
-      const angleDeg = startTop + stepTop * (i + 1);
-      const angle = toRad(angleDeg);
+  for (let i = 0; i < big; i++) {
+    const angleDeg = startTop + stepTop * (i + 1);
+    const angle = toRad(angleDeg);
 
-      const x = bigRadius * Math.cos(angle);
-      const y = bigRadius * Math.sin(angle); // тут всегда ОТРИЦАТЕЛЬНО (сверху)
+    const x = bigRadius * Math.cos(angle);
+    const y = bigRadius * Math.sin(angle);
 
-      const star = document.createElement("span");
-      star.className = "star";
-      star.textContent = "★";
-      star.style.fontSize = bigSize + "px";
-      star.style.transform =
-        `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    const node = document.createElement("span");
+    node.className = "star";
+    node.textContent = emoji;
+    node.style.fontSize = bigSize + "px";
+    node.style.transform =
+      `translate(-50%, -50%) translate(${x}px, ${y}px)`;
 
-      container.appendChild(star);
-    }
+    container.appendChild(node);
   }
 
-  // ===== НИЖНЯЯ ДУГА (МАЛЕНЬКИЕ ЗВЁЗДЫ) =====
-  if (small > 0) {
-    const startBottom = 20;
-    const endBottom   = 160;
-    const stepBottom = (endBottom - startBottom) / (small + 1);
+  // НИЖНЯЯ ДУГА — маленькие эмодзи
+  const startBottom = 20;
+  const endBottom   = 160;
+  const stepBottom = (endBottom - startBottom) / (small + 1);
 
-    for (let i = 0; i < small; i++) {
-      const angleDeg = startBottom + stepBottom * (i + 1);
-      const angle = toRad(angleDeg);
+  for (let i = 0; i < small; i++) {
+    const angleDeg = startBottom + stepBottom * (i + 1);
+    const angle = toRad(angleDeg);
 
-      const x = smallRadius * Math.cos(angle);
-      const y = smallRadius * Math.sin(angle); // тут всегда ПОЛОЖИТЕЛЬНО (снизу)
+    const x = smallRadius * Math.cos(angle);
+    const y = smallRadius * Math.sin(angle);
 
-      const star = document.createElement("span");
-      star.className = "star";
-      star.textContent = "★";
-      star.style.fontSize = smallSize + "px";
-      star.style.transform =
-        `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+    const node = document.createElement("span");
+    node.className = "star";
+    node.textContent = emoji;
+    node.style.fontSize = smallSize + "px";
+    node.style.transform =
+      `translate(-50%, -50%) translate(${x}px, ${y}px)`;
 
-      container.appendChild(star);
-    }
+    container.appendChild(node);
   }
 }
-
-
 
 
   // ====== ПОИСК ======
@@ -682,6 +828,7 @@ function placeStars(container, completed) {
   // Старт
   loadCSV();
 </script>
+
  
 
 
