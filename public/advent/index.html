@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DEAL - АДВЕНТ КАЛЕНДАРЬ</title>
+
+  <!-- Google Font (rounded + playful) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- html2canvas (download) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- jsPDF (optional PDF download) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script defer src="gifts.js"></script>
+  <script defer src="app.js"></script>
+</head>
+
+<body>
+  <main class="page">
+    <section class="card" aria-label="Advent Calendar">
+	  <div class="snowfall" id="snowLayer" aria-hidden="true"></div>
+
+		<header class="hero-header">
+		  <a class="hero-link" href="https://vk.ru/deandal" target="_blank" rel="noopener noreferrer" aria-label="Открыть сообщество DE&AL ВКонтакте">
+			<img src="hero-deal.png" alt="Advent in DEAL">
+		  </a>
+		</header>
+
+
+      <div class="grid" id="calendarGrid" role="grid" aria-label="Calendar doors">
+        <!-- Doors injected by JS -->
+      </div>
+
+      <footer class="footer">
+        <span class="footer-pill">🎁 12 cute surprises</span>
+        <span class="footer-pill">✨ Tap a door to reveal</span>
+      </footer>
+    </section>
+  </main>
+
+  <!-- MODAL: Cute Alert (locked click) -->
+  <div class="modal-overlay" id="alertOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+      <button class="close" type="button" data-close="alertOverlay" aria-label="Close alert">✕</button>
+      <h2 class="modal-title" id="alertTitle">Too early!</h2>
+      <p class="modal-text" id="alertText">Come back on Dec ??!</p>
+      <button class="btn btn-primary" type="button" data-close="alertOverlay">Okie! 💖</button>
+    </div>
+  </div>
+
+  <!-- MODAL #1: Reveal -->
+  <div class="modal-overlay" id="revealOverlay" aria-hidden="true">
+    <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="revealTitle">
+      <button class="close" type="button" data-close="revealOverlay" aria-label="Close reveal">✕</button>
+
+      <div class="reveal-head">
+        <h2 class="modal-title" id="revealTitle">Day <span id="revealDayNum">1</span> Surprise!</h2>
+        <span class="reveal-chip" id="revealChip">Unlocked</span>
+      </div>
+
+      <div class="reveal-image-wrap">
+        <img id="revealImage" src="reveal-day-1.jpg" alt="Reveal image for the selected day" />
+      </div>
+
+      <div class="reveal-actions">
+        <button class="btn btn-primary cta" type="button" id="openGiftBtn">
+          🎀 Open Your Gift
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL #2: Greeting Card -->
+  <div class="modal-overlay" id="cardOverlay" aria-hidden="true">
+    <div class="modal modal-xl" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+      <button class="close" type="button" data-close="cardOverlay" aria-label="Close card">✕</button>
+
+      <!-- This is the area we capture with html2canvas -->
+      <div class="card-capture" id="cardToCapture">
+        <div class="holiday-card">
+          <div class="holiday-left">
+            <div class="img-frame">
+              <img id="cardImage" src="card-image.jpg" alt="Holiday card image" />
+
+            </div>
+            <div class="sticker-row" aria-hidden="true">
+              <span class="sticker">❄️</span>
+              <span class="sticker">🍬</span>
+              <span class="sticker">🎄</span>
+              <span class="sticker">⭐</span>
+            </div>
+          </div>
+
+          <div class="holiday-right">
+            <h2 class="holiday-title" id="cardTitle">Warm Winter Wishes!</h2>
+            <p class="holiday-message" id="cardMessage">
+              Warm wishes for cozy days, sweet cocoa, and magical moments!
+            </p>
+
+            <div class="holiday-divider" aria-hidden="true"></div>
+
+            <p class="holiday-footer" id="cardFooter">
+              “May your December sparkle with tiny joys.” ✨
+            </p>
+
+            <div class="sig">
+              <span class="sig-pill">From: Your Advent Calendar</span>
+              <span class="sig-pill">Day <span id="cardDayNum">1</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="download-bar">
+        <button class="btn btn-secondary" type="button" id="downloadPngBtn">
+          ⬇️ Download Card (PNG)
+        </button>
+        <button class="btn btn-ghost" type="button" id="downloadPdfBtn" title="Save as PDF">
+          📄 PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

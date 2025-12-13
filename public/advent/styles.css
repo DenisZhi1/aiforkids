@@ -1,0 +1,591 @@
+/* =========================
+   KAWAII WINTER AESTHETIC
+   ========================= */
+
+:root{
+  --lavender: #cbb7ff;
+  --pink: #ffb8d9;
+  --sky: #9edcff;
+  --mint: #a6f4d6;
+
+  --red: #ff4d6d;
+  --green: #34d399;
+  --gold: #f6c453;
+
+  --ink: #2b2b3a;
+  --paper: #ffffff;
+
+  --shadow: 0 18px 50px rgba(35, 28, 65, .18);
+  --shadow-soft: 0 10px 24px rgba(35, 28, 65, .14);
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin: 0;
+  font-family: "Fredoka", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--ink);
+  overflow-x: hidden;
+
+  /* Winter landscape background (pure CSS, cover-style) */
+  background: url("bg-winter.png") center/cover no-repeat fixed;
+
+  background-size: cover;
+  position: relative;
+}
+
+/* Snowy hills + trees layer */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 420px at 30% 105%, rgba(255,255,255,.95) 60%, transparent 61%),
+    radial-gradient(1200px 420px at 75% 115%, rgba(255,255,255,.9) 60%, transparent 61%),
+    radial-gradient(24px 40px at 18% 78%, rgba(90,190,160,.45) 50%, transparent 51%),
+    radial-gradient(24px 40px at 22% 82%, rgba(90,190,160,.35) 50%, transparent 51%),
+    radial-gradient(24px 40px at 82% 80%, rgba(110,180,255,.35) 50%, transparent 51%),
+    radial-gradient(24px 40px at 78% 84%, rgba(110,180,255,.28) 50%, transparent 51%);
+  filter: blur(.2px);
+  opacity: .95;
+}
+
+.page{
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 28px 14px;
+}
+
+.card{
+  width: min(940px, 95vw);
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: clamp(10px, 2vw, 16px);
+  border: 3px solid rgba(203,183,255,.35);
+  position: relative;
+  overflow: hidden;
+}
+
+
+.card-hero{
+  position: absolute;
+  left: 50%;
+  top: clamp(-70px, -6vw, -40px); /* "вылезает" над карточкой */
+  transform: translateX(-50%);
+  width: min(560px, 92%);
+  z-index: 5;
+  pointer-events: none; /* чтобы не мешала кликам по дверям */
+}
+
+.card-hero img{
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Cute confetti border glow */
+.card::after{
+  content:"";
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, rgba(255,184,217,.35), rgba(158,220,255,.35), rgba(166,244,214,.35));
+  z-index: 0;
+  filter: blur(14px);
+  opacity: .6;
+}
+.card > *:not(.snowfall){
+  position: relative;
+  z-index: 1;
+}
+
+.hero-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 2px;
+}
+
+.hero-header img{
+  width: min(420px, 90%);
+  height: auto;
+  display: block;
+}
+
+.header{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.badge{
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(158,220,255,.55), rgba(255,184,217,.35));
+  box-shadow: var(--shadow-soft);
+  font-size: 26px;
+}
+
+.title{
+  margin: 0;
+  font-size: clamp(24px, 2.6vw, 36px);
+  letter-spacing: .2px;
+}
+.subtitle{
+  margin: 6px 0 0;
+  opacity: .8;
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px, 1.6vw, 16px);
+  padding-top: 6px;
+}
+
+.door{
+  position: relative;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  transform: translateZ(0);
+  aspect-ratio: 1 / 1;
+  user-select: none;
+  
+}
+
+.hero-link{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;         /* ключ: центрируем сам <a> */
+  line-height: 0;
+  text-decoration: none;
+}
+
+
+
+.hero-link:focus-visible{
+  outline: 3px solid rgba(203,183,255,.7);
+  outline-offset: 6px;
+}
+
+.door img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: none;
+  border-radius: 0; 
+}
+
+
+
+.door.locked{
+  cursor: not-allowed;
+}
+.door.locked img{
+  filter: grayscale(80%) brightness(90%);
+}
+.door.unlocked{
+  cursor: pointer;
+}
+.door.unlocked:hover{
+  animation: bounceWiggle .55s ease both;
+}
+.door:focus-visible{
+  box-shadow: 0 0 0 4px rgba(158,220,255,.55), 0 10px 24px rgba(35, 28, 65, .16);
+}
+
+@keyframes bounceWiggle{
+  0%{ transform: scale(1); }
+  45%{ transform: scale(1.04) rotate(-1.2deg); }
+  70%{ transform: scale(1.03) rotate(1deg); }
+  100%{ transform: scale(1.02) rotate(0deg); }
+}
+
+@keyframes shake{
+  0%{ transform: translateX(0); }
+  20%{ transform: translateX(-5px) rotate(-.5deg); }
+  40%{ transform: translateX(5px) rotate(.5deg); }
+  60%{ transform: translateX(-4px) rotate(-.4deg); }
+  80%{ transform: translateX(4px) rotate(.4deg); }
+  100%{ transform: translateX(0); }
+}
+.door.shake{
+  animation: shake .35s ease both;
+}
+
+.footer{
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.footer-pill{
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,184,217,.35), rgba(158,220,255,.35));
+  border: 2px solid rgba(166,244,214,.35);
+  font-size: 14px;
+}
+
+/* =========================
+   MODALS
+   ========================= */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  padding: 18px;
+  background: rgba(20, 18, 35, .45);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+}
+.modal-overlay.open{ display: grid; }
+
+.modal{
+  width: min(560px, 96vw);
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 3px solid rgba(255,184,217,.45);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  position: relative;
+}
+
+.modal-wide{   
+  width: fit-content;              /* главное */
+  max-width: min(1800px, 96vw);    /* но не шире экрана и не шире 1800 */
+  max-height: 92vh;
+  overflow: auto;
+}  
+.modal-xl{ 
+  width: min(1800px, 96vw); 
+  max-height: 92vh;        /* вот тут “по высоте” */
+  overflow: auto; 
+}
+
+.close{
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 40px; height: 40px;
+  border-radius: 999px;
+  border: 2px solid rgba(203,183,255,.45);
+  background: rgba(255,255,255,.9);
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--ink);
+  box-shadow: 0 8px 18px rgba(35, 28, 65, .12);
+}
+.close:hover{ transform: scale(1.04); }
+
+.modal-title{
+  margin: 6px 0 8px;
+  font-size: 26px;
+}
+.modal-text{
+  margin: 0 0 14px;
+  opacity: .85;
+  line-height: 1.35;
+}
+
+.btn{
+  border: 0;
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 22px rgba(35, 28, 65, .14);
+}
+.btn:active{ transform: translateY(1px); }
+
+.btn-primary{
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  color: #1c1026;
+  border: 2px solid rgba(255,255,255,.55);
+}
+.btn-secondary{
+  background: linear-gradient(90deg, rgba(158,220,255,.9), rgba(166,244,214,.9));
+  color: #13303a;
+  border: 2px solid rgba(255,255,255,.65);
+}
+.btn-ghost{
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(203,183,255,.45);
+  color: var(--ink);
+}
+
+/* Reveal modal */
+.reveal-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 46px; /* avoid overlapping close */
+}
+.reveal-chip{
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  background: linear-gradient(90deg, rgba(166,244,214,.7), rgba(158,220,255,.7));
+  border: 2px solid rgba(203,183,255,.35);
+}
+
+.reveal-image-wrap{
+  width: fit-content;  /* главное */
+  max-width: 100%;
+  margin: 12px auto 14px;
+  overflow: hidden;    /* чтобы скругления/бордер работали */
+}
+.reveal-image-wrap img{
+  display: block;
+  width: auto;         /* важно: не растягиваем на всю ширину контейнера */
+  height: auto;        /* сохраняем пропорции */
+  max-width: 100%;     /* но не вылезаем за модалку */
+  max-height: 70vh;    /* чтобы по высоте всегда влезало */
+}
+
+.reveal-actions{
+  display: flex;
+  justify-content: center;
+}
+.cta{
+  padding: 14px 20px;
+  font-size: 16px;
+}
+
+/* Greeting card modal */
+.card-capture{
+  background: linear-gradient(135deg, rgba(203,183,255,.20), rgba(255,184,217,.18), rgba(158,220,255,.18));
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  border: 2px dashed rgba(246,196,83,.65);
+}
+
+.holiday-card{
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 3px solid rgba(166,244,214,.40);
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 14px;
+  padding: 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+.holiday-left{ display: grid; gap: 12px; align-content: start; }
+#cardOverlay .img-frame{
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 3px solid rgba(255,184,217,.45);
+  box-shadow: 0 12px 26px rgba(35, 28, 65, .12);
+
+  aspect-ratio: 16 / 9;   /* ключ */
+  width: 100%;
+}
+
+#cardOverlay .img-frame img{
+  width: 100%;
+  height: 100%;           /* заполняем контейнер */
+  object-fit: cover;      /* красиво заполняем (возможен кроп краёв) */
+  object-position: center;
+  display: block;
+}
+
+.sticker-row{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sticker{
+  width: 44px; height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(203,183,255,.4);
+  box-shadow: 0 10px 20px rgba(35, 28, 65, .12);
+  font-size: 20px;
+}
+
+.holiday-right{
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 6px 6px 6px 2px;
+}
+
+.holiday-title{
+  margin: 0;
+  font-size: 28px;
+}
+.holiday-message{
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  opacity: .9;
+}
+
+.holiday-divider{
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,184,217,.6), rgba(158,220,255,.6), rgba(166,244,214,.6));
+  border: 2px solid rgba(255,255,255,.7);
+  margin: 6px 0;
+}
+
+.holiday-footer{
+  margin: 0;
+  font-weight: 700;
+  opacity: .85;
+}
+
+.sig{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.sig-pill{
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(158,220,255,.20);
+  border: 2px solid rgba(203,183,255,.35);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.download-bar{
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   ONLY REVEAL MODAL (Modal #1)
+   ========================= */
+
+#revealOverlay{
+  padding: 10px; /* если хочешь, чтобы именно первая имела меньше отступ */
+}
+
+#revealOverlay .modal-wide{
+  width: fit-content;              /* модалка по картинке */
+  max-width: min(1800px, 96vw);    /* но не шире экрана */
+  max-height: 92vh;
+  overflow: auto;
+}
+
+#revealOverlay .reveal-image-wrap{
+  width: fit-content;  /* по картинке */
+  max-width: 100%;
+  margin: 12px auto 14px;
+  overflow: hidden;
+}
+
+#revealOverlay .reveal-image-wrap img{
+  display: block;
+  width: auto;         /* НЕ растягиваем */
+  height: auto;
+  max-width: 100%;     /* но влезаем в модалку */
+  max-height: 70vh;    /* и по высоте в экран */
+  object-fit: initial; /* на всякий: убрать cover/contain */
+}
+
+/* Click-to-copy for card message */
+#cardMessage{
+  cursor: copy;
+  position: relative;
+}
+
+#cardMessage:hover{
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Small toast */
+.copy-toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.95);
+  border: 2px solid rgba(203,183,255,.45);
+  box-shadow: 0 12px 26px rgba(35, 28, 65, .18);
+  font-weight: 800;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.copy-toast.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ===== Snowfall inside the main card (doesn't block clicks) ===== */
+.snowfall{
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.snowflake{
+  position: absolute;
+  width: 26px;           /* размер снежинок */
+  height: 26px;
+  pointer-events: none;
+  user-select: none;
+  opacity: .55;          /* аккуратнее */
+  will-change: transform;
+  filter: drop-shadow(0 6px 10px rgba(35, 28, 65, .18));
+}
+
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 820px){
+  .grid{ grid-template-columns: repeat(3, 1fr); } /* 3 x 4 */
+  .holiday-card{ grid-template-columns: 1fr; }
+  .img-frame img{ height: 260px; }
+  .download-bar{ justify-content: stretch; }
+  .download-bar .btn{ width: 100%; justify-content: center; }
+}
+
+@media (max-width: 420px){
+  .grid{ grid-template-columns: repeat(2, 1fr); } /* 2 x 6 for tiny screens */
+  .badge{ width: 46px; height: 46px; font-size: 22px; }
+}
