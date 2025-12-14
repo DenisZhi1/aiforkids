@@ -291,18 +291,16 @@ function daysBetween(a, b){
   return Math.floor((b - a) / ms);
 }
 
+
+
 function getUnlockCount(){
   if (debugMode) return 12;
 
-  const now = new Date();
-  const year = now.getFullYear();
-  const start = dateAtNoon(year, 11, 15); // Dec is monthIndex 11
-  const today = dateAtNoon(year, now.getMonth(), now.getDate());
-
-  const diff = daysBetween(start, today); // 0 means Dec 15
-  const unlocked = diff >= 0 ? Math.min(12, diff + 1) : 0;
-  return unlocked;
+  const startUTC = getUnlockTimestampUTC(1);
+  const diff = Math.floor((Date.now() - startUTC) / DAY_MS); // 0 => первый день
+  return diff >= 0 ? Math.min(12, diff + 1) : 0;
 }
+
 
 function openModal(overlayEl){
   overlayEl.classList.add("open");
@@ -347,6 +345,47 @@ function wireModalClose(){
   });
 }
 
+
+// ===== MSK unlock logic: 06:00 MSK =====
+const MSK_OFFSET_MS = 3 * 60 * 60 * 1000;   // Moscow = UTC+3 (без DST)
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function getMskYear(){
+  // "текущий год" берём именно по МСК
+  const mskNow = new Date(Date.now() + MSK_OFFSET_MS);
+  return mskNow.getUTCFullYear();
+}
+
+function getUnlockTimestampUTC(day){
+  // 15 декабря 06:00 МСК = 15 декабря 03:00 UTC
+  const year = getMskYear();
+
+  // создаём момент "15 Dec 06:00 MSK" как UTC timestamp
+  const startUTC = Date.UTC(year, 11, 15, 6, 0, 0, 0) - MSK_OFFSET_MS;
+
+  return startUTC + (day - 1) * DAY_MS;
+}
+
+function isDoorUnlocked(day){
+  return debugMode || Date.now() >= getUnlockTimestampUTC(day);
+}
+
+function formatMskDateTime(tsUTC){
+  const months = [
+    "января","февраля","марта","апреля","мая","июня",
+    "июля","августа","сентября","октября","ноября","декабря"
+  ];
+
+  const msk = new Date(tsUTC + MSK_OFFSET_MS);
+  const dd = msk.getUTCDate();
+  const mm = months[msk.getUTCMonth()];
+  const hh = String(msk.getUTCHours()).padStart(2, "0");
+  const mi = String(msk.getUTCMinutes()).padStart(2, "0");
+
+  return `${dd} ${mm} в ${hh}:${mi} МСК`;
+}
+
+
 function buildDoors(){
   const unlockedCount = getUnlockCount();
   const now = new Date();
@@ -356,7 +395,10 @@ function buildDoors(){
   gridEl.innerHTML = "";
 
   for (let i = 1; i <= 12; i++){
-    const isUnlocked = i <= unlockedCount;
+    const unlockTsUTC = getUnlockTimestampUTC(i);
+    const isUnlocked = isDoorUnlocked(i);
+
+
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -378,23 +420,20 @@ function buildDoors(){
     btn.addEventListener("click", () => {
       const day = i;
 
-      if (!isUnlocked){
-        // Shake + cute alert
-        btn.classList.remove("shake");
-        void btn.offsetWidth; // restart animation
-        btn.classList.add("shake");
+      if (!isDoorUnlocked(day)){
+		  btn.classList.remove("shake");
+		  void btn.offsetWidth;
+		  btn.classList.add("shake");
 
-	  const unlockDate = new Date(start);
-	  unlockDate.setDate(start.getDate() + (day - 1));
+		  const unlockTsUTC = getUnlockTimestampUTC(day);
+		  const unlockDate = new Date(unlockTsUTC);
 	  
 	  // 1) текст
-	  alertText.textContent = `Еще рано моя хорошая! Откроется ${formatDecDate(unlockDate)}.`;
+	  alertText.textContent = `Еще рано моя хорошая! Откроется ${formatMskDateTime(unlockTsUTC)}.`;
 	  
-	  // 2) таймер
 	  startAlertCountdown(unlockDate);
-	  
-	  // 3) открыть модалку
 	  openModal(alertOverlay);
+
 return;
 
       }
