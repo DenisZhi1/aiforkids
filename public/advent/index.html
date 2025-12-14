@@ -37,10 +37,12 @@
         <!-- Doors injected by JS -->
       </div>
 
-      <footer class="footer">
-        <span class="footer-pill">🎁 12 cute surprises</span>
-        <span class="footer-pill">✨ Tap a door to reveal</span>
-      </footer>
+		<footer class="footer">
+		  <a class="footer-pill" href="https://vk.ru/deandal" target="_blank" rel="noopener noreferrer">
+			🎁 made by DE&AL 🎁
+		  </a>
+		</footer>
+
     </section>
   </main>
 
@@ -50,7 +52,8 @@
       <button class="close" type="button" data-close="alertOverlay" aria-label="Close alert">✕</button>
       <h2 class="modal-title" id="alertTitle">Too early!</h2>
       <p class="modal-text" id="alertText">Come back on Dec ??!</p>
-      <button class="btn btn-primary" type="button" data-close="alertOverlay">Okie! 💖</button>
+	  <div class="countdown" id="alertCountdown" aria-live="polite"></div>
+      <button class="btn btn-primary" type="button" data-close="alertOverlay">Подождать! 💖</button>
     </div>
   </div>
 
@@ -127,6 +130,12 @@
       </div>
     </div>
   </div>
+
+	<audio id="bgAudio" src="audio/bg.mp3" preload="auto" loop playsinline></audio>
+
+	<button id="audioToggle" class="audio-toggle" type="button" aria-pressed="true">
+	  🔊 Music
+	</button>
 
 </body>
 </html>
