@@ -63,7 +63,31 @@ body::before{
 
 .card{
   width: min(940px, 95vw);
-  background: var(--paper);
+
+  /* 🤍 two-layer moving gradients (no transparency) */
+  background-image:
+    linear-gradient(120deg,
+      #ffffff,
+      #ebe6ff,
+      #ffe3f0,
+      #e3f2ff,
+      #e0fff1,
+      #ffffff
+    ),
+    linear-gradient(240deg,
+      #ffffff,
+      #e3f2ff,
+      #ffe3f0,
+      #ebe6ff,
+      #e0fff1,
+      #ffffff
+    );
+
+  background-size: 600% 600%, 700% 700%;
+  background-position: 0% 50%, 100% 50%;
+  animation: dreamyGradientBreath 7s ease-in-out infinite;
+
+
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: clamp(10px, 2vw, 16px);
@@ -71,6 +95,9 @@ body::before{
   position: relative;
   overflow: hidden;
 }
+
+
+
 
 
 .card-hero{
@@ -243,6 +270,19 @@ body::before{
   background: linear-gradient(90deg, rgba(255,184,217,.35), rgba(158,220,255,.35));
   border: 2px solid rgba(166,244,214,.35);
   font-size: 14px;
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.footer-pill:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.footer-pill:focus-visible{
+  outline: 3px solid rgba(203,183,255,.75);
+  outline-offset: 4px;
 }
 
 /* =========================
@@ -567,12 +607,93 @@ body::before{
   height: 26px;
   pointer-events: none;
   user-select: none;
-  opacity: .55;          /* аккуратнее */
+  opacity: .80;          /* аккуратнее */
   will-change: transform;
   filter: drop-shadow(0 6px 10px rgba(35, 28, 65, .18));
 }
 
+.audio-toggle{
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 2000;
 
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 2px solid rgba(203,183,255,.55);
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 12px 26px rgba(35, 28, 65, .18);
+
+  font-family: "Fredoka", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.audio-toggle:focus-visible{
+  outline: 3px solid rgba(203,183,255,.85);
+  outline-offset: 4px;
+}
+
+/* Big countdown inside alert modal */
+.countdown{
+  margin: 14px 0 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.countdown-box{
+  min-width: 120px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(203,183,255,.22), rgba(255,184,217,.18), rgba(158,220,255,.18));
+  border: 2px solid rgba(166,244,214,.40);
+  box-shadow: 0 12px 26px rgba(35, 28, 65, .12);
+  text-align: center;
+}
+
+.countdown-num{
+  font-size: clamp(34px, 6vw, 58px);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.countdown-label{
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  opacity: .75;
+}
+
+@keyframes dreamyGradientBreath{
+  0%{
+    background-position: 0% 50%, 100% 50%;
+    background-size: 550% 550%, 650% 650%;
+  }
+  50%{
+    background-position: 100% 50%, 0% 50%;
+    background-size: 780% 780%, 920% 920%;
+  }
+  100%{
+    background-position: 0% 50%, 100% 50%;
+    background-size: 550% 550%, 650% 650%;
+  }
+}
+
+
+
+/* чтобы весь контент был поверх ::before */
+.card > *:not(.snowfall){ position: relative; z-index: 1; }
+
+
+
+@media (prefers-reduced-motion: reduce){
+  .card{ animation: none; }
+  .card::before{ animation: none; }
+}
 
 /* =========================
    RESPONSIVE

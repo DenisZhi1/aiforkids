@@ -2,7 +2,7 @@
    Advent Calendar Logic (Dec 15 start, 12 days)
    ========================================================= */
 
-const debugMode = true; // If true, unlock all doors
+const debugMode = false; // If true, unlock all doors
 
 const DAYS = window.GIFTS || [];
 const gridEl = document.getElementById("calendarGrid");
@@ -10,6 +10,9 @@ const gridEl = document.getElementById("calendarGrid");
 // Modals
 const alertOverlay = document.getElementById("alertOverlay");
 const alertText = document.getElementById("alertText");
+const alertCountdownEl = document.getElementById("alertCountdown");
+let alertCountdownInterval = null;
+
 
 const revealOverlay = document.getElementById("revealOverlay");
 const revealDayNumEl = document.getElementById("revealDayNum");
@@ -25,6 +28,145 @@ const cardFooter = document.getElementById("cardFooter");
 const downloadPngBtn = document.getElementById("downloadPngBtn");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 const cardImage = document.getElementById("cardImage");
+
+
+/* =========================
+   🔊 Background audio (fade in/out)
+   ========================= */
+const bgAudio = document.getElementById("bgAudio");
+const audioToggle = document.getElementById("audioToggle");
+
+const AUDIO_TARGET_VOLUME = 0.1;  // 50%
+const AUDIO_FADE_IN_MS = 4000;
+const AUDIO_FADE_OUT_MS = 450;
+
+let audioFadeRaf = null;
+
+function setAudioButton(isOn){
+  if (!audioToggle) return;
+  audioToggle.setAttribute("aria-pressed", String(isOn));
+  audioToggle.textContent = isOn ? "🔊 Music" : "🔇 Music";
+}
+
+function cancelAudioFade(){
+  if (audioFadeRaf) cancelAnimationFrame(audioFadeRaf);
+  audioFadeRaf = null;
+}
+
+function fadeAudioTo(target, durationMs){
+  return new Promise((resolve) => {
+    if (!bgAudio) return resolve();
+
+    cancelAudioFade();
+
+    const startVol = Number.isFinite(bgAudio.volume) ? bgAudio.volume : 0;
+    const start = performance.now();
+    const delta = target - startVol;
+
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / durationMs);
+      bgAudio.volume = startVol + delta * t;
+
+      if (t < 1){
+        audioFadeRaf = requestAnimationFrame(step);
+      } else {
+        audioFadeRaf = null;
+        resolve();
+      }
+    };
+
+    audioFadeRaf = requestAnimationFrame(step);
+  });
+}
+
+function prepareAudio(){
+  if (!bgAudio) return;
+  bgAudio.muted = false;
+  // ставим 0 заранее, чтобы не было "громкого щелчка" на старте
+  if (bgAudio.paused) bgAudio.volume = 0;
+}
+
+async function playWithFade(){
+  if (!bgAudio) return;
+
+  prepareAudio();
+  bgAudio.volume = 0;
+
+  await bgAudio.play(); // может быть заблокировано браузером
+  await fadeAudioTo(AUDIO_TARGET_VOLUME, AUDIO_FADE_IN_MS);
+
+  setAudioButton(true);
+}
+
+async function pauseWithFade(){
+  if (!bgAudio) return;
+
+  await fadeAudioTo(0, AUDIO_FADE_OUT_MS);
+  bgAudio.pause();
+  bgAudio.volume = 0;
+
+  setAudioButton(false);
+}
+
+async function tryAutoPlay(){
+  if (!bgAudio) return;
+
+  try{
+    await playWithFade();
+  } catch (_){
+    // autoplay blocked — оставляем OFF
+    bgAudio.pause();
+    bgAudio.volume = 0;
+    setAudioButton(false);
+  }
+}
+
+audioToggle?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (!bgAudio) return;
+
+  if (bgAudio.paused){
+    try{
+      await playWithFade();
+    } catch (_){
+      setAudioButton(false);
+    }
+  } else {
+    await pauseWithFade();
+  }
+});
+
+// начальное состояние
+prepareAudio();
+setAudioButton(false);
+tryAutoPlay();
+
+
+// If autoplay is blocked, start audio on the first user interaction anywhere
+// If autoplay is blocked, start audio on the first user interaction anywhere
+function enableAudioOnFirstGesture(){
+  if (!bgAudio) return;
+
+  const start = async () => {
+    try{
+      // запуск именно через fade, чтобы не было "тишины" (volume=0)
+      if (bgAudio.paused) await playWithFade();
+    } catch(_) {
+      setAudioButton(false);
+    }
+  };
+
+  window.addEventListener("pointerdown", start, { capture: true, once: true });
+  window.addEventListener("keydown", start, { capture: true, once: true });
+}
+
+enableAudioOnFirstGesture();
+
+
+
+
 
 function showCopyToast(text = "Copied! ✅"){
   let toast = document.getElementById("copyToast");
@@ -96,8 +238,52 @@ function dateAtNoon(year, monthIndex, day){
 function formatDecDate(d){
   // Always show "Dec X" like spec text
   const day = d.getDate();
-  return `Dec ${day}`;
+  return `${day} декабря`;
 }
+
+function stopAlertCountdown(){
+  if (alertCountdownInterval){
+    clearInterval(alertCountdownInterval);
+    alertCountdownInterval = null;
+  }
+}
+
+function renderAlertCountdown(ms){
+  if (!alertCountdownEl) return;
+
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const mins = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+
+  alertCountdownEl.innerHTML = `
+    <div class="countdown-box"><div class="countdown-num">${days}</div><div class="countdown-label">days</div></div>
+    <div class="countdown-box"><div class="countdown-num">${hours}</div><div class="countdown-label">hours</div></div>
+    <div class="countdown-box"><div class="countdown-num">${mins}</div><div class="countdown-label">mins</div></div>
+    <div class="countdown-box"><div class="countdown-num">${secs}</div><div class="countdown-label">secs</div></div>
+  `;
+}
+
+function startAlertCountdown(targetDate){
+  stopAlertCountdown();
+
+  const tick = () => {
+    const ms = targetDate - new Date();
+    renderAlertCountdown(ms);
+
+    if (ms <= 0){
+      stopAlertCountdown();
+      // на всякий — обновим двери, если наступил момент
+      buildDoors();
+      alertText.textContent = "✅ Уже можно открывать!";
+    }
+  };
+
+  tick();
+  alertCountdownInterval = setInterval(tick, 1000);
+}
+
 
 function daysBetween(a, b){
   // a and b are Date objects; calculate whole days (noon-based)
@@ -127,6 +313,9 @@ function openModal(overlayEl){
 function closeModal(overlayEl){
   overlayEl.classList.remove("open");
   overlayEl.setAttribute("aria-hidden", "true");
+
+  if (overlayEl === alertOverlay) stopAlertCountdown();
+
 
   // If no modals left open, restore scroll
   const anyOpen = document.querySelector(".modal-overlay.open");
@@ -195,12 +384,19 @@ function buildDoors(){
         void btn.offsetWidth; // restart animation
         btn.classList.add("shake");
 
-        const unlockDate = new Date(start);
-        unlockDate.setDate(start.getDate() + (day - 1));
+	  const unlockDate = new Date(start);
+	  unlockDate.setDate(start.getDate() + (day - 1));
+	  
+	  // 1) текст
+	  alertText.textContent = `Еще рано моя хорошая! Откроется ${formatDecDate(unlockDate)}.`;
+	  
+	  // 2) таймер
+	  startAlertCountdown(unlockDate);
+	  
+	  // 3) открыть модалку
+	  openModal(alertOverlay);
+return;
 
-        alertText.textContent = `Come back on ${formatDecDate(unlockDate)}!`;
-        openModal(alertOverlay);
-        return;
       }
 
       // Unlocked: open reveal modal
