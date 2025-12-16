@@ -14,8 +14,8 @@ window.GIFTS = [
     day: 2,
     revealSrc: "reveal-day/reveal-day-2.jpg",
     cardImageSrc: "card-image/card-image-2.png",
-    cardTitle: "Cozy Snow Day!",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 2.",
+    cardTitle: "Продолжаем банановые технологии",
+    cardMessage: "A movie poster. Full body front view, low angle. A woman riding a horse made of living fire and magma. The horse is performing a Spanish Walk, lifting one front leg very high, moving directly towards the camera. The woman sits regally, one hand holding the reins, the other hand resting on her thigh. Background: dark night forest, light snow falling, a large Christmas tree with garlands in the distance. Cinematic lighting. Text at the bottom Text at the bottom with magical stylized font with fire and coal parts: «В новом году будем жечь»",
     cardFooter: "Желаем учеников, которые вдохновляют, и родителей, которые поддерживают."
   },
   {
