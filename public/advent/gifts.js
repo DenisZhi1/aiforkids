@@ -30,8 +30,8 @@ window.GIFTS = [
     day: 4,
     revealSrc: "reveal-day/reveal-day-4.jpg",
     cardImageSrc: "card-image/card-image-4.png",
-    cardTitle: "Sweet Candy Cheer",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 4.",
+    cardTitle: "А кто у нас в этом году был хорошим? В промпте добавьте ваше имя и фоточку!",
+    cardMessage: "A high-quality illustration. We see the scene from Santa’s point of view — as if we are looking through Santa’s eyes. Santa is holding a large glowing X-ray film directly in front of him with red-gloved hands gripping the edges. Santa himself is NOT visible, only his gloved hands and the X-ray plate. On the X-ray film: – Insert the attached photo as the face on the radiograph (if the attached photo shows only the head, extend the rest of the body naturally). – Instead of bones, show a soft stylized X-ray silhouette: gentle glowing contours of the clothes and only a slight anatomical hint, with no actual bones. – At the top of the X-ray film add the name: «[NAME]». – Add five labeled lines pointing to different parts of the silhouette with teacher-themed notes: 1. «Was kind to students this year» 2. «Helped children learn and grow» 3. «Spread positivity in class» 4. «Worked hard and stayed strong» 5. «Made learning fun for everyone» – In the bottom-right corner of the X-ray film add a small handwritten label: «Good girl». Background: soft blurred Christmas lights, winter atmosphere, nothing distracting. Add a small, clean signature «by DEAL» in the corner outside the X-ray. Aspect ratio 16:9",
     cardFooter: "Пусть каждый месяц дарит маленький повод гордиться собой"
   },
   {
