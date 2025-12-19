@@ -38,8 +38,8 @@ window.GIFTS = [
     day: 5,
     revealSrc: "reveal-day/reveal-day-5.jpg",
     cardImageSrc: "card-image/card-image-5.png",
-    cardTitle: "Twinkle Lights Day",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 5.",
+    cardTitle: "Вставляем фотку, можете указать свой стиль в начале промпта и выбрать свой текст для заголовка",
+    cardMessage: "[СТИЛЬ И ТЕМА] = смесь «Один дома» в мультяшном 3D-стиле + рождественская магия + мир Геншина, с лёгким хаосом, весельем и праздничным озорством. [ТЕКСТ]: «DEAL 2026». A high-quality cinematic YouTube-style cover illustration created in the style of [СТИЛЬ И ТЕМА], but with an extra cheerful, comedic twist. In the center of the scene is the person from the attached reference image, recreated with correct likeness and proportions, looking slightly surprised or caught mid-action — as if something magical and chaotic is happening around him. The scene should feel funny, energetic, mischievous, and festive, like he accidentally became the main hero of a Christmas adventure: – Add playful supporting characters: hyper-happy Christmas elves, tiny chaotic fantasy creatures from a Genshin-like world, robo-cats with Santa hats, and glowing floating ornaments with personalities.– Characters should interact with the main hero in humorous ways: pulling his sleeve, offering glowing gadgets, throwing snowballs, or performing magical tricks around him.– Add flying Christmas cookies, sparkly elemental effects (Genshin style), and scattered holiday props creating a sense of friendly chaos. Atmosphere & composition: – Dynamic motion everywhere, as if the frame captures a wild festive moment. – Dramatic glowing Christmas lighting, soft magical fog, colorful ambient lights, and cinematic depth of field. – Background: whimsical Christmas town with magical particles, cute buildings, enchanted snow, and warm lights. – Composition must stay clean for YouTube covers: hero centered, supporting characters arranged in lively arcs around him. Typography:– Add the title [ТЕКСТ] in bold, glowing, icy-magic lettering at the top. – Make it fun, festive, powerful, and super-readable — like a movie Christmas special. Technical Notes: – Ultra-high-quality rendering, crisp stylized materials, vibrant festive palette. – Cartoon 3D with Genshin-level lighting polish.– Aspect ratio: 16:9. – Keep the scene rich, magical, slightly chaotic — but visually clean and focused.",
     cardFooter: "Пусть в новом году у Вас будет больше дней, когда всё получается с первого раза"
   },
   {
@@ -99,4 +99,3 @@ window.GIFTS = [
     cardFooter: "С наступающим НОВЫМ ГОДОМ НАШИ ХОРОШИЕ!!!"
   }
 ];
-
