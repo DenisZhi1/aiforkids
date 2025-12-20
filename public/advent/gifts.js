@@ -45,7 +45,7 @@ window.GIFTS = [
   {
     day: 6,
     revealSrc: "reveal-day/reveal-day-6.jpg",
-    cardImageSrc: "card-image/card-image-6.png",
+    cardImageSrc: "card-image/card-image-6.jpeg",
     cardTitle: "Можете поменять текст и сюжет, но должно получится не хуже",
     cardMessage: "[Текст] = «Денис! ГДЕ ТЫ БЫЛ?! Барсик чуть не захлебнулся в салате, Бусик доедает ёлку, а Снежинку лучше не трогать — она решила пообедать дождём…» Сюжет: Персонаж из приложенной фотографии стоит в дверном проёме, замерев от шока. В этот момент в комнате творится новогодний хаос: Барсик барахтается в огромном тазике салата, взбивая его лапами и еле выбираясь наружу. Бусик активно жует нижние ветки ёлки и тянет в рот мигающую гирлянду. Снежинка держит в лапах длинный новогодний дождик и упорно пытается его есть. По комнате летят блёстки, украшения, упавшие игрушки. Персонаж смотрит на всё это с выражением полного изумления и лёгкой паники. Внизу изображения должна быть текстовая плашка, как в визуальной новелле, содержащая текст из блока [Текст]. Стиль: In the style of a whimsical, atmospheric comic-book illustration with confident, clean hand-drawn ink lineart; expressive, slightly exaggerated character features; vibrant but slightly muted color palette (cool greens + gentle warm accents); soft cel-shading with light cartoon highlights; playful textured details; and a lively storybook-comic aesthetic. The overall vibe is magical, humorous, lightly mysterious — more fairytale adventure than dark suspense. Clean outlines, gentle contrast, subtle glow accents, and high-quality illustrated cover-art rendering.",
     cardFooter: "Желаем, чтобы дети рядом чаще радовали, чем проверяли Вашу выдержку"
@@ -99,4 +99,5 @@ window.GIFTS = [
     cardFooter: "С наступающим НОВЫМ ГОДОМ НАШИ ХОРОШИЕ!!!"
   }
 ];
+
 
