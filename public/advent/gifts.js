@@ -55,15 +55,15 @@ window.GIFTS = [
     revealSrc: "reveal-day/reveal-day-7.jpg",
     cardImageSrc: "card-image/card-image-7.png",
     cardTitle: "Reindeer Ready!",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 7.",
-    cardFooter: "Пусть Ваши уроки приносят энергию, а не забирают её"
+    cardMessage: "A hyper-realistic Christmas commercial 16:9 photo, close-up of a classic glass cola bottle (large and sharp in the frame), with a blurred background showing a traditional classic Santa Claus with a warm smile, festive lights and falling snow; LABEL DESIGN inspired by a Coca-Cola holiday label with deep glossy red background, white festive ribbon/wave, snow, sparkling stars, pine trees, curved vintage holiday layout, and big white curved script text “DEAL COLA” (cola-style handwriting, reminiscent but not identical); on the left side of the label redraw the attached character in a vintage Christmas illustration style fully integrated into the design; on the right side add small cute holiday characters/icons (elves/animals/snowmen) in the same retro-painted style placed like the bears on the reference; the whole label must look fully real, glossy, curved around the bottle, with reflections and studio lighting; overall: premium festive DEAL COLA holiday edition.",
+    cardFooter: "Пусть новые идеи приходят легко, а воплощаются без нервов"
   },
   {
     day: 8,
     revealSrc: "reveal-day/reveal-day-8.jpg",
-    cardImageSrc: "card-image/card-image-8.png",
-    cardTitle: "Snowy Smiles",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 8.",
+    cardImageSrc: "card-image/card-image-8.jpeg",
+    cardTitle: "Важно! Сперва этот промпт киньте в ГПТ или в другую ИИ, которой часто пользуетесь. ИИ даст вам промпт, и вот этот промпт уже вставляйте куда хотите :)",
+    cardMessage: "Проанализируй нашу с тобой переписку за всё время. На её основе хорошо подумай, каким вымышленным персонажем я мог(ла) бы быть. Сделай для меня детальное описание и оформи его в виде промпта. Обязательно соблюдай новогоднюю тематику. Суть картинки следующая: слева должна быть сцена с этим персонажем, а справа - сводка о персонаже из RPG-игры, где будут указаны мои статы и лучшие качества. Промпт должен быть для современного 3D-рендера в высоком разрешении. Хочу видеть два промпта: один полностью на русском языке, второй полностью на английском.",
     cardFooter: "Пусть в Вашем доме будет уют, а в расписании - место для себя"
   },
   {
@@ -72,7 +72,7 @@ window.GIFTS = [
     cardImageSrc: "card-image/card-image-9.png",
     cardTitle: "Warm Cocoa Vibes",
     cardMessage: "Напиши здесь свой уникальный текст для дня 9.",
-    cardFooter: "Пусть новые идеи приходят легко, а воплощаются без нервов"
+    cardFooter: "Пусть Ваши уроки приносят энергию, а не забирают её"
   },
   {
     day: 10,
@@ -99,5 +99,6 @@ window.GIFTS = [
     cardFooter: "С наступающим НОВЫМ ГОДОМ НАШИ ХОРОШИЕ!!!"
   }
 ];
+
 
 
