@@ -70,8 +70,8 @@ window.GIFTS = [
     day: 9,
     revealSrc: "reveal-day/reveal-day-9.jpg",
     cardImageSrc: "card-image/card-image-9.png",
-    cardTitle: "Warm Cocoa Vibes",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 9.",
+    cardTitle: "Можете приложить одну фотку, а можете и две ^^",
+    cardMessage: "Create a super cozy, heartwarming Christmas photoshoot using the uploaded photo(s) as the main character(s): one or two people realistically transformed into a warm festive living room, wearing soft knitted Christmas sweaters with reindeer, relaxing close to a glowing Christmas-decorated fireplace with garlands, candles and fairy lights, a beautifully lit Christmas tree softly blurred in the background, hygge atmosphere, warm cinematic lighting, natural skin tones, no yellow tint, photorealistic professional holiday photography, candid poses, gentle smiles, emotional warmth, comfort, nostalgia and pure Christmas joy.",
     cardFooter: "Пусть Ваши уроки приносят энергию, а не забирают её"
   },
   {
@@ -99,6 +99,7 @@ window.GIFTS = [
     cardFooter: "С наступающим НОВЫМ ГОДОМ НАШИ ХОРОШИЕ!!!"
   }
 ];
+
 
 
 
