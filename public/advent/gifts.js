@@ -78,8 +78,8 @@ window.GIFTS = [
     day: 10,
     revealSrc: "reveal-day/reveal-day-10.jpg",
     cardImageSrc: "card-image/card-image-10.png",
-    cardTitle: "Starry Winter Night",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 10.",
+    cardTitle: "Печенюююшки!",
+    cardMessage: "Transform the uploaded photo(s) into adorable Christmas gingerbread cookie people, keeping each person’s facial features, expressions, and individuality clearly recognizable, fully stylized as festive gingerbread cookies, placed gently on a festive baking tray on a warm wooden Christmas table lightly dusted with powdered sugar like snow; gingerbread style with soft golden-brown baked texture, slightly cracked edges, realistic crumbs, and detailed white icing for eyes, smiles, buttons, sweaters, scarves, and tiny holiday decorations, each cookie uniquely designed to reflect the real person’s hair, glasses, beard, hairstyle, and expression; extremely cozy hygge Christmas atmosphere with soft golden candlelight and fairy lights, a blurred background featuring a glowing Christmas tree and garlands, cinnamon sticks, star anise, oranges with cloves, and mugs of hot cocoa nearby; close-up cinematic food-photography composition with shallow depth of field, focus on the gingerbread people on the tray, softly blurred background; ultra-detailed premium holiday illustration with semi-realistic textures, Pixar-level charm combined with an edible handmade bakery feel, balanced colors, creating a heartwarming, joyful, nostalgic mood like a magical Christmas memory you want to keep forever",
     cardFooter: "Желаем, чтобы новый год принёс лёгкие решения и приятные сюрпризы"
   },
   {
@@ -99,6 +99,7 @@ window.GIFTS = [
     cardFooter: "С наступающим НОВЫМ ГОДОМ НАШИ ХОРОШИЕ!!!"
   }
 ];
+
 
 
 
