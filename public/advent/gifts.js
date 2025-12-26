@@ -95,10 +95,11 @@ window.GIFTS = [
     revealSrc: "reveal-day/reveal-day-12.jpg",
     cardImageSrc: "card-image/card-image-12.png",
     cardTitle: "Happy Winter!",
-    cardMessage: "Напиши здесь свой уникальный текст для дня 12.",
+    cardMessage: "А вы себя плохо в этом году ведете. https://vk.ru/wall-137991294_64312 тут должно было быть 10 комментов с генерациями, а вот нету. Поэтому и не будет тут вам заключительного промпта, пока не исправитесь",
     cardFooter: "С наступающим НОВЫМ ГОДОМ НАШИ ХОРОШИЕ!!!"
   }
 ];
+
 
 
 
