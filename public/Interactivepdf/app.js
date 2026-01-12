@@ -653,14 +653,14 @@ function placeEmojiRing(container, completed, emoji) {
 // === ССЫЛКИ НА ЗАДАНИЯ (вставьте сюда ваши URL)
 // Порядок: TASK_LINKS[0] — ссылка для задания 1, TASK_LINKS[1] — для задания 2 и т.д.
 const TASK_LINKS = [
-  "https://vk.ru/wall-137991294_64622", // задача 1 — вставьте URL, например "https://site.example/task1"
-  "https://vk.ru/wall-137991294_64657", // задача 2
-  "https://vk.ru/wall-137991294_64657", // задача 3
-  "https://vk.ru/wall-137991294_64657", // задача 4
-  "https://vk.ru/wall-137991294_64657", // задача 5
-  "https://vk.ru/wall-137991294_64657", // задача 6
-  "https://vk.ru/wall-137991294_64657", // задача 7
-  "https://vk.ru/wall-137991294_64657"  // задача 8
+  "https://vk.ru/club235226792", // задача 1 — вставьте URL, например "https://site.example/task1"
+  "https://vk.ru/club235226792", // задача 2
+  "https://vk.ru/club235226792", // задача 3
+  "https://vk.ru/club235226792", // задача 4
+  "https://vk.ru/club235226792", // задача 5
+  "https://vk.ru/club235226792", // задача 6
+  "https://vk.ru/club235226792", // задача 7
+  "https://vk.ru/club235226792"  // задача 8
 ];
 
 // ====== ПОИСК ======
@@ -673,4 +673,5 @@ if (searchInput) {
 // Старт
 startDeadlineTimer();
 loadCSV();
+
 
