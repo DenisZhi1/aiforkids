@@ -1,12 +1,22 @@
-
 //import { motion } from 'motion/react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
 import { Badge } from './components/ui/badge';
-import { Clock, Users, Monitor, Wifi, GraduationCap, CreditCard, Star, Sparkles, Brain, Paintbrush, Presentation, Globe, BookOpen, Laptop2, Video, Award, Target, Lightbulb, Zap } from 'lucide-react';
+import { Clock2, Clock3, Clock4, Clock5, Clock6, Shield, Clock, Users, Monitor, Wifi, GraduationCap, CreditCard, Star, Sparkles, Brain, Paintbrush, Presentation, Globe, BookOpen, Laptop2, Video, Award, Target, Lightbulb, Zap, Clapperboard } from 'lucide-react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import type { MouseEventHandler } from "react";
+
+// локальные фото педагогов
+import lubovImg from './components/teachers/lubov.png';
+import dinaraImg from './components/teachers/dinara.png';
+
+/*
+  Раздел "Отзывы выпускников" добавлен ниже перед секцией "Старт набора уже открыт!".
+  Структура массива `reviews` предложена — заполните `src` путями к вашим картинкам в папке `src/components/revews`
+  или импортируйте изображения сверху и подставьте переменные в поле `src`.
+*/
 
 export default function App() {
   const fadeInUp = {
@@ -40,16 +50,83 @@ export default function App() {
   };
 
   const courseModules = [
-    { title: "Что такое ИИ и промпт", description: "Дети узнают, где используется ИИ и как он понимает команды.", benefit: "Понимание основ, чтобы не бояться технологий.", icon: Brain },
-    { title: "Домашка с ИИ — с умом", description: "Учимся использовать ИИ как помощника, а не решебник.", benefit: "Ребёнок станет эффективнее и самостоятельнее.", icon: Sparkles },
-    { title: "Ролевые промпты", description: "ИИ в роли учителя, пирата или мультиперсонажа.", benefit: "Развитие воображения и умение проверять ответы.", icon: Users },
-    { title: "Как улучшать результат", description: "Учимся «докручивать» ответы ИИ пошагово.", benefit: "Умение добиваться точного результата.", icon: Target },
-    { title: "Шаблоны промптов", description: "Создаём свои заготовки для однотипных задач.", benefit: "Экономия времени и системное мышление.", icon: BookOpen },
-    { title: "Работа с картинками", description: "Генерация картинок, редактирование, стикеры, персонажи и истории.", benefit: "Дети развивают креативность и визуальное мышление.", icon: Paintbrush },
-    { title: "Презентации с ИИ", description: "Как за 5 минут сделать презентацию по теме.", benefit: "Лёгкая подготовка к школе и конкурсам.", icon: Presentation },
-    { title: "Инфографика", description: "Учимся представлять сложное в картинках и схемах.", benefit: "Развитие структурного мышления.", icon: Lightbulb },
-    { title: "Защита проекта", description: "Ребёнок учится выступать уверенно и интересно.", benefit: "Полезный навык для школы и будущих выступлений.", icon: Award },
-    { title: "Создание сайтов", description: "Делаем сайт-визитку и многостраничный сайт.", benefit: "Практический опыт в цифровых профессиях.", icon: Globe }
+      {
+          title: "Что такое ИИ и промпт",
+          description: "Дети узнают, где используется ИИ и как он понимает команды человека.",
+          benefit: "Базовое понимание технологий без страха и сложных терминов.",
+          icon: Brain
+      },
+
+      {
+          title: "Домашка с ИИ — с умом",
+          description: "Учимся использовать ИИ как помощника в учёбе, а не как решебник.",
+          benefit: "Ребёнок становится более самостоятельным и эффективным.",
+          icon: Sparkles
+      },
+
+      {
+          title: "Ролевые промпты",
+          description: "ИИ в роли учителя, пирата или любимого персонажа.",
+          benefit: "Развитие воображения и навыка критически оценивать ответы.",
+          icon: Users
+      },
+
+      {
+          title: "Как улучшать результат",
+          description: "Учимся пошагово уточнять запросы и «докручивать» ответы ИИ.",
+          benefit: "Навык получать точный и нужный результат.",
+          icon: Target
+      },
+
+      {
+          title: "Шаблоны промптов",
+          description: "Создаём собственные заготовки для повторяющихся задач.",
+          benefit: "Экономия времени и развитие системного мышления.",
+          icon: BookOpen
+      },
+
+      {
+          title: "Работа с картинками",
+          description: "Генерация изображений, редактирование, работы со стилями, персонажи и истории.",
+          benefit: "Развитие креативности и визуального мышления.",
+          icon: Paintbrush
+      },
+
+      {
+          title: "Генерация видео",
+          description: "Создание видео с озвучкой с помощью ИИ.",
+          benefit: "Увлекательный вход в мир видеоконтента и сторителлинга.",
+          icon: Clapperboard
+      },
+
+      {
+          title: "Презентации с ИИ",
+          description: "Как за 5 минут создать презентацию по любой теме.",
+          benefit: "Быстрая и уверенная подготовка к школе, конкурсам и проектам.",
+          icon: Presentation
+      },
+
+      {
+          title: "Защита проекта",
+          description: "Ребёнок учится презентовать свою работу уверенно и понятно.",
+          benefit: "Развитие навыков публичных выступлений и самопрезентации.",
+          icon: Shield
+      },
+
+      {
+          title: "Генерация простого сайта с игрой",
+          description: "Знакомство с основами вайб-кодинга на базе HTML.",
+          benefit: "Развитие логики и структурного мышления.",
+          icon: Lightbulb
+      },
+
+      {
+          title: "Создание сайта-визитки",
+          description: "Создаём первый сайт-портфолио ребёнка и размещаем его на хостинге.",
+          benefit: "Готовый цифровой проект, которым можно гордиться и делиться.",
+          icon: Globe
+      }
+
   ];
 
 // helpers
@@ -59,6 +136,74 @@ const isMobile =
 
 const isVKWebView =
   /(VKAndroidApp|VKontakte|VK|com\.vk\.vkclient)/i.test(navigator.userAgent);
+
+// --- новый: структура расписания (удобно поддерживать/изменять) ---
+const schedule: {
+  day: string;
+  time: string;
+  tz?: string;
+  group: string;
+  teacher: string;
+  seats: number;
+  icon: any;
+}[] = [
+  { day: 'Вторник', time: '16:30', tz: 'МСК', group: '3–5 класс', teacher: 'Любовь Зарубина', seats: 4, icon: Clock2 },
+  { day: 'Четверг', time: '15:00', tz: 'МСК', group: '3–5 класс', teacher: 'Денис Жихарев', seats: 1, icon: Clock3 },
+  { day: 'Пятница', time: '15:30', tz: 'МСК', group: '6–9 класс', teacher: 'Денис Жихарев', seats: 3, icon: Clock4 },
+  { day: 'Пятница', time: '17:00', tz: 'МСК', group: '3–5 класс', teacher: 'Динара Губайдуллина', seats: 4, icon: Clock5 },
+  { day: 'Воскресенье', time: '10:30', tz: 'МСК', group: '3–5 класс', teacher: 'Денис Жихарев', seats: 1, icon: Clock6 },
+];
+
+// helper: класс для бейджа мест (меняется при мало/много мест)
+const seatsBadgeClass = (n: number) => {
+  if (n <= 3) {
+    return "bg-red-500/20 text-red-200 border-red-400/30";
+  }
+  if (n <= 6) {
+    return "bg-yellow-500/10 text-yellow-200 border-yellow-400/20";
+  }
+  return "bg-green-500/10 text-green-200 border-green-400/20";
+};
+// --- конец новых частей ---
+
+// --- новые: данные педагогов ---
+const teachers: {
+  name: string;
+  photo: string;
+  role?: string;
+  description: string;
+}[] = [
+  {
+    name: 'Любовь Зарубина',
+    photo: lubovImg,
+    role: 'Педагог по цифровым навыкам',
+    description:
+      'Педагог и наставник, с которым занятия по ИИ проходят легко и понятно. Она очень внимательная и добродетельная, поэтому детям комфортно учиться, пробовать новое и задавать любые вопросы. Любовь помогает превращать идеи в результат: от первых запросов к ИИ до готовых проектов, презентаций и историй. С ней дети постепенно начинают верить в свои силы и не боятся ошибаться.'
+  },
+  {
+    name: 'Динара Губайдуллина',
+    photo: dinaraImg,
+    role: 'Педагог по программированию',
+    description:
+      'Педагог, с которой детям спокойно и комфортно учиться работать с ИИ. Она объясняет всё шаг за шагом, без спешки и давления, помогает разобраться в сложных моментах и всегда поддерживает, если что-то не получается. Вместе с Динарой дети увлеченно осваивают ИИ и постепенно начинают чувствовать себя увереннее как в учёбе, так и в проектах.'
+  }
+        ];
+
+
+// --- конец данных педагогов ---
+
+// --- новые: структура отзывов (заглушки)
+//  - положите картинки отзывов в папку `src/components/revews` (или скорректируйте путь).
+//  - рекомендую импортировать изображения сверху вместо строк, если хотите, чтобы Vite корректно упаковал ассеты.
+//  - структура: { src: string, name?: string, age?: string }
+const reviews: { src: string; name?: string; age?: string }[] = [
+    { src: './src/components/review/rev1.png', name: 'Айрапет', age: '16' },
+    { src: './src/components/review/rev2.png', name: 'Дарья', age: '15' },
+    { src: './src/components/review/rev3.png', name: 'Кеша', age: '15' },
+    { src: './src/components/review/rev4.png', name: 'Тимофей', age: '9' },
+    { src: './src/components/review/rev5.png', name: 'Никита', age: '9' }
+];
+// --- конец отзывов ---
 
 // ссылки
 const VK_DESKTOP = "https://vk.com/im?sel=2840329";
@@ -90,8 +235,17 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
   }
 };
 
+  // carousel state for reviews
+  const [currentReview, setCurrentReview] = useState(0);
+  useEffect(() => {
+    const autoplay = setInterval(() => {
+      setCurrentReview((c) => (c + 1) % Math.max(1, reviews.length));
+    }, 5000);
+    return () => clearInterval(autoplay);
+  }, []);
 
-  
+  const prevReview = () => setCurrentReview((c) => (c - 1 + reviews.length) % reviews.length);
+  const nextReview = () => setCurrentReview((c) => (c + 1) % reviews.length);
 
   return (
     <div className="dark min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -211,7 +365,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
           </motion.div>
           
           <motion.div 
-            className="grid md:grid-cols-2 gap-8"
+            className="max-w-3xl mx-auto"
             variants={staggerChildren}
             initial="initial"
             whileInView="whileInView"
@@ -219,24 +373,10 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
           >
             <motion.div variants={fadeInUp}>
               <Card className="p-8 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/20 hover:border-purple-400/40 transition-colors">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto">
-                    <Users className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Первая группа</h3>
-                  <p className="text-xl text-purple-200">4–5 класс</p>
-                </div>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Card className="p-8 bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/20 hover:border-pink-400/40 transition-colors">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center mx-auto">
-                    <Users className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">Вторая группа</h3>
-                  <p className="text-xl text-pink-200">6–8 класс</p>
+                <div className="text-center space-y-6">
+                  <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+                    Этот курс — для школьников, которые хотят понять, как работает ИИ и научиться использовать его с пользой. Дети учатся «разговаривать» с ИИ, делать домашние задания осознанно, придумывать картинки, видео и презентации, создавать свои первые сайты и игры и уверенно показывать результат. ИИ перестаёт быть магией или решебником и становится понятным инструментом для учёбы, творчества и собственных проектов.
+                  </p>
                 </div>
               </Card>
             </motion.div>
@@ -262,8 +402,8 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
               // рядом, выше разметки
               const groupSizes: Record<number, number> = {
-                5: 5,   // 6–10 в 6-й карточке (index 5)
-                9: 2,  // 14–15 в 14-й карточке (index 13)
+                5: 4,   // 6–10 в 6-й карточке (index 5)
+                10: 2,  // 14–15 в 14-й карточке (index 13)
               };
               
               const getLessonLabel = (i: number) => {
@@ -278,7 +418,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
               const Icon = module.icon;
              // const lessonLabel = (i: number) =>
-             //   i === 5 ? "Уроки 6–10" : `Урок ${i < 5 ? i + 1 : i + 5}`;
+             //   i === 5 ? "Уроки 6–10" : `Урок ${i < 5 ? i + 1 : i + 5}`; 
               return (
                 <motion.div key={index} variants={fadeInUp}>
                   <Card className="p-6 h-full bg-slate-800/50 border-slate-700 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:scale-105">
@@ -332,50 +472,6 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
       {}
       <section className="px-4 py-16">
         <div className="container mx-auto max-w-6xl">
-          <motion.div {...fadeInUp} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">✨ Уникальность курса</h2>
-          </motion.div>
-          
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            variants={staggerChildren}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-          >
-            <motion.div variants={fadeInUp}>
-              <Card className="p-8 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-center h-full hover:border-blue-400/50 transition-colors">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-                <p className="text-gray-200 text-lg leading-relaxed">Дети научатся пользоваться ИИ с умом, а не для списывания</p>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Card className="p-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-500/30 text-center h-full hover:border-green-400/50 transition-colors">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-8 h-8 text-white" />
-                </div>
-                <p className="text-gray-200 text-lg leading-relaxed">Станут увереннее в учёбе и смогут улучшить свои результаты</p>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Card className="p-8 bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500/30 text-center h-full hover:border-orange-400/50 transition-colors">
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Brain className="w-8 h-8 text-white" />
-                </div>
-                <p className="text-gray-200 text-lg leading-relaxed">Освоят навыки будущего: работа с текстами, картинками, презентациями, сайтами</p>
-              </Card>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {}
-      <section className="px-4 py-16">
-        <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12">
             {}
             <motion.div {...fadeInUp}>
@@ -405,14 +501,40 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
                   Расписание
                 </h3>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="w-5 h-5 text-purple-400" />
-                    <span className="text-gray-200">Четверг, 15:00 (МСК) 45 минут урок — группа 4–5 класс</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <GraduationCap className="w-5 h-5 text-purple-400" />
-                    <span className="text-gray-200">Пятница, 15:30 (МСК) 45 минут урок — группа 6–8 класс</span>
-                  </div>
+                  {schedule.map((s, i) => {
+                    const Icon = s.icon;
+                    return (
+                      <div key={i} className="flex items-center justify-between gap-3">
+                        <div className="flex items-start gap-3">
+                          <Icon className="w-5 h-5 text-purple-400 mt-1" />
+                          <div>
+                            <div className="text-white font-medium">
+                              {s.day}, {s.time} ({s.tz})
+                            </div>
+                            <div className="text-gray-200">
+                              {s.group}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Педагог: <span className="text-purple-200 font-medium">{s.teacher}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Badge className={`px-3 py-1 rounded-full text-sm font-medium border ${seatsBadgeClass(s.seats)}`}>
+                            {s.seats} {s.seats === 1 ? 'место' : 'места'}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 px-3 py-1 rounded-full"
+                            onClick={() => window.open(vkHref, "_blank")}
+                          >
+                            Записаться
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </Card>
             </motion.div>
@@ -421,55 +543,10 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
       </section>
 
       {}
-      <section className="px-4 py-16">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div {...fadeInUp} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">💳 Стоимость</h2>
-          </motion.div>
-          
-          <motion.div 
-            className="grid md:grid-cols-2 gap-8"
-            variants={staggerChildren}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-          >
-            <motion.div variants={fadeInUp}>
-              <Card className="p-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30 text-center">
-                <CreditCard className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Разовая оплата</h3>
-                <p className="text-gray-300 mb-4">За весь курс (16 уроков)</p>
-                <p className="text-3xl font-bold text-purple-300">14 400 руб</p>
-                <div className="mt-3 flex justify-center">
-                  <Badge className="bg-purple-500/20 text-purple-200 border-purple-400/30">
-                    Экономия 1600 руб
-                  </Badge>
-                </div>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Card className="p-8 bg-gradient-to-br from-pink-500/20 to-purple-500/20 border-pink-500/30 text-center">
-                <CreditCard className="w-12 h-12 text-pink-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Абонемент на месяц</h3>
-                <p className="text-gray-300 mb-4">Из расчета 1000 руб за урок</p>
-                <p className="text-3xl font-bold text-pink-300">4000 руб</p>
-                <div className="mt-3 flex justify-center">
-                  <Badge className="mt-3 bg-pink-500/20 text-pink-200 border-pink-400/30">
-                    4 урока в месяц
-                  </Badge>
-                </div>
-              </Card>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {}
       <section className="px-4 py-20 bg-gradient-to-b from-transparent to-slate-800/50">
         <div className="container mx-auto max-w-6xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">👩‍🏫 Об авторе курса</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Об авторе курса</h2>
           </motion.div>
           
           <motion.div 
@@ -521,6 +598,88 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
                 </Card>
               </div>
             </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+          { }
+
+          <section className="px-4 py-16">
+              <div className="container mx-auto max-w-6xl">
+                  <motion.div {...fadeInUp} className="text-center mb-12">
+                      <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">👩‍🏫 Наши педагоги</h2>
+                      <p className="text-gray-400 max-w-2xl mx-auto">Педагоги курса — опытные преподаватели, каждый ведёт свою тему и сопровождает проектную работу детей.</p>
+                  </motion.div>
+
+                  <motion.div
+                      className="grid md:grid-cols-2 gap-8"
+                      variants={staggerChildren}
+                      initial="initial"
+                      whileInView="whileInView"
+                      viewport={{ once: true }}
+                  >
+                      {teachers.map((t, idx) => (
+                          <motion.div key={idx} variants={idx % 2 === 0 ? fadeInLeft : fadeInRight}>
+                              <Card className="p-6 bg-slate-800/50 border-slate-700 h-full">
+                                  <div className="flex flex-col md:flex-row items-center gap-6">
+                                      <ImageWithFallback
+                                          src={t.photo}
+                                          alt={t.name}
+                                          className="w-40 h-40 object-cover rounded-2xl shadow-md"
+                                      />
+                                      <div className="text-left space-y-2">
+                                          <h4 className="text-xl font-bold text-white">{t.name}</h4>
+                                          {t.role && <p className="text-sm text-purple-200">{t.role}</p>}
+                                          <p className="text-gray-300">{t.description}</p>
+                                      </div>
+                                  </div>
+                              </Card>
+                          </motion.div>
+                      ))}
+                  </motion.div>
+              </div>
+          </section>
+
+          {/* Новая секция: Отзывы выпускников (карусель) */}
+      <section className="px-4 py-16">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div {...fadeInUp} className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white">🗣️ Отзывы выпускников</h2>
+          </motion.div>
+
+          <motion.div {...fadeInUp} className="relative">
+            <div className="bg-slate-800/40 rounded-3xl p-6 flex flex-col items-center">
+              <div className="w-full max-w-2xl h-[420px] md:h-[520px] bg-slate-900/30 rounded-xl overflow-hidden flex items-center justify-center">
+                <ImageWithFallback
+                  src={reviews.length ? reviews[currentReview].src : './components/revews/placeholder.png'}
+                  alt={`Отзыв ${currentReview + 1}`}
+                  className="w-full h-full"
+                  fit="contain"
+                />
+              </div>
+
+              <div className="mt-4 text-center">
+                <p className="text-white font-medium">{reviews[currentReview].name || 'Имя ученика'}</p>
+                <p className="text-sm text-gray-400">{reviews[currentReview].age ? `${reviews[currentReview].age} лет` : 'Возраст'}</p>
+              </div>
+
+              <div className="mt-4 flex items-center gap-4">
+                <Button size="sm" onClick={prevReview} className="px-3 py-1 rounded-full">◀</Button>
+
+                <div className="flex gap-2">
+                  {reviews.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentReview(idx)}
+                      aria-label={`Перейти к отзыву ${idx + 1}`}
+                      className={`w-2 h-2 rounded-full ${idx === currentReview ? 'bg-white' : 'bg-slate-600'}`}
+                    />
+                  ))}
+                </div>
+
+                <Button size="sm" onClick={nextReview} className="px-3 py-1 rounded-full">▶</Button>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
