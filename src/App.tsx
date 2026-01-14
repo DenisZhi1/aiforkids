@@ -197,7 +197,7 @@ const teachers: {
 //  - рекомендую импортировать изображения сверху вместо строк, если хотите, чтобы Vite корректно упаковал ассеты.
 //  - структура: { src: string, name?: string, age?: string }
 const reviews: { src: string; name?: string; age?: string }[] = [
-    { src: './src/components/review/rev1.png', name: 'Айрапет', age: '16' },
+    { src: 'src/components/review/rev1.png', name: 'Айрапет', age: '16' },
     { src: './src/components/review/rev2.png', name: 'Дарья', age: '15' },
     { src: './src/components/review/rev3.png', name: 'Кеша', age: '15' },
     { src: './src/components/review/rev4.png', name: 'Тимофей', age: '9' },
@@ -729,4 +729,5 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
