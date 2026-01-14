@@ -155,7 +155,7 @@ const schedule: {
   { day: 'Вторник', time: '16:30', tz: 'МСК', group: '3–5 класс', teacher: 'Любовь Зарубина', seats: 4, icon: Clock2 },
   { day: 'Четверг', time: '15:00', tz: 'МСК', group: '3–5 класс', teacher: 'Денис Жихарев', seats: 1, icon: Clock3 },
   { day: 'Пятница', time: '15:30', tz: 'МСК', group: '6–9 класс', teacher: 'Денис Жихарев', seats: 3, icon: Clock4 },
-  { day: 'Пятница', time: '17:00', tz: 'МСК', group: '3–5 класс', teacher: 'Динара Губайдуллина', seats: 4, icon: Clock5 },
+  { day: 'Пятница', time: '17:00', tz: 'МСК', group: '6–9 класс', teacher: 'Динара Губайдуллина', seats: 4, icon: Clock5 },
   { day: 'Воскресенье', time: '10:30', tz: 'МСК', group: '3–5 класс', teacher: 'Денис Жихарев', seats: 1, icon: Clock6 },
 ];
 
@@ -556,7 +556,48 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
         </div>
       </section>
 
+            {/* Pricing */}
+      <section className="px-4 py-16">
+        <div className="container mx-auto max-w-4xl">
+          <motion.div {...fadeInUp} className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">💳 Стоимость</h2>
+          </motion.div>
+          
+          <motion.div 
+            className="grid md:grid-cols-2 gap-8"
+            variants={staggerChildren}
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true }}
+          >
+            <motion.div variants={fadeInUp}>
+              <Card className="p-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30 text-center">
+                <CreditCard className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">Разовая оплата</h3>
+                <p className="text-gray-300 mb-4">За весь курс (16 уроков)</p>
+                <p className="text-3xl font-bold text-purple-300">14 400 руб</p>
+                <Badge className="mt-3 bg-purple-500/20 text-purple-200 border-purple-400/30">
+                  Экономия 1600 руб
+                </Badge>
+              </Card>
+            </motion.div>
+            
+            <motion.div variants={fadeInUp}>
+              <Card className="p-8 bg-gradient-to-br from-pink-500/20 to-purple-500/20 border-pink-500/30 text-center">
+                <CreditCard className="w-12 h-12 text-pink-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">Абонемент на месяц</h3>
+                <p className="text-gray-300 mb-4">Фиксированная цена вне зависимости от количества уроков</p>
+                <p className="text-3xl font-bold text-pink-300">5300 руб</p>
+                <Badge className="mt-3 bg-pink-500/20 text-pink-200 border-pink-400/30">
+                  Удобно
+                </Badge>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
       {}
+      
       <section className="px-4 py-20 bg-gradient-to-b from-transparent to-slate-800/50">
         <div className="container mx-auto max-w-6xl">
           <motion.div {...fadeInUp} className="text-center mb-12">
@@ -743,6 +784,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
 
