@@ -626,7 +626,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
                   </motion.div>
 
                   <motion.div
-                      className="grid md:grid-cols-2 gap-8"
+                      className="grid md:grid-cols-1 gap-8"
                       variants={staggerChildren}
                       initial="initial"
                       whileInView="whileInView"
@@ -743,6 +743,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
 
