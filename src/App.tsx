@@ -8,6 +8,11 @@ import { Clock2, Clock3, Clock4, Clock5, Clock6, Shield, Clock, Users, Monitor, 
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import type { MouseEventHandler } from "react";
 
+import rev1 from "./components/review/rev1.png";
+import rev2 from "./components/review/rev2.png";
+import rev3 from "./components/review/rev3.png";
+import rev4 from "./components/review/rev4.png";
+import rev5 from "./components/review/rev5.png";
 // локальные фото педагогов
 import lubovImg from './components/teachers/lubov.png';
 import dinaraImg from './components/teachers/dinara.png';
@@ -196,6 +201,14 @@ const teachers: {
 //  - положите картинки отзывов в папку `src/components/revews` (или скорректируйте путь).
 //  - рекомендую импортировать изображения сверху вместо строк, если хотите, чтобы Vite корректно упаковал ассеты.
 //  - структура: { src: string, name?: string, age?: string }
+const reviews = [
+  { src: rev1, name: "Айрапет", age: "16" },
+  { src: rev2, name: "Дарья", age: "15" },
+  { src: rev3, name: "Кеша", age: "15" },
+  { src: rev4, name: "Тимофей", age: "9" },
+  { src: rev5, name: "Никита", age: "9" },
+];
+/*  
 const reviews: { src: string; name?: string; age?: string }[] = [
     { src: 'src/components/review/rev1.png', name: 'Айрапет', age: '16' },
     { src: './src/components/review/rev2.png', name: 'Дарья', age: '15' },
@@ -203,6 +216,7 @@ const reviews: { src: string; name?: string; age?: string }[] = [
     { src: './src/components/review/rev4.png', name: 'Тимофей', age: '9' },
     { src: './src/components/review/rev5.png', name: 'Никита', age: '9' }
 ];
+*/
 // --- конец отзывов ---
 
 // ссылки
@@ -729,5 +743,6 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
