@@ -592,7 +592,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
               <Card className="p-8 bg-gradient-to-br from-pink-500/20 to-purple-500/20 border-pink-500/30 text-center">
                 <CreditCard className="w-12 h-12 text-pink-400 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">Абонемент на месяц</h3>
-                <p className="text-gray-300 mb-4">Из расчета 1000 руб за урок</p>
+                <p className="text-gray-300 mb-4">Вне зависимости от количества уроков в месяц</p>
                 <p className="text-3xl font-bold text-pink-300">5300 руб</p>
                 <div className="flex justify-center mt-3">
                   <Badge className="bg-pink-500/20 text-pink-200 border-pink-400/30">
@@ -792,6 +792,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
 
