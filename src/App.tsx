@@ -262,7 +262,8 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
   const nextReview = () => setCurrentReview((c) => (c + 1) % reviews.length);
 
   return (
-    <div className="dark min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="dark min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    
       {}
       <section className="relative overflow-hidden px-4 py-20 md:py-32">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl"></div>
@@ -791,6 +792,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
 
