@@ -579,9 +579,11 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
                 <h3 className="text-xl font-bold text-white mb-2">Разовая оплата</h3>
                 <p className="text-gray-300 mb-4">За весь курс (16 уроков)</p>
                 <p className="text-3xl font-bold text-purple-300">14 400 руб</p>
-                <Badge className="mt-3 bg-purple-500/20 text-purple-200 border-purple-400/30">
-                  Экономия 1600 руб
-                </Badge>
+                <div className="flex justify-center mt-3">
+                  <Badge className="bg-purple-500/20 text-purple-200 border-purple-400/30">
+                    Экономия 1600 руб
+                  </Badge>
+                </div>
               </Card>
             </motion.div>
             
@@ -591,9 +593,11 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
                 <h3 className="text-xl font-bold text-white mb-2">Абонемент на месяц</h3>
                 <p className="text-gray-300 mb-4">Из расчета 1000 руб за урок</p>
                 <p className="text-3xl font-bold text-pink-300">5300 руб</p>
-                <Badge className="mt-3 bg-pink-500/20 text-pink-200 border-pink-400/30">
-                  Выгодно
-                </Badge>
+                <div className="flex justify-center mt-3">
+                  <Badge className="bg-pink-500/20 text-pink-200 border-pink-400/30">
+                    Выгодно
+                  </Badge>
+                </div>
               </Card>
             </motion.div>
           </motion.div>
@@ -787,6 +791,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
 
