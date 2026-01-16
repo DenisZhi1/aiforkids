@@ -154,7 +154,7 @@ const schedule: {
 }[] = [
   { day: 'Вторник', time: '16:30', tz: 'МСК', group: '3–5 класс', teacher: 'Любовь Зарубина', seats: 4, icon: Clock2 },
   { day: 'Четверг', time: '15:00', tz: 'МСК', group: '3–5 класс', teacher: 'Денис Жихарев', seats: 1, icon: Clock3 },
-  { day: 'Пятница', time: '15:30', tz: 'МСК', group: '6–9 класс', teacher: 'Денис Жихарев', seats: 2, icon: Clock4 },
+  { day: 'Пятница', time: '15:30', tz: 'МСК', group: '6–9 класс', teacher: 'Денис Жихарев', seats: 1, icon: Clock4 },
   { day: 'Пятница', time: '17:00', tz: 'МСК', group: '3–5 класс', teacher: 'Динара Губайдуллина', seats: 4, icon: Clock5 },
   { day: 'Воскресенье', time: '10:30', tz: 'МСК', group: '3–5 класс', teacher: 'Денис Жихарев', seats: 0, icon: Clock6 },
 ];
@@ -792,6 +792,7 @@ const handleVKClick: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
 
   );
 }
+
 
 
 
