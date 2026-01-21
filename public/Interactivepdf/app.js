@@ -654,7 +654,7 @@ function placeEmojiRing(container, completed, emoji) {
 // Порядок: TASK_LINKS[0] — ссылка для задания 1, TASK_LINKS[1] — для задания 2 и т.д.
 const TASK_LINKS = [
   "https://vk.ru/wall-235226792_12", // задача 1 — вставьте URL, например "https://site.example/task1"
-  "https://vk.ru/club235226792", // задача 2
+  "https://vk.ru/wall-235226792_59", // задача 2
   "https://vk.ru/club235226792", // задача 3
   "https://vk.ru/club235226792", // задача 4
   "https://vk.ru/club235226792", // задача 5
@@ -673,6 +673,7 @@ if (searchInput) {
 // Старт
 startDeadlineTimer();
 loadCSV();
+
 
 
 
