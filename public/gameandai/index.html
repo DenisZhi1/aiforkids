@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <title>Прогресс учеников</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <!-- Таймер дедлайнов (вверх) -->
+    <div id="deadlineTimer" class="timer" role="region" aria-label="Таймер дедлайнов" aria-live="polite">
+      <h2 class="timer-title">Таймер</h2>
+      <div id="timerNow" class="timer-now" aria-hidden="false">00:00:00 (МСК)</div>
+      <div id="timerCountdown" class="timer-countdown">Осталось времени до сдачи (задания —): —</div>
+    </div>
+
+    <div>
+      <h1 style="text-align:center; width:100%;">Прогресс участников курса</h1>
+      <span>Сайты и игры в ИИ (2)</span>
+    </div>
+    
+  </header>
+
+  <main>
+    <!-- ЛИДЕРЫ -->
+    <section class="leaders">
+  	<h2>ТОП-3</h2>
+  	<div id="podium" class="podium"></div>
+    </section>
+  
+    <!-- ПОИСК -->
+    <div class="search-wrap">
+  	<input
+  	  id="searchInput"
+  	  type="search"
+  	  placeholder="Найти себя по фамилии или имени…"
+  	  aria-label="Поиск ученика по имени"
+  	/>
+    </div>
+  
+    <!-- ОСНОВНАЯ СЕТКА -->
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">
+  	Пока нет ни одной записи или ничего не найдено по запросу. Попробуйте поменять текст поиска.
+    </div>
+	
+	<div id="status" style="text-align:center; margin-top:30px; color:#9ca3af;">
+	  Загружаю данные…
+	</div>
+  </main>
+</body>
+</html>
