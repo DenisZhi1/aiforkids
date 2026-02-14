@@ -1,4 +1,4 @@
-:root {
+п»ї:root {
     --bg: #0f172a;
     --card-bg: #111827;
     --accent: #38bdf8;
@@ -28,9 +28,9 @@ header {
     padding: 16px 20px;
     border-bottom: 1px solid #1f2937;
     display: flex;
-    flex-direction: column; /* <- вертикально */
+    flex-direction: column; /* <- РІРµСЂС‚РёРєР°Р»СЊРЅРѕ */
     justify-content: center;
-    align-items: center; /* <- горизонтально центр */
+    align-items: center; /* <- РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕ С†РµРЅС‚СЂ */
     gap: 4px;
     text-align: center;
 }
@@ -93,61 +93,7 @@ main {
         box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 16px rgba(125, 245, 255, 0.55);
     }
 
-/* ===== спец-рамки для избранных ===== */
-
-/* базовая анимация пульса */
-@keyframes pulse-orange {
-    0% {
-        box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.8);
-        border-color: rgba(249, 115, 22, 0.9);
-    }
-
-    50% {
-        box-shadow: 0 0 18px 6px rgba(249, 115, 22, 0.5);
-        border-color: rgba(253, 186, 116, 1);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.2);
-        border-color: rgba(249, 115, 22, 0.7);
-    }
-}
-
-@keyframes pulse-purple {
-    0% {
-        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.8);
-        border-color: rgba(168, 85, 247, 0.9);
-    }
-
-    50% {
-        box-shadow: 0 0 20px 7px rgba(192, 132, 252, 0.6);
-        border-color: rgba(216, 180, 254, 1);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.3);
-        border-color: rgba(168, 85, 247, 0.7);
-    }
-}
-
-@keyframes pulse-blue {
-    0% {
-        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.8);
-        border-color: rgba(56, 189, 248, 0.9);
-    }
-
-    50% {
-        box-shadow: 0 0 20px 7px rgba(59, 130, 246, 0.7);
-        border-color: rgba(191, 219, 254, 1);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.3);
-        border-color: rgba(56, 189, 248, 0.7);
-    }
-}
-
-/* Новые анимации для строк участников */
+/* РќРѕРІС‹Рµ Р°РЅРёРјР°С†РёРё РґР»СЏ СЃС‚СЂРѕРє СѓС‡Р°СЃС‚РЅРёРєРѕРІ */
 @keyframes row-pulse-blue {
   0% {
     box-shadow: 0 0 0 0 rgba(56,189,248,0);
@@ -172,30 +118,6 @@ main {
   }
 }
 
-/* Денис — рыжий котик */
-.card.special-denis {
-    border-width: 2px;
-    border-color: #f97316;
-    animation: pulse-orange 1.6s infinite;
-}
-
-/* Анна — фиолетовые зайки */
-.card.special-anna {
-    border-width: 2px;
-    border-color: #a855f7;
-    animation: pulse-purple 1.7s infinite;
-}
-
-/* Динара и Люба — голубая анимация */
-.card.special-dinara,
-.card.special-lyuba {
-    border-width: 2px;
-    border-color: #38bdf8;
-    animation: pulse-blue 1.8s infinite;
-}
-
-
-
 .avatar-wrap {
     position: relative;
     width: 90px;
@@ -205,7 +127,7 @@ main {
     justify-content: center;
 }
 
-/* ссылка вокруг аватарки */
+/* СЃСЃС‹Р»РєР° РІРѕРєСЂСѓРі Р°РІР°С‚Р°СЂРєРё */
 .avatar-link {
     display: block;
     width: 56px;
@@ -213,7 +135,7 @@ main {
     border-radius: 50%;
 }
 
-/* круглый аватар (и для div, и для img) */
+/* РєСЂСѓРіР»С‹Р№ Р°РІР°С‚Р°СЂ (Рё РґР»СЏ div, Рё РґР»СЏ img) */
 .avatar {
     width: 56px;
     height: 56px;
@@ -304,14 +226,14 @@ main {
     flex-wrap: wrap;
 }
 
-    /* карточки лидеров используют тот же .card, но с модификацией */
+    /* РєР°СЂС‚РѕС‡РєРё Р»РёРґРµСЂРѕРІ РёСЃРїРѕР»СЊР·СѓСЋС‚ С‚РѕС‚ Р¶Рµ .card, РЅРѕ СЃ РјРѕРґРёС„РёРєР°С†РёРµР№ */
     .podium .card {
         min-width: 150px;
         max-width: 180px;
         position: relative;
     }
 
-        /* подиум: серебро слева чуть ниже, золото по центру выше, бронза справа чуть ниже */
+        /* РїРѕРґРёСѓРј: СЃРµСЂРµР±СЂРѕ СЃР»РµРІР° С‡СѓС‚СЊ РЅРёР¶Рµ, Р·РѕР»РѕС‚Рѕ РїРѕ С†РµРЅС‚СЂСѓ РІС‹С€Рµ, Р±СЂРѕРЅР·Р° СЃРїСЂР°РІР° С‡СѓС‚СЊ РЅРёР¶Рµ */
         .podium .card.gold {
             border: 2px solid #facc15;
             box-shadow: 0 0 10px #facc15aa;
@@ -330,7 +252,7 @@ main {
             transform: translateY(2px);
         }
 
-/* маленький бейджик "1 место" */
+/* РјР°Р»РµРЅСЊРєРёР№ Р±РµР№РґР¶РёРє "1 РјРµСЃС‚Рѕ" */
 .place-badge {
     position: absolute;
     top: 6px;
@@ -343,7 +265,7 @@ main {
     border: 1px solid rgba(148,163,184,0.7);
 }
 
-/* ПОИСК */
+/* РџРћРРЎРљ */
 .search-wrap {
     margin: 10px 0 14px;
 }
@@ -410,7 +332,7 @@ main {
     padding-bottom: 20px;
 }
 
-/* Таймер — цифровой, бирюзовые цифры */
+/* РўР°Р№РјРµСЂ вЂ” С†РёС„СЂРѕРІРѕР№, Р±РёСЂСЋР·РѕРІС‹Рµ С†РёС„СЂС‹ */
 .timer {
   display: flex;
   flex-direction: column;
@@ -428,7 +350,7 @@ main {
   box-shadow: 0 6px 18px rgba(8,16,24,0.4);
 }
 
-/* Заголовок таймера */
+/* Р—Р°РіРѕР»РѕРІРѕРє С‚Р°Р№РјРµСЂР° */
 .timer-title {
   font-size: 0.8rem;
   color: #cfe8ff;
@@ -437,16 +359,16 @@ main {
   letter-spacing: 0.6px;
 }
 
-/* Текущее время (цифры) */
+/* РўРµРєСѓС‰РµРµ РІСЂРµРјСЏ (С†РёС„СЂС‹) */
 .timer-now {
   font-family: "Roboto Mono", "Courier New", monospace;
   font-weight: 700;
   font-size: 1.4rem;
-  color: #38bdf8; /* бирюзовый */
+  color: #38bdf8; /* Р±РёСЂСЋР·РѕРІС‹Р№ */
   text-shadow: 0 2px 8px rgba(56,189,248,0.18);
 }
 
-/* Обратный отсчёт */
+/* РћР±СЂР°С‚РЅС‹Р№ РѕС‚СЃС‡С‘С‚ */
 .timer-countdown {
   font-family: "Roboto Mono", "Courier New", monospace;
   font-size: 0.95rem;
@@ -454,7 +376,7 @@ main {
   opacity: 0.95;
 }
 
-/* Адаптивно для мобильных */
+/* РђРґР°РїС‚РёРІРЅРѕ РґР»СЏ РјРѕР±РёР»СЊРЅС‹С… */
 @media (max-width: 480px) {
   .timer-now {
     font-size: 1.1rem;
@@ -464,7 +386,7 @@ main {
   }
 }
 
-/* ====== Строка участника ====== */
+/* ====== РЎС‚СЂРѕРєР° СѓС‡Р°СЃС‚РЅРёРєР° ====== */
 .student-row {
   display: flex;
   align-items: center;
@@ -481,7 +403,7 @@ main {
   outline: none;
 }
 
-/* Hover / focus — голубая пульсация */
+/* Hover / focus вЂ” РіРѕР»СѓР±Р°СЏ РїСѓР»СЊСЃР°С†РёСЏ */
 .student-row:hover,
 .student-row:focus {
   border-color: rgba(56,189,248,0.9);
@@ -490,14 +412,14 @@ main {
   transform: translateY(-2px);
 }
 
-/* Завершившие все 8 — золотая рамка и свечения */
+/* Р—Р°РІРµСЂС€РёРІС€РёРµ РІСЃРµ 8 вЂ” Р·РѕР»РѕС‚Р°СЏ СЂР°РјРєР° Рё СЃРІРµС‡РµРЅРёСЏ */
 .student-row.completed-all {
   border: 2px solid #facc15;
   animation: row-pulse-gold 1.8s infinite;
   box-shadow: 0 0 28px rgba(250,204,21,0.16), 0 6px 20px rgba(0,0,0,0.38);
 }
 
-/* Аватар */
+/* РђРІР°С‚Р°СЂ */
 .student-avatar-link,
 .student-avatar-link > .student-avatar-img,
 .student-avatar-fallback {
@@ -525,7 +447,7 @@ main {
   color: #0b1220;       
 }
 
-/* Имя (растягивается) */
+/* РРјСЏ (СЂР°СЃС‚СЏРіРёРІР°РµС‚СЃСЏ) */
 .student-name {
   font-weight: 600;
   font-size: 0.95rem;
@@ -535,7 +457,7 @@ main {
   word-break: break-word;
 }
 
-/* Обёртка ячеек заданий */
+/* РћР±С‘СЂС‚РєР° СЏС‡РµРµРє Р·Р°РґР°РЅРёР№ */
 .tasks-cells {
   display: flex;
   gap: 6px;
@@ -543,7 +465,7 @@ main {
   align-items: center;
 }
 
-/* Одна ячейка задания */
+/* РћРґРЅР° СЏС‡РµР№РєР° Р·Р°РґР°РЅРёСЏ */
 .task-cell {
   width: 34px;
   height: 28px;
@@ -553,37 +475,37 @@ main {
   justify-content: center;
   font-family: "Roboto Mono", monospace;
   font-weight: 700;
-  color: #071124;          /* Чёрная цифра — во всех состояниях */
+  color: #071124;          /* Р§С‘СЂРЅР°СЏ С†РёС„СЂР° вЂ” РІРѕ РІСЃРµС… СЃРѕСЃС‚РѕСЏРЅРёСЏС… */
   box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06);
   border: 1px solid rgba(0,0,0,0.06);
   box-sizing: border-box;
 }
 
-/* Пустая — белая */
+/* РџСѓСЃС‚Р°СЏ вЂ” Р±РµР»Р°СЏ */
     .task-cell.cell-empty {
         background: #204162;
-        color: #071124; /* чёрный */
+        color: #071124; /* С‡С‘СЂРЅС‹Р№ */
     }
 
-/* Ноль — красная */
+/* РќРѕР»СЊ вЂ” РєСЂР°СЃРЅР°СЏ */
 .task-cell.cell-zero {
   background: #ef4444; /* red-500 */
-  color: #071124; /* чёрный по требованию */
+  color: #071124; /* С‡С‘СЂРЅС‹Р№ РїРѕ С‚СЂРµР±РѕРІР°РЅРёСЋ */
 }
 
-/* Единица — зелёная */
+/* Р•РґРёРЅРёС†Р° вЂ” Р·РµР»С‘РЅР°СЏ */
 .task-cell.cell-one {
   background: #10b981; /* green-500 */
-  color: #071124; /* чёрный по требованию */
+  color: #071124; /* С‡С‘СЂРЅС‹Р№ РїРѕ С‚СЂРµР±РѕРІР°РЅРёСЋ */
 }
 
-/* Ссылки внутри ячейки — убрать подчёркивание и сохранить выравнивание */
+/* РЎСЃС‹Р»РєРё РІРЅСѓС‚СЂРё СЏС‡РµР№РєРё вЂ” СѓР±СЂР°С‚СЊ РїРѕРґС‡С‘СЂРєРёРІР°РЅРёРµ Рё СЃРѕС…СЂР°РЅРёС‚СЊ РІС‹СЂР°РІРЅРёРІР°РЅРёРµ */
 .task-cell.task-link {
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: inherit; /* сохранить чёрную цифру, как задано в .task-cell */
+  color: inherit; /* СЃРѕС…СЂР°РЅРёС‚СЊ С‡С‘СЂРЅСѓСЋ С†РёС„СЂСѓ, РєР°Рє Р·Р°РґР°РЅРѕ РІ .task-cell */
 }
 .task-cell.task-link:focus {
   outline: none;
@@ -591,7 +513,7 @@ main {
   border-radius: 6px;
 }
 
-/* Мобильные размеры */
+/* РњРѕР±РёР»СЊРЅС‹Рµ СЂР°Р·РјРµСЂС‹ */
 @media (max-width: 640px) {
   .task-cell {
     width: 28px;
@@ -603,22 +525,22 @@ main {
   }
 }
 
-/* ====== БОНУСЫ ЗА ОЧКИ ====== */
+/* ====== Р‘РћРќРЈРЎР« Р—Рђ РћР§РљР ====== */
 
-/* Серебристая рамка за 10 очков */
+/* РЎРµСЂРµР±СЂРёСЃС‚Р°СЏ СЂР°РјРєР° Р·Р° 10 РѕС‡РєРѕРІ */
 .student-avatar-link.avatar-silver {
   border: 2px solid #e5e7eb;
   box-shadow: 0 0 12px rgba(229, 231, 235, 0.6), inset 0 0 8px rgba(229, 231, 235, 0.2);
 }
 
-/* Золотая рамка с миганием за 15 очков */
+/* Р—РѕР»РѕС‚Р°СЏ СЂР°РјРєР° СЃ РјРёРіР°РЅРёРµРј Р·Р° 15 РѕС‡РєРѕРІ */
 .student-avatar-link.avatar-golden {
   border: 2px solid #facc15;
   animation: avatar-golden-pulse 1.4s infinite;
   box-shadow: 0 0 16px rgba(250, 204, 21, 0.7), inset 0 0 8px rgba(250, 204, 21, 0.3);
 }
 
-/* Анимация мигания золотой рамки */
+/* РђРЅРёРјР°С†РёСЏ РјРёРіР°РЅРёСЏ Р·РѕР»РѕС‚РѕР№ СЂР°РјРєРё */
 @keyframes avatar-golden-pulse {
   0% {
     border-color: #facc15;
@@ -634,7 +556,7 @@ main {
   }
 }
 
-/* Кристалик рядом с именем за 5 очков */
+/* РљСЂРёСЃС‚Р°Р»РёРє СЂСЏРґРѕРј СЃ РёРјРµРЅРµРј Р·Р° 5 РѕС‡РєРѕРІ */
 .crystal-emoji {
   margin-left: 4px;
   display: inline-block;
@@ -656,3 +578,82 @@ main {
     text-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
   }
 }
+/* Podium 3D tilt effect */
+.podium {
+  perspective: 1200px;
+  gap: 22px;
+}
+
+.podium .podium-card {
+  transform-style: preserve-3d;
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+  will-change: transform;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+}
+
+.podium .podium-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120px 120px at var(--mx) var(--my), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.02) 55%, rgba(255, 255, 255, 0) 80%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.podium .podium-card.is-tilting::before {
+  opacity: 0.95;
+}
+
+.podium .podium-card.is-tilting.gold {
+  animation: podium-pulse-gold 1.2s ease-in-out infinite;
+}
+
+.podium .podium-card.is-tilting.silver {
+  animation: podium-pulse-silver 1.2s ease-in-out infinite;
+}
+
+.podium .podium-card.is-tilting.bronze {
+  animation: podium-pulse-bronze 1.2s ease-in-out infinite;
+}
+
+@keyframes podium-pulse-gold {
+  0% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(250, 204, 21, 0.45);
+  }
+  50% {
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.55), 0 0 26px rgba(250, 204, 21, 0.8);
+  }
+  100% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(250, 204, 21, 0.45);
+  }
+}
+
+@keyframes podium-pulse-silver {
+  0% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(229, 231, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(229, 231, 235, 0.75);
+  }
+  100% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(229, 231, 235, 0.4);
+  }
+}
+
+@keyframes podium-pulse-bronze {
+  0% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(249, 115, 22, 0.75);
+  }
+  100% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(249, 115, 22, 0.4);
+  }
+}
+
+

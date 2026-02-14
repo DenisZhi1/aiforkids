@@ -1,17 +1,20 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="cursor.css" />
   <meta charset="utf-8" />
   <title>Прогресс учеников</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
  
   <script defer src="app.js"></script>
+  <script defer src="cursorjs.js"></script>
 </head>
 <body>
+  <canvas id="cursorCanvas" aria-hidden="true"></canvas>
   <header>
-    <!-- Таймер дедлайнов (вверх) -->
+    <!-- Таймер дедлайнов (вверху) -->
     <div id="deadlineTimer" class="timer" role="region" aria-label="Таймер дедлайнов" aria-live="polite">
       <h2 class="timer-title">Таймер</h2>
       <div id="timerNow" class="timer-now" aria-hidden="false">00:00:00 (МСК)</div>

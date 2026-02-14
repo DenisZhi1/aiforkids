@@ -353,7 +353,7 @@ function renderPodium(top3) {
     if (!st) return;
 
     const card = createStudentCard(st);
-    card.classList.add(pos.className);
+    card.classList.add("podium-card", pos.className);
 
     const badge = document.createElement("div");
     badge.className = "place-badge";
@@ -495,12 +495,6 @@ function createStudentCard(st) {
   const card = document.createElement("article");
   card.className = "card";
 
-  // особые рамки
-  const specialType = getSpecialType(st.name);
-  if (specialType) {
-    card.classList.add("special-" + specialType);
-  }
-
   const wrap = document.createElement("div");
   wrap.className = "avatar-wrap";
 
@@ -508,15 +502,7 @@ function createStudentCard(st) {
 
   const starsRing = document.createElement("div");
   starsRing.className = "stars-ring";
-
-  // котики/зайки для Дениса и Анны
-  if (specialType === "denis") {
-    placeEmojiRing(starsRing, st.completed, "🐱");
-  } else if (specialType === "anna") {
-    placeEmojiRing(starsRing, st.completed, "🐰");
-  } else {
-    placeStars(starsRing, st.completed);
-  }
+  placeStars(starsRing, st.completed);
 
   wrap.appendChild(avatarEl);
   wrap.appendChild(starsRing);
@@ -574,17 +560,6 @@ function createAvatarElement(st) {
 }
 
 // ====== ВСПОМОГАТЕЛЬНЫЕ ======
-function getSpecialType(name) {
-  const n = name.toLowerCase();
-
-  if (n.includes("денис") && n.includes("жихар")) return "denis";
-  if (n.includes("анна") && n.includes("кудряв")) return "anna";
-  if (n.includes("динара") && n.includes("губайд")) return "dinara";
-  if (n.includes("любов") && n.includes("заруб")) return "lyuba";
-
-  return null;
-}
-
 function getInitials(fullName) {
   const parts = fullName.split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
@@ -592,8 +567,7 @@ function getInitials(fullName) {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
-// ====== ЗВЁЗДЫ и остальные функции (placeStars, placeEmojiRing и т.д.) остаются без изменений ======
-// -- вставляем существующие функции placeStars и placeEmojiRing ниже (не трогаем) --
+// ====== ЗВЁЗДЫ ======
 function placeStars(container, completed) {
   container.innerHTML = "";
   if (completed <= 0) return;
@@ -657,62 +631,6 @@ function placeStars(container, completed) {
   }
 }
 
-function placeEmojiRing(container, completed, emoji) {
-  container.innerHTML = "";
-
-  const big = 3;   // ВСЕГДА три крупных сверху
-  const small = 3; // ВСЕГДА три мелких снизу
-
-  const bigRadius = 42;
-  const smallRadius = 38;
-  const bigSize = 22;
-  const smallSize = 16;
-
-  const toRad = (deg) => deg * Math.PI / 180;
-
-  const startTop = -160;
-  const endTop   = -20;
-  const stepTop = (endTop - startTop) / (big + 1);
-
-  for (let i = 0; i < big; i++) {
-    const angleDeg = startTop + stepTop * (i + 1);
-    const angle = toRad(angleDeg);
-
-    const x = bigRadius * Math.cos(angle);
-    const y = bigRadius * Math.sin(angle);
-
-    const node = document.createElement("span");
-    node.className = "star";
-    node.textContent = emoji;
-    node.style.fontSize = bigSize + "px";
-    node.style.transform =
-      `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-
-    container.appendChild(node);
-  }
-
-  const startBottom = 20;
-  const endBottom   = 160;
-  const stepBottom = (endBottom - startBottom) / (small + 1);
-
-  for (let i = 0; i < small; i++) {
-    const angleDeg = startBottom + stepBottom * (i + 1);
-    const angle = toRad(angleDeg);
-
-    const x = smallRadius * Math.cos(angle);
-    const y = smallRadius * Math.sin(angle);
-
-    const node = document.createElement("span");
-    node.className = "star";
-    node.textContent = emoji;
-    node.style.fontSize = smallSize + "px";
-    node.style.transform =
-      `translate(-50%, -50%) translate(${x}px, ${y}px)`;
-
-    container.appendChild(node);
-  }
-}
-
 
 
 // ====== ПОИСК ======
@@ -725,3 +643,108 @@ if (searchInput) {
 // Старт
 startDeadlineTimer();
 loadCSV();
+
+// Podium mouse reactive 3D tilt
+function initPodium3D() {
+  if (!podiumEl) return;
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const MAX_TILT_X = 18;
+  const MAX_TILT_Y = 20;
+  const IDLE_X = 12;
+
+  let activeCard = null;
+  let rafId = null;
+  let lastEvent = null;
+
+  const getBaseTransform = (card) => {
+    if (card.classList.contains("gold")) return "translateY(-10px) scale(1.05)";
+    if (card.classList.contains("bronze")) return "translateY(2px) scale(1)";
+    return "translateY(0px) scale(1)";
+  };
+
+  const getIdleY = (card) => {
+    if (card.classList.contains("silver")) return -8;
+    if (card.classList.contains("bronze")) return 8;
+    return 0;
+  };
+
+  const applyTransform = (card, rx, ry) => {
+    const base = getBaseTransform(card);
+    const idleY = getIdleY(card);
+    card.style.transform = `${base} perspective(900px) rotateX(${IDLE_X + rx}deg) rotateY(${idleY + ry}deg)`;
+  };
+
+  const setNeutral = (card) => {
+    if (!card) return;
+    applyTransform(card, 0, 0);
+    card.style.setProperty("--mx", "50%");
+    card.style.setProperty("--my", "50%");
+    card.classList.remove("is-tilting");
+  };
+
+  const applyTilt = () => {
+    rafId = null;
+    if (!activeCard || !lastEvent) return;
+
+    const r = activeCard.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+
+    const x = clamp(lastEvent.clientX - r.left, 0, r.width);
+    const y = clamp(lastEvent.clientY - r.top, 0, r.height);
+    const nx = (x / r.width) - 0.5;
+    const ny = (y / r.height) - 0.5;
+
+    const rx = Number((-ny * MAX_TILT_X).toFixed(2));
+    const ry = Number((nx * MAX_TILT_Y).toFixed(2));
+
+    applyTransform(activeCard, rx, ry);
+    activeCard.style.setProperty("--mx", ((x / r.width) * 100).toFixed(2) + "%");
+    activeCard.style.setProperty("--my", ((y / r.height) * 100).toFixed(2) + "%");
+    activeCard.classList.add("is-tilting");
+  };
+
+  const queueTilt = () => {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(applyTilt);
+  };
+
+  podiumEl.addEventListener("pointermove", (e) => {
+    const card = e.target.closest(".podium-card");
+    if (!card || !podiumEl.contains(card)) {
+      if (activeCard) clearActive();
+      return;
+    }
+    if (e.pointerType === "touch") return;
+
+    if (activeCard && activeCard !== card) setNeutral(activeCard);
+    activeCard = card;
+    lastEvent = e;
+    queueTilt();
+  });
+
+  const clearActive = () => {
+    if (activeCard) setNeutral(activeCard);
+    activeCard = null;
+    lastEvent = null;
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  };
+
+  podiumEl.addEventListener("pointercancel", clearActive);
+  podiumEl.addEventListener("pointerleave", clearActive);
+
+  const prepareCards = () => {
+    podiumEl.querySelectorAll(".podium-card").forEach((card) => setNeutral(card));
+  };
+
+  prepareCards();
+  const observer = new MutationObserver(prepareCards);
+  observer.observe(podiumEl, { childList: true });
+}
+
+initPodium3D();
+
+
