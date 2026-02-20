@@ -31,11 +31,11 @@ const DEADLINES = [
 // === ССЫЛКИ НА ЗАДАНИЯ (вставьте сюда ваши URL)
 // Порядок: TASK_LINKS[0] — ссылка для задания 1, TASK_LINKS[1] — для задания 2 и т.д.
 const TASK_LINKS = [
-    "https://vk.ru/club235320700", // задача 1
-    "https://vk.ru/club235320700", // задача 2
-    "https://vk.ru/club235320700", // задача 3
-    "https://vk.ru/club235320700", // задача 4
-    "https://vk.ru/club235320700", // задача 5
+    "https://vk.com/wall-235320700_15", // задача 1
+    "https://vk.com/wall-235320700_149", // задача 2
+    "https://vk.com/wall-235320700_282", // задача 3
+    "https://vk.com/wall-235320700_413", // задача 4
+    "https://vk.com/wall-235320700_558", // задача 5
     "https://vk.ru/club235320700", // задача 6
     "https://vk.ru/club235320700", // задача 7
     "https://vk.ru/club235320700", // задача 8npx
@@ -746,5 +746,6 @@ function initPodium3D() {
 }
 
 initPodium3D();
+
 
 
