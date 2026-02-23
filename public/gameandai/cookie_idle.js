@@ -54,7 +54,6 @@
     'Каждые 10 печенек делают мир чуть ярче.'
   ];
 
-  const bestKey = 'cookie_idle_best_v1';
   const countKey = 'cookie_idle_count_v1';
   const seenKey = 'cookie_idle_seen_v1';
   const congratsKey = 'cookie_idle_congrats_v1';
@@ -72,7 +71,6 @@
 
   const state = {
     count: savedCount,
-    best: Number.parseInt(localStorage.getItem(bestKey) || '0', 10) || 0,
     seen: new Set(savedSeen),
     congratsShown: localStorage.getItem(congratsKey) === '1',
     pendingCongrats: false,
@@ -236,7 +234,6 @@
   document.body.appendChild(modal);
 
   const countEl = hud.querySelector('#cookie-count');
-  const bestEl = hud.querySelector('#cookie-best');
   const messagesEl = hud.querySelector('#cookie-messages');
   const modalText = modal.querySelector('#cookie-modal-text');
   const modalClose = modal.querySelector('#cookie-modal-close');
@@ -248,11 +245,6 @@
 
   function updateCounters() {
     countEl.textContent = state.count;
-    if (state.count > state.best) {
-      state.best = state.count;
-      bestEl.textContent = state.best;
-      localStorage.setItem(bestKey, String(state.best));
-    }
     localStorage.setItem(countKey, String(state.count));
     messagesEl.textContent = `${state.seen.size}/${totalMessages}`;
   }
