@@ -55,10 +55,28 @@
   ];
 
   const bestKey = 'cookie_idle_best_v1';
+  const countKey = 'cookie_idle_count_v1';
+  const seenKey = 'cookie_idle_seen_v1';
+  const congratsKey = 'cookie_idle_congrats_v1';
+  const totalMessages = 50;
+  const savedCount = Number.parseInt(localStorage.getItem(countKey) || '0', 10) || 0;
+  const savedSeen = (() => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(seenKey) || '[]');
+      if (Array.isArray(raw)) return raw.filter((n) => Number.isInteger(n));
+      return [];
+    } catch {
+      return [];
+    }
+  })();
+
   const state = {
-    count: 0,
-    best: Number.parseInt(localStorage.getItem(bestKey) || '0', 10),
-    nextEventAt: 10,
+    count: savedCount,
+    best: Number.parseInt(localStorage.getItem(bestKey) || '0', 10) || 0,
+    seen: new Set(savedSeen),
+    congratsShown: localStorage.getItem(congratsKey) === '1',
+    pendingCongrats: false,
+    nextEventAt: (Math.floor(savedCount / 10) + 1) * 10,
     dropTimer: null,
     isModalOpen: false
   };
@@ -161,6 +179,16 @@
       text-align: center;
       box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
     }
+    #cookie-modal .cookie-modal-card.glow {
+      border-color: rgba(251, 191, 36, 0.9);
+      animation: cookie-glow 1.2s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.45), 0 18px 40px rgba(0, 0, 0, 0.55);
+    }
+    @keyframes cookie-glow {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.02); filter: brightness(1.15); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
     #cookie-modal .cookie-modal-text {
       font-size: 12px;
       line-height: 1.6;
@@ -191,8 +219,8 @@
       <div class="cookie-value" id="cookie-count">0</div>
     </div>
     <div class="cookie-box">
-      <div class="cookie-label">Рекорд</div>
-      <div class="cookie-value" id="cookie-best">${state.best}</div>
+      <div class="cookie-label">Сообщения</div>
+      <div class="cookie-value" id="cookie-messages">0/${totalMessages}</div>
     </div>
   `;
   document.body.appendChild(hud);
@@ -209,8 +237,10 @@
 
   const countEl = hud.querySelector('#cookie-count');
   const bestEl = hud.querySelector('#cookie-best');
+  const messagesEl = hud.querySelector('#cookie-messages');
   const modalText = modal.querySelector('#cookie-modal-text');
   const modalClose = modal.querySelector('#cookie-modal-close');
+  const modalCard = modal.querySelector('.cookie-modal-card');
 
   function randomBetween(min, max) {
     return Math.random() * (max - min) + min;
@@ -223,12 +253,33 @@
       bestEl.textContent = state.best;
       localStorage.setItem(bestKey, String(state.best));
     }
+    localStorage.setItem(countKey, String(state.count));
+    messagesEl.textContent = `${state.seen.size}/${totalMessages}`;
   }
 
-  function showModal() {
+  function persistSeen() {
+    localStorage.setItem(seenKey, JSON.stringify([...state.seen]));
+  }
+
+  function showModal(message) {
     state.isModalOpen = true;
     document.body.classList.add('cookie-paused');
-    modalText.textContent = jokes[Math.floor(Math.random() * jokes.length)];
+    modalCard.classList.remove('glow');
+    modalText.textContent = message;
+    modal.classList.add('open');
+    if (state.dropTimer) {
+      clearTimeout(state.dropTimer);
+      state.dropTimer = null;
+    }
+  }
+
+  function showCongratsModal() {
+    state.isModalOpen = true;
+    state.congratsShown = true;
+    localStorage.setItem(congratsKey, '1');
+    document.body.classList.add('cookie-paused');
+    modalCard.classList.add('glow');
+    modalText.textContent = 'Поздравляю! Вы собрали все 50 сообщений и стали королем печенек!';
     modal.classList.add('open');
     if (state.dropTimer) {
       clearTimeout(state.dropTimer);
@@ -239,7 +290,13 @@
   function hideModal() {
     state.isModalOpen = false;
     modal.classList.remove('open');
+    modalCard.classList.remove('glow');
     document.body.classList.remove('cookie-paused');
+    if (state.pendingCongrats && !state.congratsShown) {
+      state.pendingCongrats = false;
+      showCongratsModal();
+      return;
+    }
     scheduleDrop();
   }
 
@@ -266,7 +323,21 @@
       cookie.remove();
       if (state.count >= state.nextEventAt) {
         state.nextEventAt += 10;
-        showModal();
+        if (state.seen.size < totalMessages) {
+          const remaining = jokes
+            .map((_, index) => index)
+            .filter((index) => !state.seen.has(index));
+          const pick = remaining[Math.floor(Math.random() * remaining.length)];
+          state.seen.add(pick);
+          persistSeen();
+          updateCounters();
+          if (state.seen.size === totalMessages && !state.congratsShown) {
+            state.pendingCongrats = true;
+          }
+          showModal(jokes[pick]);
+        } else if (!state.congratsShown) {
+          showCongratsModal();
+        }
       }
     }, { once: true });
 
