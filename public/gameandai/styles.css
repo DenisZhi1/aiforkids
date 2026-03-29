@@ -412,7 +412,7 @@ main {
   transform: translateY(-2px);
 }
 
-/* Завершившие все 8 — золотая рамка и свечения */
+/* Завершившие все 20 — золотая рамка и свечение */
 .student-row.completed-all {
   border: 2px solid #facc15;
   animation: row-pulse-gold 1.8s infinite;
@@ -449,12 +449,71 @@ main {
 
 /* Имя (растягивается) */
 .student-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   font-weight: 600;
   font-size: 0.95rem;
   color: #e6eefc;
   flex: 1 1 auto;
   min-width: 150px;
   word-break: break-word;
+}
+
+.student-name-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.student-achievements {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.completion-button {
+  min-width: 40px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(15, 23, 42, 0.9);
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.completion-button:hover,
+.completion-button:focus-visible {
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.completion-button-silver {
+  color: #e5e7eb;
+  border-color: rgba(229, 231, 235, 0.45);
+  box-shadow: 0 0 10px rgba(229, 231, 235, 0.2);
+}
+
+.completion-button-silver:hover,
+.completion-button-silver:focus-visible {
+  box-shadow: 0 0 14px rgba(229, 231, 235, 0.35);
+}
+
+.completion-button-gold {
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.55);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.24);
+}
+
+.completion-button-gold:hover,
+.completion-button-gold:focus-visible {
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.4);
 }
 
 /* Обёртка ячеек заданий */
@@ -522,6 +581,12 @@ main {
   }
   .student-name {
     font-size: 0.9rem;
+  }
+  .completion-button {
+    min-width: 36px;
+    height: 22px;
+    padding: 0 8px;
+    font-size: 0.68rem;
   }
 }
 

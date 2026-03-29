@@ -19,21 +19,21 @@ const TASK_LINKS = [
     "https://vk.com/wall-235320700_282", // задача 3
     "https://vk.com/wall-235320700_413", // задача 4
     "https://vk.com/wall-235320700_558", // задача 5
-    "https://vk.ru/club235320700", // задача 6
-    "https://vk.ru/club235320700", // задача 7
-    "https://vk.ru/club235320700", // задача 8npx
-    "https://vk.ru/club235320700", // задача 9
-    "https://vk.ru/club235320700", // задача 10
-    "https://vk.ru/club235320700", // задача 11
-    "https://vk.ru/club235320700", // задача 12
-    "https://vk.ru/club235320700", // задача 13
-    "https://vk.ru/club235320700", // задача 14
-    "https://vk.ru/club235320700", // задача 15
-    "https://vk.ru/club235320700",  // задача 16
-    "https://vk.ru/club235320700", // задача 17
-    "https://vk.ru/club235320700", // задача 18
-    "https://vk.ru/club235320700", // задача 19
-    "https://vk.ru/club235320700" // задача 20
+    "https://vk.ru/wall-235320700_978", // задача 6
+    "https://vk.ru/wall-235320700_1089", // задача 7
+    "https://vk.ru/wall-235320700_1129", // задача 8npx
+    "https://vk.ru/wall-235320700_1249", // задача 9
+    "https://vk.ru/wall-235320700_1363", // задача 10
+    "https://vk.ru/wall-235320700_1757", // задача 11
+    "https://vk.ru/wall-235320700_1890", // задача 12
+    "https://vk.ru/wall-235320700_1923", // задача 13
+    "https://vk.ru/wall-235320700_1953", // задача 14
+    "https://vk.ru/wall-235320700_2117", // задача 15
+    "https://vk.ru/wall-235320700_2430",  // задача 16
+    "https://vk.ru/wall-235320700_2497", // задача 17
+    "https://vk.ru/wall-235320700_2552", // задача 18
+    "https://vk.ru/wall-235320700_2600", // задача 19
+    "https://vk.ru/wall-235320700_2692" // задача 20
 ];
 
 // === НАСТРОЙКИ ===
@@ -43,6 +43,13 @@ const CSV_PATH = "https://docs.google.com/spreadsheets/d/19jdoAIhJZEiLrb0X8VUdf9
                   
 const MAX_STARS = 20;
 const TASKS_PER_STAR = 1;
+const TASKS_START_INDEX = 3;
+const TASKS_COUNT = 20;
+const COMPLETED_HOMEWORKS_INDEX = TASKS_START_INDEX + TASKS_COUNT;
+const CERTIFICATE_EDITOR_PATH_17 = "cert-editor.html";
+const CERTIFICATE_EDITOR_PATH_20 = "cert-editor-20.html";
+const CERTIFICATE_EDITOR_SESSION_KEY = "coursev2-certificate-editor";
+const CERTIFICATE_EDITOR_PAYLOAD_PREFIX = "coursev2-certificate-editor-payload";
 
 // Элементы таймера
 const timerNowEl = document.getElementById("timerNow");
@@ -159,7 +166,8 @@ async function loadCSV() {
 // 0 - ссылка на ВК (profile)
 // 1 - имя участника (name)
 // 2 - ссылка на изображение аватара (avatar)
-// 3..10 - 8 полей заданий (значения пусто / 0 / 1)
+// 3..22 - 20 полей заданий (значения пусто / 0 / 1)
+// 23 - количество выполненных ДЗ
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length <= 1) return [];
@@ -183,9 +191,9 @@ function parseCSV(text) {
     const name = (parts[1] || "").trim();
     const avatar = (parts[2] || "").trim();
 
-    // Собираем 8 полей заданий (индексы 3..10)
+    // Собираем поля заданий.
     const tasks = [];
-    for (let t = 3; t <= 22; t++) {
+    for (let t = TASKS_START_INDEX; t < TASKS_START_INDEX + TASKS_COUNT; t++) {
       const raw = parts[t] !== undefined ? String(parts[t]).trim() : "";
       if (raw === "") {
         tasks.push(null); // пустое поле
@@ -204,8 +212,14 @@ function parseCSV(text) {
     // Если нет имени — пропускаем
     if (!name) continue;
 
-    // Считаем выполненные (единицы)
-    const completed = tasks.reduce((s, v) => s + (v === 1 ? 1 : 0), 0);
+    // Берём количество выполненных ДЗ из отдельного поля CSV.
+    // Если поле пока не заполнено, используем запасной подсчёт по ячейкам заданий.
+    const completedFromTasks = tasks.reduce((s, v) => s + (v === 1 ? 1 : 0), 0);
+    const completedRaw = (parts[COMPLETED_HOMEWORKS_INDEX] || "").trim().replace(/^"(.*)"$/, "$1");
+    const completedParsed = Number(completedRaw);
+    const completed = Number.isFinite(completedParsed) && completedParsed >= 0
+      ? Math.round(completedParsed)
+      : completedFromTasks;
 
     students.push({ profile, name, avatar, tasks, completed });
   }
@@ -361,6 +375,7 @@ function createStudentRow(st) {
   const row = document.createElement("article");
   row.className = "student-row";
   row.tabIndex = 0;
+  row.dataset.studentName = st.name;
 
   // Аватар с ссылкой (profile)
   let avatarCore;
@@ -405,21 +420,31 @@ function createStudentRow(st) {
   // Имя с бонусом за 5 очков
   const nameEl = document.createElement("div");
   nameEl.className = "student-name";
-  
+
+  const nameText = document.createElement("span");
+  nameText.className = "student-name-text";
+
   if (st.completed >= 5) {
     const namePart = document.createElement("span");
     namePart.textContent = st.name;
-    
+
     const crystal = document.createElement("span");
     crystal.className = "crystal-emoji";
     crystal.textContent = " 💎";
-    
-    nameEl.appendChild(namePart);
-    nameEl.appendChild(crystal);
+
+    nameText.appendChild(namePart);
+    nameText.appendChild(crystal);
   } else {
-    nameEl.textContent = st.name;
+    nameText.textContent = st.name;
   }
-  
+
+  nameEl.appendChild(nameText);
+
+  const achievementButtons = createCompletionButtons(st);
+  if (achievementButtons) {
+    nameEl.appendChild(achievementButtons);
+  }
+
   row.appendChild(nameEl);
 
   // Ячейки заданий
@@ -471,6 +496,97 @@ function createStudentRow(st) {
   }
 
   return row;
+}
+
+function createCompletionButtons(student) {
+  let buttonConfig = null;
+  const completed = student.completed;
+
+  if (completed >= 20) {
+    buttonConfig = [{ label: "C20", className: "completion-button completion-button-gold", type: "20" }];
+  } else if (completed >= 17) {
+    buttonConfig = [{ label: "C17", className: "completion-button completion-button-silver", type: "17" }];
+  }
+
+  if (!buttonConfig) return null;
+
+  const wrap = document.createElement("div");
+  wrap.className = "student-achievements";
+
+  buttonConfig.forEach((cfg) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = cfg.className;
+    button.textContent = cfg.label;
+    button.title = `Открыть редактор сертификата ${cfg.label}`;
+    button.setAttribute("aria-label", `Открыть редактор сертификата ${cfg.label} для ${student.name}`);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openCertificateEditor(button, student.name, cfg.type);
+    });
+    wrap.appendChild(button);
+  });
+
+  return wrap;
+}
+
+function openCertificateEditor(triggerButton, fallbackName, certificateType) {
+  const studentName = resolveStudentNameFromRow(triggerButton, fallbackName);
+  let payloadKey = "";
+
+  try {
+    const payload = {
+      name: studentName,
+      type: certificateType,
+      timestamp: Date.now()
+    };
+
+    sessionStorage.setItem(CERTIFICATE_EDITOR_SESSION_KEY, JSON.stringify(payload));
+    payloadKey = `${CERTIFICATE_EDITOR_PAYLOAD_PREFIX}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(payloadKey, JSON.stringify(payload));
+  } catch {
+    // Если storage недоступен, редактор всё равно попробует взять данные из URL.
+  }
+
+  const transportParams = new URLSearchParams({
+    type: certificateType,
+    name: studentName
+  });
+
+  const editorUrl = new URL(getCertificateEditorPath(certificateType), window.location.href);
+  editorUrl.search = transportParams.toString();
+  editorUrl.hash = transportParams.toString();
+  if (payloadKey) {
+    editorUrl.searchParams.set("payload", payloadKey);
+  }
+
+  window.open(editorUrl.toString(), "_blank", "noopener");
+}
+
+function getCertificateEditorPath(certificateType) {
+  return certificateType === "20" ? CERTIFICATE_EDITOR_PATH_20 : CERTIFICATE_EDITOR_PATH_17;
+}
+
+function resolveStudentNameFromRow(triggerButton, fallbackName) {
+  const row = triggerButton ? triggerButton.closest(".student-row") : null;
+  const datasetName = row ? String(row.dataset.studentName || "").trim() : "";
+  if (datasetName) {
+    return datasetName;
+  }
+
+  const nameText = row ? row.querySelector(".student-name-text") : null;
+
+  if (!nameText) {
+    return fallbackName;
+  }
+
+  const rawName = (nameText.textContent || "")
+    .replace(/💎/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return rawName || fallbackName;
 }
 
 // ====== КАРТОЧКА УЧЕНИКА (оставляем для подиума) ======
@@ -729,10 +845,5 @@ function initPodium3D() {
 }
 
 initPodium3D();
-
-
-
-
-
 
 
