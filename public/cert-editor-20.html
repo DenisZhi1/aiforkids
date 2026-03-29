@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Редактор сертификата С20</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:wght@100..900&family=Montserrat:wght@100..900&family=Sofia+Sans+Condensed:wght@100..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="cert-editor-20.css" />
+  <script defer src="cert-editor-20.js"></script>
+</head>
+<body>
+  <div class="editor-shell">
+    <header class="editor-header">
+      <div class="editor-heading">
+        <h1 id="editorTitle">Редактор сертификата С20</h1>
+        <p id="editorSubtitle">Загружаем шаблон…</p>
+      </div>
+      <button id="downloadButton" class="download-button" type="button" disabled>Скачать PNG</button>
+    </header>
+
+    <main class="editor-layout">
+      <aside class="editor-sidebar">
+        <section class="editor-panel">
+          <h2>Имя</h2>
+
+          <label class="field">
+            <span>Имя</span>
+            <input id="nameInput" type="text" autocomplete="name" />
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>X</span>
+              <input id="nameXInput" type="number" step="1" />
+            </label>
+
+            <label class="field">
+              <span>Y</span>
+              <input id="nameYInput" type="number" step="1" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Тип шрифта</span>
+            <select id="nameFontInput"></select>
+          </label>
+
+          <div class="field">
+            <div class="field-header">
+              <span>Жирность шрифта</span>
+              <strong id="nameWeightValue" class="field-value">400</strong>
+            </div>
+            <input id="nameWeightInput" class="range-slider" type="range" min="100" max="900" step="1" value="400" />
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <span>Размер шрифта</span>
+              <strong id="nameSizeValue" class="field-value">147</strong>
+            </div>
+            <input id="nameSizeInput" class="range-slider" type="range" min="12" max="240" step="1" value="147" />
+          </div>
+        </section>
+
+        <section class="editor-panel">
+          <h2>Дата</h2>
+
+          <label class="field">
+            <span>Дата</span>
+            <input id="dateInput" type="text" inputmode="numeric" />
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>X</span>
+              <input id="dateXInput" type="number" step="1" />
+            </label>
+
+            <label class="field">
+              <span>Y</span>
+              <input id="dateYInput" type="number" step="1" />
+            </label>
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <span>Размер шрифта</span>
+              <strong id="dateSizeValue" class="field-value">50</strong>
+            </div>
+            <input id="dateSizeInput" class="range-slider" type="range" min="12" max="160" step="1" value="50" />
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <span>Жирность шрифта</span>
+              <strong id="dateWeightValue" class="field-value">400</strong>
+            </div>
+            <input id="dateWeightInput" class="range-slider" type="range" min="100" max="900" step="1" value="400" />
+          </div>
+        </section>
+      </aside>
+
+      <section class="editor-stage">
+        <div class="stage-toolbar">
+          <span id="statusMessage" class="status-message">Подготавливаем предпросмотр…</span>
+        </div>
+        <div class="canvas-scroller">
+          <canvas id="certificateCanvas"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="celebrationModal" class="celebration-modal" aria-hidden="true">
+    <div class="celebration-backdrop" data-modal-close="true"></div>
+    <div class="celebration-dialog" role="dialog" aria-modal="true" aria-labelledby="celebrationTitle">
+      <button id="celebrationCloseButton" class="celebration-close" type="button" aria-label="Закрыть поздравление">×</button>
+      <div class="celebration-glow"></div>
+      <p class="celebration-kicker">Сертификат уже у вас</p>
+      <h2 id="celebrationTitle" class="celebration-title">ТОРЖЕСТВЕННО ПОЗДРАВЛЯЮ!!</h2>
+      <div class="celebration-body">
+        <p>Вы сделали это! Вы просто не представляете, насколько сильно я вами горжусь. Вы проделали такой сложный путь, проявили невероятную выдержку и усидчивость. Обнимаю изо всех сил!</p>
+        <p>Желаю вам творческих свершений и очередных подвигов! А еще прошу от вас оставить отзыв и еще был бы несказанно рад, если похвастаетесь вашими наработками в соцсети. Напишите пост, оставьте тег <strong>#AI_DEAL</strong>, можете и меня отметить, приду еще раз вас нахвалю!</p>
+        <p>Увидимся в следующих проектах!</p>
+      </div>
+      <a
+        class="celebration-cta"
+        href="https://vk.ru/wall-137991294_66385"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>Оставить отзыв</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
