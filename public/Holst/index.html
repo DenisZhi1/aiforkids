@@ -1,0 +1,52 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="cursor.css" />
+  <meta charset="utf-8" />
+  <title>Прогресс учеников</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
+  <script defer src="app.js"></script>
+  <script defer src="cursorjs.js"></script>
+</head>
+<body>
+  <canvas id="cursorCanvas" aria-hidden="true"></canvas>
+  <header>
+    <div>
+      <h1 style="text-align:center; width:100%;">Прогресс участников курса</h1>
+      <span class="course-subtitle">Холст с нуля</span>
+    </div>
+    
+  </header>
+
+  <main>
+    <!-- ЛИДЕРЫ -->
+    <section class="leaders">
+  	<h2>ТОП-3</h2>
+  	<div id="podium" class="podium"></div>
+    </section>
+  
+    <!-- ПОИСК -->
+    <div class="search-wrap">
+  	<input
+  	  id="searchInput"
+  	  type="search"
+  	  placeholder="Найти себя по фамилии или имени…"
+  	  aria-label="Поиск ученика по имени"
+  	/>
+    </div>
+  
+    <!-- ОСНОВНАЯ СЕТКА -->
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty" style="display:none;">
+  	Пока нет ни одной записи или ничего не найдено по запросу. Попробуйте поменять текст поиска.
+    </div>
+	
+	<div id="status" style="text-align:center; margin-top:30px; color:#9ca3af;">
+	  Загружаю данные…
+	</div>
+  </main>
+</body>
+</html>

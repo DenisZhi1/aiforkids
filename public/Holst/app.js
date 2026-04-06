@@ -1,0 +1,829 @@
+﻿// === ДЕДЛАЙНЫ (здесь добавляйте свои даты) ===
+// Формат: { title: "Задание 1", iso: "YYYY-MM-DDTHH:mm:ss+03:00" }
+// Рекомендуется указывать часовой пояс +03:00, чтобы парсинг был однозначен.
+const DEADLINES = [
+
+    { title: "Задание 10", iso: "2026-03-01T23:59:59+03:00" },
+    { title: "Задание 15", iso: "2026-03-15T23:59:59+03:00" },
+    { title: "Задание 20", iso: "2026-03-29T23:59:59+03:00" }
+  // Пример:
+  // { title: "Задание 1", iso: "2026-01-20T23:59:59+03:00" },
+  // { title: "Задание 2", iso: "2026-02-01T18:00:00+03:00" }
+];
+
+// === ССЫЛКИ НА ЗАДАНИЯ (вставьте сюда ваши URL)
+// Порядок: TASK_LINKS[0] — ссылка для задания 1, TASK_LINKS[1] — для задания 2 и т.д.
+const TASK_LINKS = [
+    "https://vk.com/wall-235320700_15", // задача 1
+    "https://vk.com/wall-235320700_149", // задача 2
+    "https://vk.com/wall-235320700_282", // задача 3
+    "https://vk.com/wall-235320700_413", // задача 4
+    "https://vk.com/wall-235320700_558", // задача 5
+    "https://vk.ru/wall-235320700_978", // задача 6
+    "https://vk.ru/wall-235320700_1089", // задача 7
+    "https://vk.ru/wall-235320700_1129", // задача 8npx
+    "https://vk.ru/wall-235320700_1249", // задача 9
+    "https://vk.ru/wall-235320700_1363", // задача 10
+    "https://vk.ru/wall-235320700_1757", // задача 11
+    "https://vk.ru/wall-235320700_1890", // задача 12
+    "https://vk.ru/wall-235320700_1923", // задача 13
+    "https://vk.ru/wall-235320700_1953", // задача 14
+    "https://vk.ru/wall-235320700_2117", // задача 15
+    "https://vk.ru/wall-235320700_2430",  // задача 16
+    "https://vk.ru/wall-235320700_2497", // задача 17
+    "https://vk.ru/wall-235320700_2552", // задача 18
+    "https://vk.ru/wall-235320700_2600", // задача 19
+    "https://vk.ru/wall-235320700_2692" // задача 20
+];
+
+// === НАСТРОЙКИ ===
+//const CSV_PATH = "https://docs.google.com/spreadsheets/d/1JJfgxFl6FczKSOeSQHRk20A-iQk83buj1fgbgPbRiVU/export?format=csv&gid=613453476";
+//const CSV_PATH = "https://docs.google.com/spreadsheets/d/19jdoAIhJZEiLrb0X8VUdf98yEKZh-0hNdqsqoX2KOek/export?format=csv&gid=613453476";
+const CSV_PATH = "https://docs.google.com/spreadsheets/d/1bOo3z9puN5KY0QcBUTxIqwKl8FbCnmkynpwQlQ37-mw/export?format=csv&gid=613453476";
+
+
+                  
+const MAX_STARS = 8;
+const TASKS_PER_STAR = 1;
+const TASKS_START_INDEX = 3;
+const TASKS_COUNT = 8;
+const CERTIFICATE_EDITOR_PATH_17 = "cert-editor.html";
+const CERTIFICATE_EDITOR_PATH_20 = "cert-editor-20.html";
+const CERTIFICATE_EDITOR_SESSION_KEY = "coursev2-certificate-editor";
+const CERTIFICATE_EDITOR_PAYLOAD_PREFIX = "coursev2-certificate-editor-payload";
+
+const statusEl = document.getElementById("status");
+const gridEl = document.getElementById("grid");
+const emptyEl = document.getElementById("empty");
+const podiumEl = document.getElementById("podium");
+const searchInput = document.getElementById("searchInput");
+
+let allStudents = [];
+
+// ====== ЗАГРУЗКА CSV ======
+async function loadCSV() {
+  try {
+    statusEl.textContent = "Загружаю данные из CSV…";
+    const res = await fetch(CSV_PATH);
+    if (!res.ok) {
+      throw new Error("Не получилось загрузить CSV: " + res.status);
+    }
+
+    const text = await res.text();
+    console.log("CSV текст:", text.slice(0, 200));
+    const students = parseCSV(text);
+    allStudents = students;
+
+    if (students.length === 0) {
+      statusEl.textContent = "Записей пока нет.";
+    } else {
+      statusEl.textContent = "Загружено участников: " + students.length;
+    }
+
+    renderAll();
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "Ошибка загрузки данных. Не удалось получить данные из таблицы.";
+    gridEl.innerHTML = "";
+    if (podiumEl) podiumEl.innerHTML = "";
+    emptyEl.style.display = "block";
+  }
+}
+
+// ====== ПАРСЕР CSV ======
+// Новая структура CSV (позиции колонок):
+// 0 - ссылка на ВК (profile)
+// 1 - имя участника (name)
+// 2 - ссылка на изображение аватара (avatar)
+// 3..10 - 8 отображаемых полей заданий (значения пусто / 0 / 1)
+// количество выполненных ДЗ считаем по этим 8 полям, чтобы награды и подсветка
+// всегда совпадали с тем, что видно в карточке участника
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length <= 1) return [];
+
+  // Пробуем определить, есть ли заголовок и пропустить его.
+  const maybeHeader = lines[0].toLowerCase();
+  const hasHeader = maybeHeader.includes("vk") || maybeHeader.includes("имя") || maybeHeader.includes("avatar") || maybeHeader.includes("avatar");
+  const startIndex = hasHeader ? 1 : 0;
+
+  const students = [];
+
+  for (let i = startIndex; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    // Простой CSV-split (в текущем проекте уже используется аналогичная логика).
+    // Если в будущем появятся кавычки/запятые в полях — нужно заменить на robust CSV parser.
+    const parts = line.split(",");
+
+    const profile = (parts[0] || "").trim();
+    const name = (parts[1] || "").trim();
+    const avatar = (parts[2] || "").trim();
+
+    // Собираем поля заданий.
+    const tasks = [];
+    for (let t = TASKS_START_INDEX; t < TASKS_START_INDEX + TASKS_COUNT; t++) {
+      const raw = parts[t] !== undefined ? String(parts[t]).trim() : "";
+      if (raw === "") {
+        tasks.push(null); // пустое поле
+      } else if (raw === "0") {
+        tasks.push(0);
+      } else if (raw === "1") {
+        tasks.push(1);
+      } else {
+        // Если приходит число в виде ' 1 ' или '1.0' — попытаемся привести
+        const n = Number(raw);
+        if (!Number.isNaN(n) && (n === 0 || n === 1)) tasks.push(n);
+        else tasks.push(null);
+      }
+    }
+
+    // Если нет имени — пропускаем
+    if (!name) continue;
+
+    // Считаем количество выполненных ДЗ по 8 отображаемым заданиям.
+    // Так логика наград всегда синхронизирована с тем, что видно в интерфейсе.
+    const completedFromTasks = tasks.reduce((s, v) => s + (v === 1 ? 1 : 0), 0);
+    const completed = completedFromTasks;
+
+    students.push({ profile, name, avatar, tasks, completed });
+  }
+
+  return students;
+}
+
+// ====== ГЛАВНЫЙ РЕНДЕР (топ-3 + список) ======
+function renderAll(filterText = "") {
+  const q = filterText.trim().toLowerCase();
+
+  // 1) Подиум всегда считаем по всем ученикам
+  if (!allStudents || allStudents.length === 0) {
+    renderPodium([]);
+  } else {
+    const sortedByScoreAll = allStudents
+      .slice()
+      .sort((a, b) => {
+        if (b.completed !== a.completed) return b.completed - a.completed;
+        return a.name.localeCompare(b.name, "ru");
+      });
+
+    // ВАЖНО: выбираем не просто первые 3, а случайных людей из группы с наибольшим количеством сданных работ.
+    const top3All = pickRandomTop3ByScore(sortedByScoreAll);
+    renderPodium(top3All);
+  }
+
+  // 2) Список ниже — с фильтром
+  let filtered = allStudents.slice();
+
+  if (q) {
+    filtered = filtered.filter(st =>
+      st.name.toLowerCase().includes(q)
+    );
+  }
+
+  if (filtered.length === 0) {
+    gridEl.innerHTML = "";
+    emptyEl.style.display = "block";
+    return;
+  } else {
+    emptyEl.style.display = "none";
+  }
+
+  // Список по алфавиту
+  const listSorted = filtered.slice().sort((a, b) =>
+    a.name.localeCompare(b.name, "ru")
+  );
+
+  renderGrid(listSorted);
+}
+
+/**
+ * Выбрать до 3 участников случайным образом, отдавая приоритет участникам
+ * с наибольшим количеством сданных работ. Алгоритм:
+ * - Группируем участников по completed (по убыванию).
+ * - Берём группы по одной, перемешиваем группу и добавляем участников, пока не набрали 3.
+ * - Если после лучших групп меньше 3 — продолжаем со следующими группами.
+ */
+function pickRandomTop3ByScore(sortedDescStudents) {
+  if (!sortedDescStudents || sortedDescStudents.length === 0) return [];
+
+  // Группируем по completed (sortedDescStudents уже отсортирован по completed desc)
+  const groups = [];
+  let currentScore = null;
+  let currentGroup = [];
+  for (const s of sortedDescStudents) {
+    if (currentScore === null) {
+      currentScore = s.completed;
+      currentGroup = [s];
+    } else if (s.completed === currentScore) {
+      currentGroup.push(s);
+    } else {
+      groups.push({ score: currentScore, items: currentGroup.slice() });
+      currentScore = s.completed;
+      currentGroup = [s];
+    }
+  }
+  if (currentGroup.length > 0) groups.push({ score: currentScore, items: currentGroup.slice() });
+
+  const result = [];
+  for (const g of groups) {
+    // Перемешиваем группу (Fisher-Yates)
+    shuffleArray(g.items);
+    for (const item of g.items) {
+      if (result.length < 3) result.push(item);
+      else break;
+    }
+    if (result.length >= 3) break;
+  }
+
+  return result;
+}
+
+// Простой in-place Fisher-Yates shuffle
+function shuffleArray(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+}
+
+
+/* ====== ПОДИУМ (топ-3) ======
+   renderPodiumостаётся без изменений и корректно отрисует
+   результаты, даже если top3 содержит < 3 элементов.
+*/
+function renderPodium(top3) {
+  if (!podiumEl) return;
+  podiumEl.innerHTML = "";
+
+  if (!top3 || top3.length === 0) {
+    const msg = document.createElement("div");
+    msg.className = "meta";
+    msg.textContent = "Пока недостаточно данных для отображения лидеров.";
+    podiumEl.appendChild(msg);
+    return;
+  }
+
+  const positions = [
+    { index: 1, className: "silver", place: 2 },
+    { index: 0, className: "gold",   place: 1 },
+    { index: 2, className: "bronze", place: 3 }
+  ];
+
+  positions.forEach(pos => {
+    const st = top3[pos.index];
+    if (!st) return;
+
+    const card = createStudentCard(st);
+    card.classList.add("podium-card", pos.className);
+
+    const badge = document.createElement("div");
+    badge.className = "place-badge";
+    badge.textContent = pos.place + " место";
+    card.appendChild(badge);
+
+    podiumEl.appendChild(card);
+  });
+}
+
+// ====== СЕТКА (Табличные строки пользователей) ======
+function renderGrid(students) {
+  gridEl.innerHTML = "";
+  students.forEach(st => {
+    const row = createStudentRow(st);
+    gridEl.appendChild(row);
+  });
+}
+
+// ====== СТРОКА УЧЕНИКА (новая) ======
+function createStudentRow(st) {
+  const row = document.createElement("article");
+  row.className = "student-row";
+  row.tabIndex = 0;
+  row.dataset.studentName = st.name;
+
+  // Аватар с ссылкой (profile)
+  let avatarCore;
+  if (st.avatar) {
+    const img = document.createElement("img");
+    img.src = st.avatar;
+    img.alt = st.name + " — аватар";
+    img.className = "student-avatar-img";
+    avatarCore = img;
+  } else {
+    const div = document.createElement("div");
+    div.className = "student-avatar-fallback";
+    div.textContent = getInitials(st.name);
+    avatarCore = div;
+  }
+
+  let avatarWrapper;
+  if (st.profile) {
+    const a = document.createElement("a");
+    a.href = st.profile;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "student-avatar-link";
+    a.appendChild(avatarCore);
+    avatarWrapper = a;
+  } else {
+    const wrap = document.createElement("div");
+    wrap.className = "student-avatar-link";
+    wrap.appendChild(avatarCore);
+    avatarWrapper = wrap;
+  }
+
+  // Применяем класс для рамки аватара по количеству очков
+  if (st.completed >= 6) {
+    avatarWrapper.classList.add("avatar-golden");
+  } else if (st.completed >= 4) {
+    avatarWrapper.classList.add("avatar-silver");
+  }
+
+  const summaryEl = document.createElement("div");
+  summaryEl.className = "student-summary";
+  summaryEl.appendChild(avatarWrapper);
+
+  const contentEl = document.createElement("div");
+  contentEl.className = "student-main";
+
+  // Имя с бонусом за 2 выполненных задания
+  const nameEl = document.createElement("div");
+  nameEl.className = "student-name";
+
+  const nameText = document.createElement("span");
+  nameText.className = "student-name-text";
+
+  if (st.completed >= 2) {
+    const namePart = document.createElement("span");
+    namePart.textContent = st.name;
+
+    const crystal = document.createElement("span");
+    crystal.className = "crystal-emoji";
+    crystal.textContent = " 💎";
+
+    nameText.appendChild(namePart);
+    nameText.appendChild(crystal);
+  } else {
+    nameText.textContent = st.name;
+  }
+
+  nameEl.appendChild(nameText);
+
+  contentEl.appendChild(nameEl);
+
+  const progressEl = createStudentProgress(st.completed);
+  contentEl.appendChild(progressEl);
+
+  summaryEl.appendChild(contentEl);
+  row.appendChild(summaryEl);
+
+  // Ячейки заданий
+  const tasksWrap = document.createElement("div");
+  tasksWrap.className = "tasks-cells";
+
+  st.tasks.forEach((val, idx) => {
+    const label = String(idx + 1);
+    const href = TASK_LINKS[idx] && TASK_LINKS[idx].trim() !== "" ? TASK_LINKS[idx].trim() : null;
+
+    let cellEl;
+    if (href) {
+      const a = document.createElement("a");
+      a.className = "task-cell task-link";
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = label;
+      cellEl = a;
+    } else {
+      const div = document.createElement("div");
+      div.className = "task-cell";
+      div.textContent = label;
+      cellEl = div;
+    }
+
+    const statusText = val === 1 ? "выполнено" : val === 0 ? "не выполнено" : "нет данных";
+    cellEl.setAttribute("role", "img");
+    cellEl.setAttribute("aria-label", `Задание ${idx + 1}: ${statusText}`);
+    cellEl.title = `Задание ${idx + 1}: ${statusText}`;
+
+    if (val === null) {
+      cellEl.classList.add("cell-empty");
+    } else if (val === 0) {
+      cellEl.classList.add("cell-zero");
+    } else if (val === 1) {
+      cellEl.classList.add("cell-one");
+    } else {
+      cellEl.classList.add("cell-empty");
+    }
+
+    tasksWrap.appendChild(cellEl);
+  });
+
+  row.appendChild(tasksWrap);
+
+  const achievementButtons = createCompletionButtons(st);
+  if (achievementButtons) {
+    row.appendChild(achievementButtons);
+  }
+
+  if (st.completed === TASKS_COUNT) {
+    row.classList.add("completed-all");
+  }
+
+  return row;
+}
+
+function createStudentProgress(completed) {
+  const progress = document.createElement("div");
+  progress.className = "student-progress";
+
+  if (completed >= TASKS_COUNT) {
+    progress.classList.add("is-complete");
+  } else if (completed >= 6) {
+    progress.classList.add("is-golden");
+  } else if (completed >= 4) {
+    progress.classList.add("is-silver");
+  }
+
+  const percent = Math.round((completed / TASKS_COUNT) * 100);
+
+  const meta = document.createElement("div");
+  meta.className = "student-progress-meta";
+
+  const count = document.createElement("span");
+  count.className = "student-progress-count";
+  count.textContent = `${completed} из ${TASKS_COUNT} заданий`;
+
+  const percentEl = document.createElement("span");
+  percentEl.className = "student-progress-percent";
+  percentEl.textContent = `${percent}%`;
+
+  meta.appendChild(count);
+  meta.appendChild(percentEl);
+
+  const track = document.createElement("div");
+  track.className = "student-progress-track";
+  track.setAttribute("role", "progressbar");
+  track.setAttribute("aria-valuemin", "0");
+  track.setAttribute("aria-valuemax", String(TASKS_COUNT));
+  track.setAttribute("aria-valuenow", String(completed));
+  track.setAttribute("aria-label", `Прогресс по заданиям: ${completed} из ${TASKS_COUNT}, ${percent}%`);
+
+  const fill = document.createElement("div");
+  fill.className = "student-progress-fill";
+  fill.style.width = `${percent}%`;
+
+  track.appendChild(fill);
+  progress.appendChild(meta);
+  progress.appendChild(track);
+
+  return progress;
+}
+
+function createCompletionButtons(student) {
+  const completed = student.completed;
+
+  const buttonConfig = completed === TASKS_COUNT
+    ? [{ label: "Получить сертификат", className: "completion-button completion-button-gold certificate-button", type: "20" }]
+    : null;
+
+  if (!buttonConfig) return null;
+
+  const wrap = document.createElement("div");
+  wrap.className = "student-achievements";
+
+  buttonConfig.forEach((cfg) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = cfg.className;
+    button.textContent = cfg.label;
+    button.title = `Открыть редактор сертификата ${cfg.label}`;
+    button.setAttribute("aria-label", `Открыть редактор сертификата ${cfg.label} для ${student.name}`);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openCertificateEditor(button, student.name, cfg.type);
+    });
+    wrap.appendChild(button);
+  });
+
+  return wrap;
+}
+
+function openCertificateEditor(triggerButton, fallbackName, certificateType) {
+  const studentName = resolveStudentNameFromRow(triggerButton, fallbackName);
+  let payloadKey = "";
+
+  try {
+    const payload = {
+      name: studentName,
+      type: certificateType,
+      timestamp: Date.now()
+    };
+
+    sessionStorage.setItem(CERTIFICATE_EDITOR_SESSION_KEY, JSON.stringify(payload));
+    payloadKey = `${CERTIFICATE_EDITOR_PAYLOAD_PREFIX}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem(payloadKey, JSON.stringify(payload));
+  } catch {
+    // Если storage недоступен, редактор всё равно попробует взять данные из URL.
+  }
+
+  const transportParams = new URLSearchParams({
+    type: certificateType,
+    name: studentName
+  });
+
+  const editorUrl = new URL(getCertificateEditorPath(certificateType), window.location.href);
+  editorUrl.search = transportParams.toString();
+  editorUrl.hash = transportParams.toString();
+  if (payloadKey) {
+    editorUrl.searchParams.set("payload", payloadKey);
+  }
+
+  window.open(editorUrl.toString(), "_blank", "noopener");
+}
+
+function getCertificateEditorPath(certificateType) {
+  return certificateType === "20" ? CERTIFICATE_EDITOR_PATH_20 : CERTIFICATE_EDITOR_PATH_17;
+}
+
+function resolveStudentNameFromRow(triggerButton, fallbackName) {
+  const row = triggerButton ? triggerButton.closest(".student-row") : null;
+  const datasetName = row ? String(row.dataset.studentName || "").trim() : "";
+  if (datasetName) {
+    return datasetName;
+  }
+
+  const nameText = row ? row.querySelector(".student-name-text") : null;
+
+  if (!nameText) {
+    return fallbackName;
+  }
+
+  const rawName = (nameText.textContent || "")
+    .replace(/💎/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return rawName || fallbackName;
+}
+
+// ====== КАРТОЧКА УЧЕНИКА (оставляем для подиума) ======
+function createStudentCard(st) {
+  const card = document.createElement("article");
+  card.className = "card";
+
+  const wrap = document.createElement("div");
+  wrap.className = "avatar-wrap";
+
+  const avatarEl = createAvatarElement(st);
+
+  const starsRing = document.createElement("div");
+  starsRing.className = "stars-ring";
+  placeStars(starsRing, st.completed);
+
+  wrap.appendChild(avatarEl);
+  wrap.appendChild(starsRing);
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "name";
+
+  const parts = st.name.split(" ").filter(Boolean);
+  const firstName = parts[0] || "";
+  const lastName = parts.slice(1).join(" ") || "";
+
+  nameEl.innerHTML = `
+    <div>${firstName}</div>
+    <div>${lastName}</div>
+  `;
+
+  const metaEl = document.createElement("div");
+  metaEl.className = "meta";
+  metaEl.innerHTML = `Выполнено заданий: <strong>${st.completed}</strong>`;
+
+  card.appendChild(wrap);
+  card.appendChild(nameEl);
+  card.appendChild(metaEl);
+
+  return card;
+}
+
+// ====== АВАТАР ======
+function createAvatarElement(st) {
+  let core;
+  if (st.avatar) {
+    const img = document.createElement("img");
+    img.src = st.avatar;
+    img.alt = st.name;
+    img.className = "avatar";
+    core = img;
+  } else {
+    const div = document.createElement("div");
+    div.className = "avatar";
+    div.textContent = getInitials(st.name);
+    core = div;
+  }
+
+  if (st.profile) {
+    const link = document.createElement("a");
+    link.href = st.profile;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.className = "avatar-link";
+    link.appendChild(core);
+    return link;
+  }
+
+  return core;
+}
+
+// ====== ВСПОМОГАТЕЛЬНЫЕ ======
+function getInitials(fullName) {
+  const parts = fullName.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+// ====== ЗВЁЗДЫ ======
+function placeStars(container, completed) {
+  container.innerHTML = "";
+  if (completed <= 0) return;
+
+  const big = Math.floor(completed / 5);
+  const small = completed % 5;
+
+  const bigRadius = 42;
+  const smallRadius = 38;
+  const bigSize = 20;
+  const smallSize = 12;
+
+  const toRad = (deg) => deg * Math.PI / 180;
+
+  // верхняя дуга — большие
+  if (big > 0) {
+    const startTop = -160;
+    const endTop   = -20;
+    const stepTop = (endTop - startTop) / (big + 1);
+
+    for (let i = 0; i < big; i++) {
+      const angleDeg = startTop + stepTop * (i + 1);
+      const angle = toRad(angleDeg);
+
+      const x = bigRadius * Math.cos(angle);
+      const y = bigRadius * Math.sin(angle);
+
+      const star = document.createElement("span");
+      star.className = "star";
+      star.textContent = "★";
+      star.style.fontSize = bigSize + "px";
+      star.style.transform =
+        `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+      container.appendChild(star);
+    }
+  }
+
+  // нижняя дуга — маленькие
+  if (small > 0) {
+    const startBottom = 20;
+    const endBottom   = 160;
+    const stepBottom = (endBottom - startBottom) / (small + 1);
+
+    for (let i = 0; i < small; i++) {
+      const angleDeg = startBottom + stepBottom * (i + 1);
+      const angle = toRad(angleDeg);
+
+      const x = smallRadius * Math.cos(angle);
+      const y = smallRadius * Math.sin(angle);
+
+      const star = document.createElement("span");
+      star.className = "star";
+      star.textContent = "★";
+      star.style.fontSize = smallSize + "px";
+      star.style.transform =
+        `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+
+      container.appendChild(star);
+    }
+  }
+}
+
+
+
+// ====== ПОИСК ======
+if (searchInput) {
+  searchInput.addEventListener("input", (e) => {
+    renderAll(e.target.value);
+  });
+}
+
+// Старт
+loadCSV();
+
+// Podium mouse reactive 3D tilt
+function initPodium3D() {
+  if (!podiumEl) return;
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const MAX_TILT_X = 18;
+  const MAX_TILT_Y = 20;
+  const IDLE_X = 12;
+
+  let activeCard = null;
+  let rafId = null;
+  let lastEvent = null;
+
+  const getBaseTransform = (card) => {
+    if (card.classList.contains("gold")) return "translateY(-10px) scale(1.05)";
+    if (card.classList.contains("bronze")) return "translateY(2px) scale(1)";
+    return "translateY(0px) scale(1)";
+  };
+
+  const getIdleY = (card) => {
+    if (card.classList.contains("silver")) return -8;
+    if (card.classList.contains("bronze")) return 8;
+    return 0;
+  };
+
+  const applyTransform = (card, rx, ry) => {
+    const base = getBaseTransform(card);
+    const idleY = getIdleY(card);
+    card.style.transform = `${base} perspective(900px) rotateX(${IDLE_X + rx}deg) rotateY(${idleY + ry}deg)`;
+  };
+
+  const setNeutral = (card) => {
+    if (!card) return;
+    applyTransform(card, 0, 0);
+    card.style.setProperty("--mx", "50%");
+    card.style.setProperty("--my", "50%");
+    card.classList.remove("is-tilting");
+  };
+
+  const applyTilt = () => {
+    rafId = null;
+    if (!activeCard || !lastEvent) return;
+
+    const r = activeCard.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+
+    const x = clamp(lastEvent.clientX - r.left, 0, r.width);
+    const y = clamp(lastEvent.clientY - r.top, 0, r.height);
+    const nx = (x / r.width) - 0.5;
+    const ny = (y / r.height) - 0.5;
+
+    const rx = Number((-ny * MAX_TILT_X).toFixed(2));
+    const ry = Number((nx * MAX_TILT_Y).toFixed(2));
+
+    applyTransform(activeCard, rx, ry);
+    activeCard.style.setProperty("--mx", ((x / r.width) * 100).toFixed(2) + "%");
+    activeCard.style.setProperty("--my", ((y / r.height) * 100).toFixed(2) + "%");
+    activeCard.classList.add("is-tilting");
+  };
+
+  const queueTilt = () => {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(applyTilt);
+  };
+
+  podiumEl.addEventListener("pointermove", (e) => {
+    const card = e.target.closest(".podium-card");
+    if (!card || !podiumEl.contains(card)) {
+      if (activeCard) clearActive();
+      return;
+    }
+    if (e.pointerType === "touch") return;
+
+    if (activeCard && activeCard !== card) setNeutral(activeCard);
+    activeCard = card;
+    lastEvent = e;
+    queueTilt();
+  });
+
+  const clearActive = () => {
+    if (activeCard) setNeutral(activeCard);
+    activeCard = null;
+    lastEvent = null;
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  };
+
+  podiumEl.addEventListener("pointercancel", clearActive);
+  podiumEl.addEventListener("pointerleave", clearActive);
+
+  const prepareCards = () => {
+    podiumEl.querySelectorAll(".podium-card").forEach((card) => setNeutral(card));
+  };
+
+  prepareCards();
+  const observer = new MutationObserver(prepareCards);
+  observer.observe(podiumEl, { childList: true });
+}
+
+initPodium3D();
+
+
