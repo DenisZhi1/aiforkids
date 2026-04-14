@@ -15,13 +15,13 @@ const DEADLINES = [
 // Порядок: TASK_LINKS[0] — ссылка для задания 1, TASK_LINKS[1] — для задания 2 и т.д.
 const TASK_LINKS = [
     "https://vk.ru/wall-237258138_4", // задача 1
-    "https://vk.ru/club237258138", // задача 2
-    "https://vk.ru/club237258138", // задача 3
-    "https://vk.ru/club237258138", // задача 4
-    "https://vk.ru/club237258138", // задача 5
+    "https://vk.ru/wall-237258138_86", // задача 2
+    "https://vk.ru/wall-237258138_182", // задача 3
+    "https://vk.ru/wall-237258138_334", // задача 4
+    "https://vk.ru/wall-237258138_574", // задача 5
     "https://vk.ru/club237258138", // задача 6
     "https://vk.ru/club237258138", // задача 7
-    "https://vk.ru/club237258138", // задача 8npx
+    "https://vk.ru/club237258138", // задача 8
 ];
 
 // === НАСТРОЙКИ ===
