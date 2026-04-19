@@ -6,7 +6,7 @@ const CERTIFICATE_TYPE = "20";
 const TEMPLATE_CONFIG = {
   title: "Редактор сертификата С20",
   subtitle: "Отдельная dev-версия для участников с 20 выполненными заданиями",
-  imagePath: "cert/20.png",
+  imagePath: "cert/holst.png",
   storageKey: `cert-editor-20-${CERTIFICATE_EDITOR_STATE_VERSION}`,
   defaults: {
     nameX: 1377,
