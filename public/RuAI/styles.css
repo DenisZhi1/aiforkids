@@ -29,6 +29,8 @@ body {
 }
 
 header {
+    position: relative;
+    z-index: 1;
     padding: 16px 20px;
     border-bottom: 1px solid #0d3529;
     display: flex;
@@ -73,6 +75,8 @@ header {
     }
 
 main {
+    position: relative;
+    z-index: 1;
     padding: 16px 20px 32px;
     max-width: 1100px;
     width: 100%;

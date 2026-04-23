@@ -14,7 +14,7 @@
     mix-blend-mode: screen;
   }
 
-  body > *:not(#cursorCanvas) {
+  body > *:not(#cursorCanvas):not(#__starfield_canvas__) {
     position: relative;
     z-index: 1;
   }
