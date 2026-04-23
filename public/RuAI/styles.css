@@ -1,0 +1,881 @@
+﻿:root {
+    --bg: #04141a;
+    --card-bg: #0b1f24;
+    --accent: #10b981;          /* изумрудно-зелёный (основной) */
+    --accent-soft: #34d399;     /* светлый изумрудный */
+    --accent-glow: #6ee7b7;     /* мятный для свечения */
+    --purple: #a855f7;          /* фиолетовый (премиум/лидеры) */
+    --purple-soft: #c084fc;
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --star: #a855f7;            /* звёзды теперь фиолетовые */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(ellipse at 20% 30%, #0a2540 0%, #072820 45%, #041a18 100%);
+    color: #e0fff1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-attachment: fixed;
+}
+
+header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #0d3529;
+    display: flex;
+    flex-direction: column; /* <- вертикально */
+    justify-content: center;
+    align-items: center; /* <- горизонтально центр */
+    gap: 4px;
+    text-align: center;
+}
+
+    header h1 {
+        font-family: "Press Start 2P", monospace;
+        letter-spacing: 1px;
+        text-shadow: 0 0 8px rgba(110, 231, 183, 0.55);
+        font-size: 2rem;
+        font-weight: 600;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+
+    header span {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .course-subtitle {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 1rem;
+        line-height: 1.4;
+        letter-spacing: 0.08em;
+        color: #eafff5;
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.85) 0%, rgba(5, 150, 105, 0.9) 100%);
+        border: 1px solid rgba(110, 231, 183, 0.55);
+        box-shadow: 0 0 22px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+        text-shadow: 0 0 10px rgba(110, 231, 183, 0.4);
+    }
+
+main {
+    padding: 16px 20px 32px;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+#status {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+    background: rgba(11, 31, 36, 0.75);
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4), 0 0 10px rgba(16, 185, 129, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+    .card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(110, 231, 183, 0.85);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 16px rgba(16, 185, 129, 0.55);
+    }
+
+/* Новые анимации для строк участников */
+@keyframes row-pulse-emerald {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 6px rgba(16, 185, 129, 0.18);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes row-pulse-purple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+  }
+  50% {
+    box-shadow: 0 0 26px 10px rgba(168, 85, 247, 0.22);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+  }
+}
+
+.avatar-wrap {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ссылка вокруг аватарки */
+.avatar-link {
+    display: block;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+}
+
+/* круглый аватар (и для div, и для img) */
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 30% 20%, #34d399, #059669);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #04141a;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.avatar-wrap img.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.stars-ring {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: var(--star);
+    text-shadow: 0 0 6px rgba(168, 85, 247, 0.85);
+}
+
+.name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+    .meta strong {
+        color: var(--accent);
+        font-weight: 600;
+    }
+
+.empty {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    main {
+        padding: 12px 12px 24px;
+    }
+
+    .course-subtitle {
+        font-size: 0.82rem;
+        padding: 7px 12px;
+    }
+}
+
+.leaders {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+    .leaders h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 25px;
+    }
+
+.podium {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+    /* карточки лидеров используют тот же .card, но с модификацией */
+    .podium .card {
+        min-width: 150px;
+        max-width: 180px;
+        position: relative;
+    }
+
+        /* подиум: серебро слева чуть ниже, фиолет по центру выше, изумруд справа чуть ниже */
+        .podium .card.gold {
+            border: 2px solid #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .podium .card.silver {
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 0 10px #e5e7eb88;
+            transform: translateY(0px);
+        }
+
+        .podium .card.bronze {
+            border: 2px solid #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.55);
+            transform: translateY(2px);
+        }
+
+/* маленький бейджик "1 место" */
+.place-badge {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: rgba(4, 20, 26, 0.9);
+    border: 1px solid rgba(110, 231, 183, 0.5);
+}
+
+/* ПОИСК */
+.search-wrap {
+    margin: 10px 0 14px;
+}
+
+#searchInput {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid rgba(110, 231, 183, 0.4);
+    background: rgba(4, 20, 26, 0.8);
+    color: #d1fae5;
+    font-size: 0.9rem;
+    outline: none;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.22);
+    text-align: center;
+}
+
+    #searchInput::placeholder {
+        color: #6b7280;
+    }
+
+    #searchInput:focus {
+        border-color: #34d399;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+    }
+
+.podium .name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+}
+
+    .podium .name div:first-child {
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .podium .name div:last-child {
+        font-size: 0.9rem;
+        font-weight: 500;
+        opacity: 0.9;
+    }
+
+
+
+.leaders {
+    text-align: center;
+}
+
+    .leaders h2 {
+        width: 100%;
+        text-align: center;
+    }
+
+.search-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0 20px;
+}
+
+#status {
+    padding-bottom: 20px;
+}
+
+
+/* ====== Строка участника ====== */
+.student-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(11, 31, 36, 0.55);
+  border: 1px solid rgba(255,255,255,0.03);
+  margin-bottom: 8px;
+  width: min(100%, 700px);
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+  box-sizing: border-box;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  outline: none;
+}
+
+/* Hover / focus — изумрудная пульсация */
+.student-row:hover,
+.student-row:focus {
+  border-color: rgba(52, 211, 153, 0.9);
+  animation: row-pulse-emerald 1.6s infinite;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.18), 0 6px 18px rgba(0,0,0,0.35);
+  transform: translateY(-2px);
+}
+
+/* Завершившие весь марафон — фиолетовая рамка и свечение */
+.student-row.completed-all {
+  border: 2px solid #a855f7;
+  animation: row-pulse-purple 1.8s infinite;
+  box-shadow: 0 0 28px rgba(168, 85, 247, 0.22), 0 6px 20px rgba(0,0,0,0.38);
+}
+
+/* Аватар */
+.student-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 330px;
+  min-width: 0;
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: rgba(5, 24, 20, 0.44);
+  border: 1px solid rgba(110, 231, 183, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.student-avatar-link,
+.student-avatar-link > .student-avatar-img,
+.student-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #d1fae5 0%, #a7f3d0 100%);
+  flex: 0 0 44px;
+  text-decoration: none;
+}
+
+.student-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.student-avatar-fallback {
+  font-weight: 700;
+  color: #0b1220;       
+}
+
+/* Имя (растягивается) */
+.student-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.student-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #ecfdf5;
+  word-break: break-word;
+}
+
+.student-name-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.student-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.student-progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.student-progress-count {
+  color: #d1fae5;
+  opacity: 0.92;
+}
+
+.student-progress-percent {
+  color: #6ee7b7;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.student-progress-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(5, 24, 20, 0.95) 0%, rgba(4, 18, 16, 0.82) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -2px 8px rgba(0,0,0,0.28),
+    0 0 0 1px rgba(5, 24, 20, 0.35);
+}
+
+.student-progress-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 18%, rgba(255,255,255,0) 40%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 1px, transparent 1px 24px);
+  pointer-events: none;
+}
+
+.student-progress-fill {
+  position: relative;
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #059669 0%, #10b981 55%, #6ee7b7 100%);
+  box-shadow:
+    inset 0 -1px 0 rgba(255,255,255,0.22),
+    0 0 16px rgba(16, 185, 129, 0.42);
+  transition: width 0.35s ease;
+}
+
+.student-progress-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0) 100%);
+  mix-blend-mode: screen;
+}
+
+.student-progress.is-silver .student-progress-percent {
+  color: #f3f4f6;
+  text-shadow: 0 0 10px rgba(229, 231, 235, 0.22);
+}
+
+.student-progress.is-silver .student-progress-track {
+  border-color: rgba(229, 231, 235, 0.22);
+}
+
+.student-progress.is-silver .student-progress-fill {
+  background: linear-gradient(90deg, #cbd5e1 0%, #e5e7eb 55%, #f8fafc 100%);
+  box-shadow:
+    inset 0 -1px 0 rgba(255,255,255,0.28),
+    0 0 16px rgba(229, 231, 235, 0.22);
+}
+
+.student-progress.is-golden .student-progress-percent,
+.student-progress.is-complete .student-progress-percent {
+  color: #c084fc;
+  text-shadow: 0 0 12px rgba(168, 85, 247, 0.45);
+}
+
+.student-progress.is-golden .student-progress-track,
+.student-progress.is-complete .student-progress-track {
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.student-progress.is-golden .student-progress-fill,
+.student-progress.is-complete .student-progress-fill {
+  background: linear-gradient(90deg, #7c3aed 0%, #a855f7 52%, #d8b4fe 100%);
+  box-shadow:
+    inset 0 -1px 0 rgba(255,255,255,0.28),
+    0 0 18px rgba(168, 85, 247, 0.42);
+}
+
+.student-progress.is-complete .student-progress-track {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -2px 8px rgba(0,0,0,0.28),
+    0 0 18px rgba(168, 85, 247, 0.2);
+}
+
+.student-achievements {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: 156px;
+  margin-left: 2px;
+}
+
+.completion-button.certificate-button {
+  min-width: 156px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.completion-button.certificate-button:hover,
+.completion-button.certificate-button:focus-visible {
+  transform: translateY(-1px);
+}
+
+.completion-button {
+  min-width: 40px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(4, 20, 26, 0.9);
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.completion-button:hover,
+.completion-button:focus-visible {
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.completion-button-silver {
+  color: #e5e7eb;
+  border-color: rgba(229, 231, 235, 0.45);
+  box-shadow: 0 0 10px rgba(229, 231, 235, 0.2);
+}
+
+.completion-button-silver:hover,
+.completion-button-silver:focus-visible {
+  box-shadow: 0 0 14px rgba(229, 231, 235, 0.35);
+}
+
+.completion-button-gold {
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.32);
+}
+
+.completion-button-gold:hover,
+.completion-button-gold:focus-visible {
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.55);
+}
+
+/* Обёртка ячеек заданий */
+.tasks-cells {
+  display: grid;
+  grid-template-columns: repeat(5, 30px);
+  grid-auto-rows: 24px;
+  gap: 4px;
+  flex: 0 0 auto;
+  align-content: center;
+  justify-content: start;
+  min-width: 166px;
+}
+
+/* Одна ячейка задания */
+.task-cell {
+  width: 30px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #071124;          /* Чёрная цифра — во всех состояниях */
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-sizing: border-box;
+}
+
+/* Пустая — тёмно-изумрудная */
+    .task-cell.cell-empty {
+        background: #1a4d3e;
+        color: #071a14; /* чёрный */
+    }
+
+/* Ноль — красная */
+.task-cell.cell-zero {
+  background: #ef4444; /* red-500 */
+  color: #071124; /* чёрный по требованию */
+}
+
+/* Единица — зелёная */
+.task-cell.cell-one {
+  background: #10b981; /* green-500 */
+  color: #071124; /* чёрный по требованию */
+}
+
+/* Ссылки внутри ячейки — убрать подчёркивание и сохранить выравнивание */
+.task-cell.task-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit; /* сохранить чёрную цифру, как задано в .task-cell */
+}
+.task-cell.task-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+}
+
+/* Мобильные размеры */
+@media (max-width: 640px) {
+  .student-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .student-summary {
+    flex: 1 1 100%;
+  }
+  .student-main {
+    min-width: 0;
+  }
+  .tasks-cells {
+    grid-template-columns: repeat(5, 28px);
+    grid-auto-rows: 22px;
+    min-width: 152px;
+  }
+  .task-cell {
+    width: 28px;
+    height: 22px;
+    font-size: 0.78rem;
+  }
+  .student-name {
+    font-size: 0.86rem;
+  }
+  .completion-button {
+    min-width: 36px;
+    height: 22px;
+    padding: 0 8px;
+    font-size: 0.68rem;
+  }
+  .student-achievements {
+    min-width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+  .completion-button.certificate-button {
+    min-width: 148px;
+    height: 28px;
+    font-size: 0.64rem;
+  }
+  .student-progress-meta {
+    font-size: 0.64rem;
+  }
+  .student-progress-track {
+    height: 9px;
+  }
+}
+
+/* ====== БОНУСЫ ЗА ОЧКИ ====== */
+
+/* Серебристая рамка за 4 задания */
+.student-avatar-link.avatar-silver {
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 0 12px rgba(229, 231, 235, 0.6), inset 0 0 8px rgba(229, 231, 235, 0.2);
+}
+
+/* Фиолетовая рамка с миганием за 6 заданий */
+.student-avatar-link.avatar-golden {
+  border: 2px solid #a855f7;
+  animation: avatar-golden-pulse 1.4s infinite;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.75), inset 0 0 8px rgba(168, 85, 247, 0.35);
+}
+
+/* Анимация мигания фиолетовой рамки */
+@keyframes avatar-golden-pulse {
+  0% {
+    border-color: #a855f7;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.7), inset 0 0 8px rgba(168, 85, 247, 0.3);
+  }
+  50% {
+    border-color: #c084fc;
+    box-shadow: 0 0 28px rgba(168, 85, 247, 1), inset 0 0 12px rgba(192, 132, 252, 0.55);
+  }
+  100% {
+    border-color: #a855f7;
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.7), inset 0 0 8px rgba(168, 85, 247, 0.3);
+  }
+}
+
+/* Кристалик рядом с именем за 2 задания */
+.crystal-emoji {
+  margin-left: 4px;
+  display: inline-block;
+  animation: crystal-shine 1.8s infinite;
+  font-size: 1em;
+}
+
+@keyframes crystal-shine {
+  0% {
+    opacity: 0.7;
+    text-shadow: 0 0 8px rgba(110, 231, 183, 0.45);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 16px rgba(110, 231, 183, 0.9);
+  }
+  100% {
+    opacity: 0.7;
+    text-shadow: 0 0 8px rgba(110, 231, 183, 0.45);
+  }
+}
+/* Podium 3D tilt effect */
+.podium {
+  perspective: 1200px;
+  gap: 22px;
+}
+
+.podium .podium-card {
+  transform-style: preserve-3d;
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+  will-change: transform;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+}
+
+.podium .podium-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120px 120px at var(--mx) var(--my), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.02) 55%, rgba(255, 255, 255, 0) 80%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.podium .podium-card.is-tilting::before {
+  opacity: 0.95;
+}
+
+.podium .podium-card.is-tilting.gold {
+  animation: podium-pulse-gold 1.2s ease-in-out infinite;
+}
+
+.podium .podium-card.is-tilting.silver {
+  animation: podium-pulse-silver 1.2s ease-in-out infinite;
+}
+
+.podium .podium-card.is-tilting.bronze {
+  animation: podium-pulse-bronze 1.2s ease-in-out infinite;
+}
+
+@keyframes podium-pulse-gold {
+  0% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(168, 85, 247, 0.5);
+  }
+  50% {
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.55), 0 0 26px rgba(168, 85, 247, 0.85);
+  }
+  100% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(168, 85, 247, 0.5);
+  }
+}
+
+@keyframes podium-pulse-silver {
+  0% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(229, 231, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(229, 231, 235, 0.75);
+  }
+  100% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(229, 231, 235, 0.4);
+  }
+}
+
+@keyframes podium-pulse-bronze {
+  0% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(16, 185, 129, 0.45);
+  }
+  50% {
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(16, 185, 129, 0.8);
+  }
+  100% {
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.45), 0 0 12px rgba(16, 185, 129, 0.45);
+  }
+}
