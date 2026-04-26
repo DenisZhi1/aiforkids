@@ -9,13 +9,13 @@ const TEMPLATE_CONFIG = {
   imagePath: "cert/holst.png",
   storageKey: `cert-editor-20-${CERTIFICATE_EDITOR_STATE_VERSION}`,
   defaults: {
-    nameX: 1377,
-    nameY: 776,
+    nameX: 1387,
+    nameY: 649,
     nameFontFamily: '"Sofia Sans Condensed", sans-serif',
     nameFontWeight: "511",
     nameFontSize: 129,
-    dateX: 1989,
-    dateY: 1385,
+    dateX: 2115,
+    dateY: 1314,
     dateFontWeight: "400",
     dateFontSize: 50
   }

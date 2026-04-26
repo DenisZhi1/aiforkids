@@ -473,7 +473,7 @@ function createStudentProgress(completed) {
 function createCompletionButtons(student) {
   const completed = student.completed;
 
-  const buttonConfig = completed === TASKS_COUNT
+  const buttonConfig = completed >= 6
     ? [{ label: "Получить сертификат", className: "completion-button completion-button-gold certificate-button", type: "20" }]
     : null;
 
