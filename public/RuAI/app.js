@@ -16,12 +16,11 @@ const DEADLINES = [
 const TASK_LINKS = [
     "https://vk.ru/wall-237781354_3", // задача 1
     "https://vk.ru/wall-237781354_84", // задача 2
-    "https://vk.ru/club237781354", // задача 3
-    "https://vk.ru/club237781354", // задача 4
-    "https://vk.ru/club237781354", // задача 5
+    "https://vk.ru/wall-237781354_168", // задача 3
+    "https://vk.ru/wall-237781354_353", // задача 4
+    "https://vk.ru/wall-237781354_583", // задача 5
     "https://vk.ru/club237781354", // задача 6
     "https://vk.ru/club237781354", // задача 7
-    "https://vk.ru/club237781354", // задача 8
 ];
 
 // === НАСТРОЙКИ ===
@@ -31,10 +30,12 @@ const TASK_LINKS = [
 
 const CSV_PATH = "https://docs.google.com/spreadsheets/d/1XBqJFafWjdEVucrlztNVpj_RtVzVEfz3nNlcm0f6qyI/export?format=csv&gid=613453476";
                   
-const MAX_STARS = 8;
+const MAX_STARS = 7;
 const TASKS_PER_STAR = 1;
 const TASKS_START_INDEX = 3;
-const TASKS_COUNT = 8;
+const TASKS_COUNT = 7;
+const AVATAR_REWARD_TASKS = 5;
+const MAIN_REWARD_TASKS = TASKS_COUNT;
 const CERTIFICATE_EDITOR_PATH_17 = "cert-editor.html";
 const CERTIFICATE_EDITOR_PATH_20 = "cert-editor-20.html";
 const CERTIFICATE_EDITOR_SESSION_KEY = "coursev2-certificate-editor";
@@ -83,8 +84,8 @@ async function loadCSV() {
 // 0 - ссылка на ВК (profile)
 // 1 - имя участника (name)
 // 2 - ссылка на изображение аватара (avatar)
-// 3..10 - 8 отображаемых полей заданий (значения пусто / 0 / 1)
-// количество выполненных ДЗ считаем по этим 8 полям, чтобы награды и подсветка
+// 3..9 - 7 отображаемых полей заданий (значения пусто / 0 / 1)
+// количество выполненных ДЗ считаем по этим 7 полям, чтобы награды и подсветка
 // всегда совпадали с тем, что видно в карточке участника
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
@@ -130,7 +131,7 @@ function parseCSV(text) {
     // Если нет имени — пропускаем
     if (!name) continue;
 
-    // Считаем количество выполненных ДЗ по 8 отображаемым заданиям.
+    // Считаем количество выполненных ДЗ по 7 отображаемым заданиям.
     // Так логика наград всегда синхронизирована с тем, что видно в интерфейсе.
     const completedFromTasks = tasks.reduce((s, v) => s + (v === 1 ? 1 : 0), 0);
     const completed = completedFromTasks;
@@ -323,7 +324,7 @@ function createStudentRow(st) {
   }
 
   // Применяем класс для рамки аватара по количеству очков
-  if (st.completed >= 6) {
+  if (st.completed >= AVATAR_REWARD_TASKS) {
     avatarWrapper.classList.add("avatar-golden");
   } else if (st.completed >= 4) {
     avatarWrapper.classList.add("avatar-silver");
@@ -416,7 +417,7 @@ function createStudentRow(st) {
     row.appendChild(achievementButtons);
   }
 
-  if (st.completed === TASKS_COUNT) {
+  if (st.completed >= MAIN_REWARD_TASKS) {
     row.classList.add("completed-all");
   }
 
@@ -427,9 +428,9 @@ function createStudentProgress(completed) {
   const progress = document.createElement("div");
   progress.className = "student-progress";
 
-  if (completed >= TASKS_COUNT) {
+  if (completed >= MAIN_REWARD_TASKS) {
     progress.classList.add("is-complete");
-  } else if (completed >= 6) {
+  } else if (completed >= AVATAR_REWARD_TASKS) {
     progress.classList.add("is-golden");
   } else if (completed >= 4) {
     progress.classList.add("is-silver");
@@ -473,7 +474,7 @@ function createStudentProgress(completed) {
 function createCompletionButtons(student) {
   const completed = student.completed;
 
-  const buttonConfig = completed >= 6
+  const buttonConfig = completed >= MAIN_REWARD_TASKS
     ? [{ label: "Получить сертификат", className: "completion-button completion-button-gold certificate-button", type: "20" }]
     : null;
 
