@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Редактор сертификата</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Advent+Pro:wght@100..900&family=Montserrat:wght@100..900&family=Sofia+Sans+Condensed:wght@100..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="cert-editor.css" />
+  <script defer src="cert-editor-custom.js"></script>
+</head>
+<body>
+  <div class="editor-shell">
+    <header class="editor-header">
+      <div class="editor-heading">
+        <h1 id="editorTitle">Редактор сертификата</h1>
+        <p id="editorSubtitle">Одна страница для настройки и скачивания сертификата.</p>
+      </div>
+      <button id="downloadButton" class="download-button" type="button" disabled>Скачать сертификат</button>
+    </header>
+
+    <main class="editor-layout">
+      <aside class="editor-sidebar">
+        <section class="editor-panel">
+          <h2>Имя</h2>
+
+          <label class="field">
+            <span>Имя</span>
+            <input id="nameInput" type="text" autocomplete="name" />
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>X</span>
+              <input id="nameXInput" type="number" step="1" />
+            </label>
+
+            <label class="field">
+              <span>Y</span>
+              <input id="nameYInput" type="number" step="1" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Тип шрифта</span>
+            <select id="nameFontInput"></select>
+          </label>
+
+          <div class="field">
+            <div class="field-header">
+              <span>Жирность шрифта</span>
+              <strong id="nameWeightValue" class="field-value">448</strong>
+            </div>
+            <input id="nameWeightInput" class="range-slider" type="range" min="100" max="900" step="1" value="448" />
+          </div>
+
+          <div class="field">
+            <div class="field-header">
+              <span>Размер шрифта</span>
+              <strong id="nameSizeValue" class="field-value">93</strong>
+            </div>
+            <input id="nameSizeInput" class="range-slider" type="range" min="12" max="240" step="1" value="93" />
+          </div>
+        </section>
+
+      </aside>
+
+      <section class="editor-stage">
+        <div class="stage-toolbar">
+          <span id="statusMessage" class="status-message">Загружаем шаблон сертификата…</span>
+        </div>
+        <div class="canvas-scroller">
+          <canvas id="certificateCanvas"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="celebrationModal" class="celebration-modal" aria-hidden="true">
+    <div class="celebration-backdrop" data-modal-close="true"></div>
+    <div class="celebration-dialog" role="dialog" aria-modal="true" aria-labelledby="celebrationTitle">
+      <button id="celebrationCloseButton" class="celebration-close" type="button" aria-label="Закрыть поздравление">×</button>
+      <div class="celebration-glow"></div>
+      <h2 id="celebrationTitle" class="celebration-title">Спасибо за участие!</h2>
+      <div class="celebration-body">
+        <p>Надеюсь, вы будете рады вашей игре, а мы ждем вас на курсе!</p>
+      </div>
+      <a
+        class="celebration-cta"
+        href="https://vk.ru/wall-137991294_66385"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>Узнать о курсе</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

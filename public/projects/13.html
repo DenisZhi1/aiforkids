@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Путешествие Лиса</title>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<style>
+  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at top,#263b5f,#11182f 55%,#050611);font-family:Arial,Helvetica,sans-serif}
+  body{display:flex;align-items:center;justify-content:center}
+  #game-container{width:800px;height:600px;border-radius:26px;overflow:hidden;border:4px solid rgba(255,255,255,.25);box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 50px rgba(80,210,255,.32);background:#000}
+</style>
+</head>
+<body>
+<div id="game-container"></div>
+<script>
+/*
+  «Путешествие Лиса»
+  HTML5 + Phaser 3. Всё в одном файле.
+  Управление: стрелки или WASD. Перезапуск после проигрыша: R.
+  Звук включается после первого клика или нажатия клавиши.
+*/
+function svgData(svg){return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));}
+
+const foxSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="220" height="190" viewBox="0 0 220 190">
+<defs><radialGradient id="fur" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#ffc071"/><stop offset="45%" stop-color="#f77d2b"/><stop offset="100%" stop-color="#a83b12"/></radialGradient><linearGradient id="tail" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffb24f"/><stop offset="62%" stop-color="#d65a1f"/><stop offset="100%" stop-color="#fff7ea"/></linearGradient><filter id="sh" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#5b260e" flood-opacity=".36"/></filter><filter id="gl"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<path d="M52 110 C1 89 9 39 58 47 C104 54 111 104 72 128 C65 132 58 125 52 110Z" fill="url(#tail)" filter="url(#sh)"/><path d="M27 62 C11 75 15 101 40 111 C31 96 32 78 49 59Z" fill="#fff8ec" opacity=".96"/>
+<ellipse cx="108" cy="114" rx="54" ry="45" fill="url(#fur)" filter="url(#sh)"/><ellipse cx="113" cy="127" rx="31" ry="25" fill="#ffd9b0" opacity=".95"/><ellipse cx="78" cy="154" rx="18" ry="13" fill="#6f2c0e"/><ellipse cx="137" cy="154" rx="18" ry="13" fill="#6f2c0e"/>
+<path d="M69 67 C71 29 104 14 135 31 C165 47 169 84 146 106 C124 126 86 121 73 96 C69 88 68 77 69 67Z" fill="url(#fur)" filter="url(#sh)"/>
+<path d="M80 52 L72 13 L106 37Z" fill="#e85f1f"/><path d="M137 50 L155 14 L111 35Z" fill="#e85f1f"/><path d="M82 43 L78 23 L96 38Z" fill="#ffd1ad" opacity=".86"/><path d="M137 42 L148 24 L123 38Z" fill="#ffd1ad" opacity=".86"/>
+<ellipse cx="108" cy="84" rx="32" ry="25" fill="#fff3df"/><ellipse cx="98" cy="77" rx="6" ry="8" fill="#251510"/><ellipse cx="123" cy="77" rx="6" ry="8" fill="#251510"/><circle cx="100" cy="74" r="2" fill="#fff"/><circle cx="125" cy="74" r="2" fill="#fff"/>
+<path d="M109 88 C114 87 118 90 115 95 C112 101 103 101 101 95 C99 90 104 87 109 88Z" fill="#1d1110"/><path d="M108 96 C105 104 96 104 92 99" stroke="#6e2f16" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M110 96 C113 104 123 104 127 99" stroke="#6e2f16" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M74 105 C95 119 125 120 150 104 C145 125 125 137 105 136 C88 135 76 124 74 105Z" fill="#0877ff" filter="url(#gl)"/><path d="M118 119 L153 138 L130 144Z" fill="#005bd1"/><path d="M89 113 C105 122 125 122 140 113" stroke="#8fd9ff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".74"/>
+</svg>`;
+const mushroomSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130"><defs><radialGradient id="c" cx="40%" cy="25%" r="75%"><stop offset="0%" stop-color="#ff8686"/><stop offset="55%" stop-color="#e93636"/><stop offset="100%" stop-color="#8b1010"/></radialGradient><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff5d6"/><stop offset="100%" stop-color="#d7a05b"/></linearGradient><filter id="d"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#4b210c" flood-opacity=".35"/></filter></defs><ellipse cx="65" cy="111" rx="34" ry="9" fill="#143915" opacity=".32"/><path d="M48 62 C45 82 45 103 65 106 C85 103 85 82 82 62Z" fill="url(#s)" filter="url(#d)"/><path d="M19 66 C23 31 52 15 78 20 C105 25 119 45 112 68 C91 62 54 61 19 66Z" fill="url(#c)" filter="url(#d)"/><circle cx="45" cy="43" r="8" fill="#fff5e8"/><circle cx="70" cy="32" r="6" fill="#fff5e8"/><circle cx="91" cy="50" r="7" fill="#fff5e8"/><circle cx="62" cy="58" r="5" fill="#fff5e8"/></svg>`;
+const alienMushSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><defs><radialGradient id="a" cx="50%" cy="35%" r="70%"><stop offset="0%" stop-color="#e8fff9"/><stop offset="35%" stop-color="#4fffe1"/><stop offset="70%" stop-color="#8b45ff"/><stop offset="100%" stop-color="#34106e"/></radialGradient><linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5f7ff"/><stop offset="55%" stop-color="#8fe7ff"/><stop offset="100%" stop-color="#3154ff"/></linearGradient><filter id="n" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><ellipse cx="70" cy="117" rx="36" ry="10" fill="#44e8ff" opacity=".22"/><path d="M52 61 C45 83 48 110 70 115 C94 109 96 83 88 61Z" fill="url(#st)" filter="url(#n)"/><path d="M20 65 C26 30 56 12 86 19 C115 26 127 45 121 70 C93 62 54 62 20 65Z" fill="url(#a)" filter="url(#n)"/><circle cx="48" cy="44" r="7" fill="#f7ff7a"/><circle cx="72" cy="31" r="6" fill="#fff"/><circle cx="96" cy="51" r="7" fill="#9effff"/><circle cx="64" cy="59" r="5" fill="#ff7aff"/></svg>`;
+const hedgehogSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="150" height="120" viewBox="0 0 150 120"><defs><radialGradient id="b" cx="45%" cy="35%" r="75%"><stop offset="0%" stop-color="#b77b4a"/><stop offset="100%" stop-color="#5a321f"/></radialGradient><filter id="dr"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-opacity=".35"/></filter></defs><ellipse cx="75" cy="98" rx="45" ry="8" fill="#10230e" opacity=".25"/><path d="M25 76 C30 40 65 24 103 37 C130 46 137 73 118 91 C93 107 48 105 25 76Z" fill="url(#b)" filter="url(#dr)"/><path d="M31 49 L25 24 L48 40 L49 17 L68 38 L76 15 L88 39 L107 22 L105 49" fill="none" stroke="#3a2116" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="103" cy="62" r="18" fill="#c88655"/><circle cx="110" cy="57" r="4" fill="#111"/><circle cx="122" cy="63" r="5" fill="#1a0d0a"/></svg>`;
+const bugSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="150" height="120" viewBox="0 0 150 120"><defs><radialGradient id="bug" cx="40%" cy="30%" r="70%"><stop offset="0%" stop-color="#88fff7"/><stop offset="50%" stop-color="#785cff"/><stop offset="100%" stop-color="#25105f"/></radialGradient><filter id="g" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="bb"/><feMerge><feMergeNode in="bb"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><ellipse cx="76" cy="96" rx="42" ry="8" fill="#28e9ff" opacity=".18"/><ellipse cx="75" cy="62" rx="42" ry="31" fill="url(#bug)" filter="url(#g)"/><circle cx="54" cy="55" r="8" fill="#fff"/><circle cx="96" cy="55" r="8" fill="#fff"/><circle cx="55" cy="56" r="3" fill="#111"/><circle cx="97" cy="56" r="3" fill="#111"/><path d="M40 35 C25 16 14 18 10 30" stroke="#55fff1" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M110 35 C125 16 136 18 140 30" stroke="#55fff1" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="10" cy="30" r="5" fill="#ff71f6"/><circle cx="140" cy="30" r="5" fill="#ff71f6"/></svg>`;
+const logSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="180" height="90" viewBox="0 0 180 90"><defs><linearGradient id="w" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7c421f"/><stop offset="50%" stop-color="#b66a34"/><stop offset="100%" stop-color="#6f361a"/></linearGradient><filter id="sd"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-opacity=".35"/></filter></defs><ellipse cx="90" cy="70" rx="70" ry="10" fill="#10230e" opacity=".25"/><rect x="22" y="25" width="136" height="36" rx="18" fill="url(#w)" filter="url(#sd)"/><ellipse cx="25" cy="43" rx="20" ry="21" fill="#c3844f"/><ellipse cx="25" cy="43" rx="11" ry="12" fill="#8b4f2b"/><path d="M55 35 C82 43 105 31 135 41" stroke="#e1a46f" stroke-width="5" fill="none" opacity=".55" stroke-linecap="round"/></svg>`;
+const rockSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="100" viewBox="0 0 120 100"><defs><radialGradient id="r" cx="40%" cy="25%" r="75%"><stop offset="0%" stop-color="#c8d0d4"/><stop offset="65%" stop-color="#73828a"/><stop offset="100%" stop-color="#3f4a50"/></radialGradient><filter id="rs"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-opacity=".32"/></filter></defs><ellipse cx="60" cy="83" rx="38" ry="9" fill="#10230e" opacity=".24"/><path d="M19 70 C17 44 35 22 61 19 C88 16 107 38 101 67 C83 84 43 89 19 70Z" fill="url(#r)" filter="url(#rs)"/><path d="M45 31 C37 43 35 56 45 68" stroke="#edf6f8" stroke-width="4" opacity=".35" fill="none" stroke-linecap="round"/></svg>`;
+const crystalSVG=`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="130" viewBox="0 0 120 130"><defs><linearGradient id="cr" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#eaffff"/><stop offset="40%" stop-color="#52eaff"/><stop offset="100%" stop-color="#7c3dff"/></linearGradient><filter id="cg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><ellipse cx="60" cy="110" rx="32" ry="9" fill="#3ff5ff" opacity=".18"/><path d="M58 8 L94 47 L77 111 L35 111 L22 47Z" fill="url(#cr)" filter="url(#cg)"/><path d="M58 8 L58 111" stroke="#fff" stroke-width="3" opacity=".5"/><path d="M22 47 L58 111 L94 47" stroke="#301067" stroke-width="3" opacity=".35" fill="none"/></svg>`;
+
+const config={type:Phaser.AUTO,width:800,height:600,parent:'game-container',backgroundColor:'#000',physics:{default:'arcade',arcade:{debug:false}},scene:{preload,create,update}};
+new Phaser.Game(config);
+
+let player,cursors,wasd,mushrooms,enemies,obstacles,bg;
+let scoreText,levelText,livesText,helpText,msgText;
+let score=0,levelScore=0,lives=3,currentLevel=1,inv=false,transition=false,over=false;
+let audioCtx=null,soundReady=false,ambientOsc=null,ambientGain=null;
+
+function preload(){
+  this.load.image('fox',svgData(foxSVG));this.load.image('mushroom',svgData(mushroomSVG));this.load.image('alienMush',svgData(alienMushSVG));
+  this.load.image('hedgehog',svgData(hedgehogSVG));this.load.image('bug',svgData(bugSVG));this.load.image('log',svgData(logSVG));this.load.image('rock',svgData(rockSVG));this.load.image('crystal',svgData(crystalSVG));
+}
+
+function create(){
+  bg=createBackground(this,currentLevel).setDepth(-100);
+  mushrooms=this.physics.add.staticGroup(); obstacles=this.physics.add.staticGroup(); enemies=this.physics.add.group();
+  player=this.physics.add.image(400,325,'fox').setScale(.46).setDepth(30).setCollideWorldBounds(true);
+  player.body.setSize(88,78); player.body.setOffset(66,70);
+  cursors=this.input.keyboard.createCursorKeys();
+  wasd=this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D,restart:Phaser.Input.Keyboard.KeyCodes.R});
+  this.physics.add.collider(player,obstacles); this.physics.add.collider(enemies,obstacles);
+  this.physics.add.overlap(player,mushrooms,collectMushroom,null,this); this.physics.add.overlap(player,enemies,hitEnemy,null,this);
+  this.input.once('pointerdown',()=>initSound()); this.input.keyboard.once('keydown',()=>initSound());
+  createUI(this); startLevel(this);
+}
+
+function update(time){
+  if(!player)return;
+  if(over){player.setVelocity(0,0); if(Phaser.Input.Keyboard.JustDown(wasd.restart))restartGame(this); return;}
+  if(transition){player.setVelocity(0,0); return;}
+  const sp=currentLevel===1?245:265; let vx=0,vy=0;
+  if(cursors.left.isDown||wasd.left.isDown){vx=-sp;player.setFlipX(true)} else if(cursors.right.isDown||wasd.right.isDown){vx=sp;player.setFlipX(false)}
+  if(cursors.up.isDown||wasd.up.isDown)vy=-sp; else if(cursors.down.isDown||wasd.down.isDown)vy=sp;
+  if(vx&&vy){vx*=.707;vy*=.707}
+  player.setVelocity(vx,vy);
+  if(vx||vy){player.angle=Math.sin(time/88)*4;player.scaleY=.46+Math.sin(time/120)*.014}else{player.angle*=.86;player.scaleY+=(.46-player.scaleY)*.14}
+  updateEnemies(time);
+}
+
+function createUI(scene){
+  const p=scene.add.graphics(); p.fillStyle(0x000000,.3); p.fillRoundedRect(14,12,330,96,18); p.lineStyle(2,0xffffff,.25); p.strokeRoundedRect(14,12,330,96,18); p.setDepth(95);
+  scoreText=scene.add.text(30,24,'Грибы: 0 / нужно 5',{fontFamily:'Arial',fontSize:'25px',fontStyle:'bold',color:'#fff',stroke:'#143819',strokeThickness:5}).setDepth(100);
+  levelText=scene.add.text(30,55,'Уровень 1: Живой лес',{fontFamily:'Arial',fontSize:'18px',fontStyle:'bold',color:'#fff4a3',stroke:'#143819',strokeThickness:4}).setDepth(100);
+  livesText=scene.add.text(30,78,'Жизни: ❤ ❤ ❤',{fontFamily:'Arial',fontSize:'18px',fontStyle:'bold',color:'#ffdfdf',stroke:'#641013',strokeThickness:4}).setDepth(100);
+  helpText=scene.add.text(400,570,'Стрелки или WASD. Собери 5 грибов. Не касайся врагов! Звук включится после первого нажатия.',{fontFamily:'Arial',fontSize:'14px',fontStyle:'bold',color:'#fff',stroke:'#000',strokeThickness:4}).setOrigin(.5).setDepth(100);
+  msgText=scene.add.text(400,138,'',{fontFamily:'Arial',fontSize:'34px',fontStyle:'bold',align:'center',color:'#fff',stroke:'#151529',strokeThickness:8}).setOrigin(.5).setDepth(130).setAlpha(0);
+}
+function updateUI(){
+  scoreText.setText('Грибы: '+score+' / нужно 5');
+  levelText.setText(currentLevel===1?'Уровень 1: Живой лес':'Уровень 2: Космос');
+  levelText.setColor(currentLevel===1?'#fff4a3':'#baf7ff');
+  let h=''; for(let i=0;i<lives;i++)h+='❤ '; livesText.setText('Жизни: '+h.trim());
+}
+function showMessage(scene,t){
+  msgText.setText(t).setAlpha(0).setScale(.75);
+  scene.tweens.add({targets:msgText,alpha:1,scaleX:1,scaleY:1,duration:320,yoyo:true,hold:650,ease:'Back.easeOut'});
+}
+
+function startLevel(scene){
+  levelScore=0; mushrooms.clear(true,true); obstacles.clear(true,true); enemies.clear(true,true); updateUI(); startAmbientSound(currentLevel);
+  if(currentLevel===1)forestLevel(scene); else spaceLevel(scene);
+  spawnMushrooms(scene); showMessage(scene,currentLevel===1?'Живой лес':'Космическая поляна');
+}
+function forestLevel(scene){
+  addObstacle(scene,180,455,'log',.62,120,34);addObstacle(scene,575,380,'log',.55,112,34);addObstacle(scene,395,505,'rock',.58,58,42);addObstacle(scene,650,510,'rock',.5,54,38);addObstacle(scene,120,250,'rock',.5,54,38);
+  addEnemy(scene,135,335,'hedgehog',.45,'x',155,78);addEnemy(scene,520,255,'hedgehog',.42,'y',120,66);addEnemy(scene,690,430,'hedgehog',.42,'x',95,82);
+}
+function spaceLevel(scene){
+  addObstacle(scene,185,470,'crystal',.55,55,78);addObstacle(scene,620,415,'crystal',.6,60,84);addObstacle(scene,410,270,'crystal',.48,50,70);addObstacle(scene,700,180,'crystal',.44,46,66);
+  addEnemy(scene,130,210,'bug',.45,'x',200,96);addEnemy(scene,570,310,'bug',.43,'y',150,78);addEnemy(scene,410,470,'bug',.42,'x',140,105);addEnemy(scene,710,500,'bug',.38,'y',115,86);
+}
+function addObstacle(scene,x,y,key,scale,w,h){const o=obstacles.create(x,y,key).setScale(scale).setDepth(15);o.refreshBody();o.body.setSize(w,h);o.body.updateFromGameObject();return o;}
+function addEnemy(scene,x,y,key,scale,axis,range,speed){const e=enemies.create(x,y,key).setScale(scale).setDepth(18).setCollideWorldBounds(true);e.body.setSize(86,54);e.body.setOffset(32,40);e.setData({startX:x,startY:y,axis,range,speed,direction:1});scene.tweens.add({targets:e,scaleY:scale*1.05,duration:520,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});return e;}
+function updateEnemies(time){enemies.children.iterate(e=>{if(!e||!e.active)return;const axis=e.getData('axis'),range=e.getData('range'),speed=e.getData('speed');let d=e.getData('direction');if(axis==='x'){e.setVelocityX(speed*d);e.setVelocityY(0);e.setFlipX(d<0);if(Math.abs(e.x-e.getData('startX'))>range){d*=-1;e.setData('direction',d)}}else{e.setVelocityY(speed*d);e.setVelocityX(0);if(Math.abs(e.y-e.getData('startY'))>range){d*=-1;e.setData('direction',d)}}e.angle=Math.sin(time/160+e.x)*2.2;});}
+
+function spawnMushrooms(scene){
+  const key=currentLevel===1?'mushroom':'alienMush', sc=currentLevel===1?.34:.36;
+  for(let i=0;i<8;i++){const p=safePos();const m=mushrooms.create(p.x,p.y,key).setScale(sc).setDepth(12);m.refreshBody();m.body.setSize(52,48);m.body.updateFromGameObject();scene.tweens.add({targets:m,y:m.y-6,duration:Phaser.Math.Between(650,1000),yoyo:true,repeat:-1,ease:'Sine.easeInOut'});if(currentLevel===2)scene.tweens.add({targets:m,alpha:.68,duration:650,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});}
+}
+function safePos(){let x,y,tr=0;do{x=Phaser.Math.Between(70,730);y=Phaser.Math.Between(125,535);tr++}while(!isSafe(x,y)&&tr<120);return{x,y};}
+function isSafe(x,y){if(Phaser.Math.Distance.Between(x,y,player.x,player.y)<150)return false;let ok=true;obstacles.children.iterate(o=>{if(o&&o.active&&Phaser.Math.Distance.Between(x,y,o.x,o.y)<85)ok=false});enemies.children.iterate(o=>{if(o&&o.active&&Phaser.Math.Distance.Between(x,y,o.x,o.y)<105)ok=false});return ok;}
+function collectMushroom(player,m){
+  if(m.getData('collected')||transition||over)return;m.setData('collected',true);m.body.enable=false;score++;levelScore++;updateUI();playCollectSound();
+  this.tweens.add({targets:m,scaleX:m.scaleX*1.75,scaleY:m.scaleY*1.75,alpha:0,angle:m.angle+25,duration:260,ease:'Back.easeIn',onComplete:()=>m.destroy()});
+  sparkle(this,m.x,m.y,currentLevel===1?0xfff28a:0x6fffff);
+  this.tweens.add({targets:scoreText,scaleX:1.13,scaleY:1.13,duration:120,yoyo:true,ease:'Sine.easeOut'});
+  if(levelScore>=5)changeLevel(this);
+}
+function hitEnemy(player,e){
+  if(inv||transition||over)return;lives--;updateUI();playHitSound();inv=true;
+  const a=Phaser.Math.Angle.Between(e.x,e.y,player.x,player.y);player.setVelocity(Math.cos(a)*410,Math.sin(a)*410);this.cameras.main.shake(180,.009);showMessage(this,lives>0?'Осторожно! Враг!':'Игра окончена');
+  this.tweens.add({targets:player,alpha:.35,duration:120,yoyo:true,repeat:8,onComplete:()=>{player.alpha=1;inv=false;}});
+  if(lives<=0)endGame(this);
+}
+function endGame(scene){over=true;playGameOverSound();player.setTint(0x777777);msgText.setText('Игра окончена\nНажми R, чтобы начать заново').setAlpha(1).setScale(1);}
+function restartGame(scene){score=0;levelScore=0;lives=3;currentLevel=1;over=false;inv=false;transition=false;player.clearTint();player.setAlpha(1);player.setPosition(400,325);player.setVelocity(0,0);const old=bg;bg=createBackground(scene,currentLevel).setDepth(-100);old.destroy();startLevel(scene);}
+function changeLevel(scene){
+  if(transition)return;transition=true;currentLevel=currentLevel===1?2:1;levelScore=0;playLevelSound();showMessage(scene,currentLevel===1?'Возвращаемся в лес!':'Открыт космос!');
+  const old=bg,nw=createBackground(scene,currentLevel).setDepth(-99).setAlpha(0);
+  scene.tweens.add({targets:nw,alpha:1,duration:950,ease:'Sine.easeInOut'});
+  scene.tweens.add({targets:old,alpha:0,duration:950,ease:'Sine.easeInOut',onComplete:()=>{old.destroy();bg=nw.setDepth(-100);player.setPosition(400,325);player.setVelocity(0,0);startLevel(scene);transition=false;}});
+}
+function sparkle(scene,x,y,color){for(let i=0;i<14;i++){const d=scene.add.circle(x,y,Phaser.Math.FloatBetween(2.5,5),color,.9).setDepth(60);const a=Phaser.Math.FloatBetween(0,Math.PI*2),dist=Phaser.Math.Between(24,62);scene.tweens.add({targets:d,x:x+Math.cos(a)*dist,y:y+Math.sin(a)*dist,alpha:0,scaleX:.1,scaleY:.1,duration:420,ease:'Sine.easeOut',onComplete:()=>d.destroy()});}}
+
+function initSound(){if(soundReady)return;const A=window.AudioContext||window.webkitAudioContext;if(!A)return;audioCtx=new A();soundReady=true;startAmbientSound(currentLevel);}
+function tone(f,d,t='sine',v=.08){if(!soundReady||!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(v,audioCtx.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03);}
+function playCollectSound(){tone(720,.12,'sine',.09);setTimeout(()=>tone(1040,.16,'triangle',.07),70)}
+function playHitSound(){tone(150,.18,'sawtooth',.08);setTimeout(()=>tone(95,.2,'square',.045),80)}
+function playLevelSound(){tone(330,.18,'triangle',.07);setTimeout(()=>tone(520,.2,'triangle',.075),120);setTimeout(()=>tone(760,.26,'sine',.08),260)}
+function playGameOverSound(){tone(260,.22,'sawtooth',.07);setTimeout(()=>tone(190,.24,'sawtooth',.06),160);setTimeout(()=>tone(120,.35,'sine',.05),340)}
+function startAmbientSound(level){if(!soundReady||!audioCtx)return;if(ambientOsc){try{ambientOsc.stop()}catch(e){}ambientOsc=null}ambientOsc=audioCtx.createOscillator();ambientGain=audioCtx.createGain();ambientOsc.type=level===1?'sine':'triangle';ambientOsc.frequency.value=level===1?110:185;ambientGain.gain.setValueAtTime(.0001,audioCtx.currentTime);ambientGain.gain.exponentialRampToValueAtTime(level===1?.018:.014,audioCtx.currentTime+.8);ambientOsc.connect(ambientGain);ambientGain.connect(audioCtx.destination);ambientOsc.start();}
+
+function createBackground(scene,level){const c=scene.add.container(0,0);level===1?forestBg(scene,c):spaceBg(scene,c);return c;}
+function forestBg(scene,c){
+  const g=scene.add.graphics();g.fillGradientStyle(0xb8f7ff,0x99d7ff,0x3b915f,0x15492f,1);g.fillRect(0,0,800,600);
+  g.fillStyle(0x74c97a,.55);g.fillEllipse(180,360,520,190);g.fillStyle(0x4dae67,.48);g.fillEllipse(610,370,560,210);
+  g.fillGradientStyle(0x69d26e,0x4abb5f,0x1e7a44,0x0f4b2b,1);g.fillEllipse(400,620,950,270);
+  g.fillStyle(0xfff1a8,.2);g.fillCircle(165,110,105);g.fillStyle(0xa6f5ff,.12);g.fillCircle(650,150,125);
+  g.fillStyle(0xffffff,.1);g.beginPath();g.moveTo(95,0);g.lineTo(185,0);g.lineTo(415,600);g.lineTo(305,600);g.closePath();g.fillPath();g.beginPath();g.moveTo(225,0);g.lineTo(282,0);g.lineTo(510,600);g.lineTo(435,600);g.closePath();g.fillPath();c.add(g);
+  for(let i=0;i<10;i++){const x=-20+i*92+Phaser.Math.Between(-12,12);c.add([scene.add.rectangle(x,332,20,240,0x6d452d,.32),scene.add.ellipse(x,210,110,170,0x247a45,.34),scene.add.ellipse(x+28,245,100,135,0x42ad61,.28)])}
+  [{x:50,y:380,h:360,w:38},{x:755,y:395,h:390,w:44},{x:255,y:405,h:320,w:34},{x:595,y:405,h:330,w:36}].forEach(t=>{const tr=scene.add.rectangle(t.x,t.y,t.w,t.h,0x6b3a20,.92).setOrigin(.5,1),sh=scene.add.rectangle(t.x-t.w*.18,t.y-t.h*.45,t.w*.18,t.h*.76,0xc98755,.28);c.add([tr,sh,scene.add.circle(t.x,t.y-t.h+42,74,0x2bb85a,.88),scene.add.circle(t.x-52,t.y-t.h+86,62,0x167b42,.86),scene.add.circle(t.x+48,t.y-t.h+88,68,0x65df78,.82),scene.add.circle(t.x+4,t.y-t.h+126,70,0x239e52,.82)])});
+  for(let i=0;i<85;i++){const blade=scene.add.rectangle(Phaser.Math.Between(0,800),Phaser.Math.Between(485,595),Phaser.Math.Between(3,6),Phaser.Math.Between(12,30),0x2aa14f,Phaser.Math.FloatBetween(.42,.78));blade.setAngle(Phaser.Math.Between(-16,16));c.add(blade)}
+  for(let i=0;i<46;i++)c.add(scene.add.circle(Phaser.Math.Between(0,800),Phaser.Math.Between(500,590),Phaser.Math.Between(2,5),Phaser.Math.RND.pick([0xfff0a1,0xffffff,0xff9ecb,0xa7f6ff]),.78));
+  for(let i=0;i<18;i++){const f=scene.add.circle(Phaser.Math.Between(70,730),Phaser.Math.Between(135,430),Phaser.Math.FloatBetween(2,4),0xfff6a6,.65);c.add(f);scene.tweens.add({targets:f,x:f.x+Phaser.Math.Between(-25,25),y:f.y+Phaser.Math.Between(-20,20),alpha:.15,duration:Phaser.Math.Between(1200,2500),yoyo:true,repeat:-1,ease:'Sine.easeInOut'})}
+}
+function spaceBg(scene,c){
+  const g=scene.add.graphics();g.fillGradientStyle(0x080420,0x160c42,0x241057,0x05010f,1);g.fillRect(0,0,800,600);g.fillStyle(0x8b45ff,.18);g.fillCircle(150,135,150);g.fillStyle(0x00d8ff,.12);g.fillCircle(625,210,190);g.fillStyle(0xff4fd8,.11);g.fillCircle(455,470,170);g.fillStyle(0x5c7cff,.85);g.fillCircle(690,95,42);g.lineStyle(5,0xb8f6ff,.45);g.strokeEllipse(690,95,105,24);c.add(g);
+  for(let i=0;i<105;i++){const s=scene.add.circle(Phaser.Math.Between(0,800),Phaser.Math.Between(0,600),Phaser.Math.FloatBetween(1.1,2.7),0xffffff,Phaser.Math.FloatBetween(.35,.95));c.add(s);scene.tweens.add({targets:s,alpha:Phaser.Math.FloatBetween(.12,1),duration:Phaser.Math.Between(700,1700),yoyo:true,repeat:-1,ease:'Sine.easeInOut'})}
+  for(let i=0;i<35;i++){const p=scene.add.circle(Phaser.Math.Between(0,800),Phaser.Math.Between(0,600),Phaser.Math.FloatBetween(2,4),Phaser.Math.RND.pick([0x4fffe1,0xff7aff,0xa780ff]),.55);c.add(p);scene.tweens.add({targets:p,y:p.y-Phaser.Math.Between(15,45),alpha:.15,duration:Phaser.Math.Between(1600,3200),yoyo:true,repeat:-1,ease:'Sine.easeInOut'})}
+}
+</script>
+</body>
+</html>

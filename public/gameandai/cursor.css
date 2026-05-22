@@ -1,0 +1,27 @@
+﻿/* Cursor overlay styles */
+@media (pointer: fine) {
+  body {
+    position: relative;
+  }
+
+  #cursorCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: screen;
+  }
+
+  body > *:not(#cursorCanvas) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@media (pointer: coarse) {
+  #cursorCanvas {
+    display: none;
+  }
+}

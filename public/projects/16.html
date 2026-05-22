@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aim Trainer: Rank Edition</title>
+    <style>
+        /* --- Базовые стили и переменные --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            --target-color-1: red;
+            --target-color-2: white;
+            --text-color: white;
+            --ui-bg: rgba(0, 0, 0, 0.6);
+            --accent: #28a745;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* --- Игровой контейнер --- */
+        #game-container {
+            position: relative;
+            width: 90vw;
+            height: 80vh;
+            background-color: var(--ui-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            cursor: crosshair;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- Игровое поле (зона спавна мишеней) --- */
+        #target-area {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transition: filter 0.3s;
+        }
+
+        /* Эффект размытия ТОЛЬКО для мишеней при паузе */
+        .paused-filter {
+            filter: blur(8px) grayscale(50%);
+            pointer-events: none; 
+        }
+
+        /* --- Интерфейс (HUD) --- */
+        .hud {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            color: var(--text-color);
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 60; /* Выше меню, но ниже настроек */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            pointer-events: auto;
+        }
+
+        .hud-left, .hud-right { display: flex; gap: 20px; align-items: center; }
+
+        .pause-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: 0.2s;
+        }
+        .pause-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+
+        /* --- Мишени --- */
+        .target {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: scale(0);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .style-classic {
+            background: radial-gradient(circle, var(--target-color-1) 40%, var(--target-color-2) 41%, var(--target-color-2) 60%, var(--target-color-1) 61%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .style-neon {
+            background: transparent;
+            border: 3px solid var(--target-color-1);
+            box-shadow: 0 0 15px var(--target-color-1), inset 0 0 10px var(--target-color-1);
+        }
+        .style-neon::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 30%; height: 30%; background: var(--target-color-2); border-radius: 50%;
+        }
+        .style-emoji { background: transparent !important; box-shadow: none !important; }
+
+        @keyframes popIn { to { transform: scale(1); } }
+        .target.hit { animation: popOut 0.15s forwards; pointer-events: none; }
+        @keyframes popOut { to { transform: scale(1.5); opacity: 0; } }
+
+        /* --- Меню и Экраны (Start / Game Over) --- */
+        .menu-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 50; /* Ниже настроек */
+        }
+        .hidden { display: none !important; }
+
+        h1 { font-size: 48px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .rank-display {
+            font-size: 28px;
+            margin: 15px 0 30px 0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        .rank-title { font-weight: bold; color: #ffd700; display: block; font-size: 32px; margin-top: 5px; }
+
+        .btn-group { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            padding: 12px 30px; font-size: 18px; background-color: var(--accent);
+            color: white; border: none; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-secondary { background-color: #007bff; }
+        .btn-danger { background-color: #dc3545; }
+
+        /* --- Оверлеи (Пауза и Настройки) --- */
+        
+        /* Общие стили для оверлеев */
+        .overlay-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); 
+            z-index: 100; /* САМЫЙ ВЫСОКИЙ ПРИОРИТЕТ */
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        .modal-content {
+            background: #222; padding: 30px; border-radius: 15px;
+            width: 400px; max-width: 90%; border: 1px solid #444; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        
+        .setting-row { margin-bottom: 20px; text-align: left; }
+        .setting-label { display: block; margin-bottom: 8px; font-weight: bold; color: #fff; }
+        select {
+            width: 100%; padding: 10px; background: #333; color: white;
+            border: 1px solid #555; border-radius: 5px; font-size: 16px;
+        }
+
+        /* Элементы паузы внутри игры */
+        #pause-text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px; font-weight: bold; color: white;
+            text-shadow: 0 0 20px black;
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        .pause-controls {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 25;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-left">
+                <div id="score-display">Счет: 0</div>
+            </div>
+            <div class="hud-right">
+                <div id="time-display">30</div>
+                <button class="pause-btn" onclick="togglePause()" title="Пауза (Esc)">⏸</button>
+            </div>
+        </div>
+
+        <!-- Текст ПАУЗА -->
+        <div id="pause-text" class="hidden">ПАУЗА</div>
+
+        <!-- Область мишеней -->
+        <div id="target-area"></div>
+
+        <!-- Кнопки управления паузой -->
+        <div id="pause-controls" class="pause-controls hidden">
+            <button class="btn" onclick="togglePause()">Продолжить</button>
+            <button class="btn btn-danger" onclick="quitGame()">Выйти в меню</button>
+        </div>
+
+        <!-- Оверлей настроек (Z-index 100) -->
+        <div id="settings-overlay" class="overlay-modal hidden">
+            <div class="modal-content">
+                <h2 style="color:white; margin-bottom: 20px;">Настройки</h2>
+                <div class="setting-row">
+                    <label class="setting-label">Стиль:</label>
+                    <select id="setting-style">
+                        <option value="classic">Классика</option>
+                        <option value="neon">Неон</option>
+                        <option value="emoji">Эмодзи</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label class="setting-label">Фон:</label>
+                    <select id="setting-theme">
+                        <option value="space">Космос</option>
+                        <option value="forest">Лес</option>
+                        <option value="minimal">Минимализм</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label class="setting-label">Размер:</label>
+                    <select id="setting-size">
+                        <option value="small">Маленький</option>
+                        <option value="medium" selected>Средний</option>
+                        <option value="large">Большой</option>
+                    </select>
+                </div>
+                <button class="btn close-settings" style="width:100%" onclick="saveAndCloseSettings()">Сохранить</button>
+            </div>
+        </div>
+
+        <!-- Главное меню (Z-index 50) -->
+        <div id="start-screen" class="menu-screen">
+            <h1>Aim Trainer</h1>
+            <p>Тренируй реакцию и получай ранги</p>
+            <div class="btn-group">
+                <button class="btn" onclick="startGame()">Играть</button>
+                <button class="btn btn-secondary" onclick="openSettings()">Настройки</button>
+            </div>
+        </div>
+
+        <!-- Game Over (Z-index 50) -->
+        <div id="game-over-screen" class="menu-screen hidden">
+            <h1>Результаты</h1>
+            
+            <div class="rank-display">
+                Ваш ранг:
+                <span id="rank-name" class="rank-title">Новичок</span>
+            </div>
+            
+            <p>Очки: <span id="final-score" style="font-weight:bold; font-size: 24px;">0</span></p>
+            
+            <div class="btn-group">
+                <button class="btn" onclick="startGame()">Играть снова</button>
+                <button class="btn btn-secondary" onclick="showMenu()">Меню</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Конфигурация ---
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let isPlaying = false;
+        let isPaused = false;
+        
+        let config = { style: 'classic', theme: 'space', sizeLevel: 'medium' };
+        const sizes = { small: 30, medium: 50, large: 80 };
+        const emojis = ['🎯', '🔴', '👹', '👽', '💣', '⭐', '🍪'];
+
+        // Система рангов
+        const ranks = [
+            { score: 0, title: "Новичок", color: "#ccc" },
+            { score: 15, title: "Любитель", color: "#fff" },
+            { score: 25, title: "Стрелок", color: "#00ff00" },
+            { score: 35, title: "Профи", color: "#00ffff" },
+            { score: 45, title: "Эксперт", color: "#ff00ff" },
+            { score: 60, title: "Легенда", color: "#ffd700" }
+        ];
+
+        // DOM Elements
+        const root = document.documentElement;
+        const targetArea = document.getElementById('target-area');
+        const scoreDisplay = document.getElementById('score-display');
+        const timeDisplay = document.getElementById('time-display');
+        const finalScoreSpan = document.getElementById('final-score');
+        const rankNameSpan = document.getElementById('rank-name');
+        
+        // Screens & Overlays
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const pauseText = document.getElementById('pause-text');
+        const pauseControls = document.getElementById('pause-controls');
+        const settingsOverlay = document.getElementById('settings-overlay');
+
+        // --- Init ---
+        window.onload = () => {
+            loadSettings();
+            applySettings();
+        };
+
+        window.addEventListener('blur', () => {
+            if (isPlaying && !isPaused) togglePause();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isPlaying) {
+                togglePause();
+            }
+        });
+
+        // --- Game Logic ---
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            isPlaying = true;
+            isPaused = false;
+            
+            updateUI();
+            
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            targetArea.innerHTML = '';
+            
+            targetArea.classList.remove('paused-filter');
+            pauseText.classList.add('hidden');
+            pauseControls.classList.add('hidden');
+
+            spawnTarget();
+            clearInterval(gameInterval);
+            
+            gameInterval = setInterval(() => {
+                if (!isPaused) {
+                    timeLeft--;
+                    updateUI();
+                    if (timeLeft <= 0) endGame();
+                }
+            }, 1000);
+        }
+
+        function togglePause() {
+            if (!isPlaying) return;
+            
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                targetArea.classList.add('paused-filter');
+                pauseText.classList.remove('hidden');
+                pauseControls.classList.remove('hidden');
+            } else {
+                targetArea.classList.remove('paused-filter');
+                pauseText.classList.add('hidden');
+                pauseControls.classList.add('hidden');
+            }
+        }
+
+        function quitGame() {
+            isPlaying = false;
+            isPaused = false;
+            clearInterval(gameInterval);
+            
+            targetArea.classList.remove('paused-filter');
+            pauseText.classList.add('hidden');
+            pauseControls.classList.add('hidden');
+            
+            showMenu();
+        }
+
+        function endGame() {
+            isPlaying = false;
+            clearInterval(gameInterval);
+            
+            const playerRank = calculateRank(score);
+            rankNameSpan.textContent = playerRank.title;
+            rankNameSpan.style.color = playerRank.color;
+            rankNameSpan.style.textShadow = `0 0 10px ${playerRank.color}`;
+            
+            finalScoreSpan.textContent = score;
+            
+            gameOverScreen.classList.remove('hidden');
+            targetArea.innerHTML = '';
+        }
+
+        function calculateRank(finalScore) {
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (finalScore >= ranks[i].score) {
+                    return ranks[i];
+                }
+            }
+            return ranks[0];
+        }
+
+        function showMenu() {
+            gameOverScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        function spawnTarget() {
+            if (!isPlaying || isPaused) return;
+
+            const currentSize = sizes[config.sizeLevel];
+            const target = document.createElement('div');
+            
+            target.classList.add('target', `style-${config.style}`);
+            target.style.width = `${currentSize}px`;
+            target.style.height = `${currentSize}px`;
+
+            if (config.style === 'emoji') {
+                target.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                target.style.fontSize = `${currentSize * 0.7}px`;
+            }
+
+            const containerRect = document.getElementById('game-container').getBoundingClientRect();
+            const maxX = containerRect.width - currentSize;
+            const maxY = containerRect.height - currentSize;
+            
+            target.style.left = `${Math.random() * Math.max(0, maxX)}px`;
+            target.style.top = `${Math.random() * Math.max(0, maxY)}px`;
+
+            const clickHandler = (e) => {
+                if(e.type === 'touchstart') e.preventDefault(); 
+                handleHit(target);
+            };
+
+            target.addEventListener('mousedown', clickHandler);
+            target.addEventListener('touchstart', clickHandler);
+            targetArea.appendChild(target);
+        }
+
+        function handleHit(target) {
+            if (!isPlaying || isPaused || target.classList.contains('hit')) return;
+
+            score++;
+            updateUI();
+            
+            target.classList.add('hit');
+            setTimeout(() => target.remove(), 150);
+            spawnTarget();
+        }
+
+        function updateUI() {
+            scoreDisplay.textContent = `Счет: ${score}`;
+            timeDisplay.textContent = timeLeft;
+            timeDisplay.style.color = timeLeft <= 5 ? '#ff4444' : 'var(--text-color)';
+        }
+
+        // --- Settings Logic ---
+
+        function openSettings() {
+            document.getElementById('setting-style').value = config.style;
+            document.getElementById('setting-theme').value = config.theme;
+            document.getElementById('setting-size').value = config.sizeLevel;
+            settingsOverlay.classList.remove('hidden');
+        }
+
+        function saveAndCloseSettings() {
+            config.style = document.getElementById('setting-style').value;
+            config.theme = document.getElementById('setting-theme').value;
+            config.sizeLevel = document.getElementById('setting-size').value;
+
+            localStorage.setItem('aimTrainerConfig', JSON.stringify(config));
+            applySettings();
+            settingsOverlay.classList.add('hidden');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('aimTrainerConfig');
+            if (saved) config = JSON.parse(saved);
+        }
+
+        function applySettings() {
+            if (config.theme === 'space') root.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d)');
+            else if (config.theme === 'forest') root.style.setProperty('--bg-gradient', 'linear-gradient(to bottom, #134e5e, #71b280)');
+            else if (config.theme === 'minimal') {
+                root.style.setProperty('--bg-gradient', '#ecf0f1');
+                root.style.setProperty('--text-color', '#333');
+                root.style.setProperty('--ui-bg', 'rgba(255, 255, 255, 0.8)');
+            }
+
+            if (config.theme !== 'minimal') {
+                root.style.setProperty('--text-color', 'white');
+                root.style.setProperty('--ui-bg', 'rgba(0, 0, 0, 0.6)');
+            }
+
+            if (config.style === 'neon') {
+                root.style.setProperty('--target-color-1', '#0ff');
+                root.style.setProperty('--target-color-2', '#f0f');
+            } else {
+                root.style.setProperty('--target-color-1', 'red');
+                root.style.setProperty('--target-color-2', 'white');
+            }
+        }
+    </script>
+</body>
+</html>
