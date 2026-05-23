@@ -80,7 +80,7 @@ export default function RobotMascot({ className = '', size = 260 }: RobotMascotP
         animate={{ y: floatY }}
         transition={{ y: { repeat: Infinity, duration: floatDuration, ease: 'easeInOut' } }}
       >
-        <svg viewBox="0 0 200 275" className="w-full h-full drop-shadow-[0_15px_25px_rgba(139,92,246,0.15)]">
+        <svg viewBox="0 0 200 275" overflow="visible" className="w-full h-full drop-shadow-[0_15px_25px_rgba(139,92,246,0.15)]">
           <defs>
             <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#FFFFFF" />
@@ -192,7 +192,7 @@ export default function RobotMascot({ className = '', size = 260 }: RobotMascotP
           <motion.g
             animate={{ rotate: [-25, 25, -25] }}
             transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
-            style={{ transformOrigin: '48px 170px' }}
+            style={{ transformBox: 'fill-box', transformOrigin: 'top right' }}
           >
             <path d="M 52,174 Q 25,185 22,205" fill="none" stroke="#94A3B8" strokeWidth="10" strokeLinecap="round" />
             <circle cx="22" cy="205" r="7" fill="#06B6D4" />
@@ -204,7 +204,7 @@ export default function RobotMascot({ className = '', size = 260 }: RobotMascotP
               ? { rotate: [-20, 40, -20] }
               : { rotate: [25, -25, 25] }}
             transition={{ repeat: Infinity, duration: expression === 'excited' ? 1.6 : 4.5, ease: 'easeInOut' }}
-            style={{ transformOrigin: '152px 170px' }}
+            style={{ transformBox: 'fill-box', transformOrigin: 'top left' }}
           >
             <path d="M 148,174 Q 175,185 178,205" fill="none" stroke="#94A3B8" strokeWidth="10" strokeLinecap="round" />
             <circle cx="178" cy="205" r="7" fill="#06B6D4" />
