@@ -188,27 +188,37 @@ export default function RobotMascot({ className = '', size = 260 }: RobotMascotP
           />
           <circle cx="100" cy="190" r="5" fill="#FFFFFF" />
 
-          {/* Left arm — smooth wide wave ~50° total */}
-          <motion.g
-            animate={{ rotate: [-25, 25, -25] }}
+          {/* Left arm — animating path coords directly (±25° from shoulder at 52,174) */}
+          <motion.path
+            fill="none" stroke="#94A3B8" strokeWidth="10" strokeLinecap="round"
+            animate={{ d: [
+              'M 52,174 Q 23,173 12,189',
+              'M 52,174 Q 32,195 38,215',
+              'M 52,174 Q 23,173 12,189',
+            ] }}
             transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
-            style={{ transformBox: 'fill-box', transformOrigin: 'top right' }}
-          >
-            <path d="M 52,174 Q 25,185 22,205" fill="none" stroke="#94A3B8" strokeWidth="10" strokeLinecap="round" />
-            <circle cx="22" cy="205" r="7" fill="#06B6D4" />
-          </motion.g>
+          />
+          <motion.circle
+            r="7" fill="#06B6D4"
+            animate={{ cx: [12, 38, 12], cy: [189, 215, 189] }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
+          />
 
           {/* Right arm — opposite phase */}
-          <motion.g
-            animate={expression === 'excited' || expression === 'wink'
-              ? { rotate: [-20, 40, -20] }
-              : { rotate: [25, -25, 25] }}
-            transition={{ repeat: Infinity, duration: expression === 'excited' ? 1.6 : 4.5, ease: 'easeInOut' }}
-            style={{ transformBox: 'fill-box', transformOrigin: 'top left' }}
-          >
-            <path d="M 148,174 Q 175,185 178,205" fill="none" stroke="#94A3B8" strokeWidth="10" strokeLinecap="round" />
-            <circle cx="178" cy="205" r="7" fill="#06B6D4" />
-          </motion.g>
+          <motion.path
+            fill="none" stroke="#94A3B8" strokeWidth="10" strokeLinecap="round"
+            animate={{ d: [
+              'M 148,174 Q 168,195 162,215',
+              'M 148,174 Q 177,173 188,189',
+              'M 148,174 Q 168,195 162,215',
+            ] }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
+          />
+          <motion.circle
+            r="7" fill="#06B6D4"
+            animate={{ cx: [162, 188, 162], cy: [215, 189, 215] }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
+          />
 
           {/* Jet nozzle */}
           <path d="M 82,224 L 118,224 L 110,236 L 90,236 Z" fill="#64748B" />
