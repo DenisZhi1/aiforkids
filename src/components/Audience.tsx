@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { Users } from 'lucide-react'
+import { Users, PlayCircle } from 'lucide-react'
 import { AUDIENCE } from '../content'
 
 export default function Audience() {
@@ -59,17 +59,31 @@ export default function Audience() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex items-center gap-4 p-6 rounded-2xl bg-white border border-violet-100 shadow-sm"
-        >
-          <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-            <Users className="text-violet-600" size={22} />
-          </div>
-          <p className="text-slate-700 leading-relaxed">{AUDIENCE.note}</p>
-        </motion.div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="flex items-center gap-4 p-6 rounded-2xl bg-white border border-violet-100 shadow-sm flex-1"
+          >
+            <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+              <Users className="text-violet-600" size={22} />
+            </div>
+            <p className="text-slate-700 leading-relaxed">{AUDIENCE.note}</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.65 }}
+            className="flex items-center gap-4 p-6 rounded-2xl bg-white border border-teal-100 shadow-sm flex-1"
+          >
+            <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center shrink-0">
+              <PlayCircle className="text-teal-600" size={22} />
+            </div>
+            <p className="text-slate-700 leading-relaxed">{AUDIENCE.noteRecord}</p>
+          </motion.div>
+        </div>
       </div>
     </section>
   )
