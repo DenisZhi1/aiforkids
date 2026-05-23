@@ -89,9 +89,6 @@ export default function About() {
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
             О преподавателе курса
           </h2>
-          <p className="text-slate-400 max-w-xl mx-auto text-sm">
-            Мы отказались от нанимаемых неподготовленных кураторов. Каждое занятие ведёт лично автор программы.
-          </p>
         </motion.div>
 
         {/* Grid: photo left, text right */}
