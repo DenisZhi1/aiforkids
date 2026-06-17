@@ -5,293 +5,315 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI VIBE for Teachers 2026 — Трекер прогресса</title>
   <style>
-    /* ══ OASIS THEME ══════════════════════════════════════════════════════════ */
+    /* ══ OASIS — SUNSET THEME ════════════════════════════════════════════════ */
     :root {
-      --navy:         #070d1a;
-      --navy-2:       #0d1f3c;
-      --navy-3:       #112244;
-      --gold:         #e8b84b;
-      --gold-bright:  #ffd84d;
-      --glass-bg:     rgba(13, 31, 60, 0.65);
-      --glass-border: rgba(232, 184, 75, 0.18);
-      --text:         #dce8ff;
-      --text-muted:   #7a95bb;
-      --cell-empty:   rgba(255, 255, 255, 0.09);
-      --cell-done:    #e8b84b;
-      --blue-dot:     #5599ff;
-      --green-dot:    #33cc88;
+      --gold:        #f5c842;
+      --gold-dim:    rgba(245,200,66,0.18);
+      --gold-border: rgba(220,165,40,0.45);
+      --gold-glow:   rgba(245,200,66,0.25);
+      --card-bg:     rgba(6, 12, 32, 0.88);
+      --text:        #ffffff;
+      --text-sub:    rgba(200,215,255,0.55);
+      --star-empty:  rgba(255,255,255,0.14);
+      --blue-dot:    #5599ff;
+      --green-dot:   #33cc88;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      background: var(--navy);
-      background-image:
-        radial-gradient(ellipse 80% 40% at 10% 0%,  rgba(18, 70, 180, 0.22) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 30% at 90% 0%,  rgba(10, 50, 130, 0.18) 0%, transparent 50%),
-        radial-gradient(ellipse 100% 50% at 50% 110%, rgba(5, 30, 80, 0.4)  0%, transparent 55%);
       min-height: 100vh;
       color: var(--text);
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       font-size: 13px;
       line-height: 1.4;
+
+      /* ── Закатный фон ── */
+      background:
+        radial-gradient(ellipse 160% 25% at 50% 42%, rgba(230,110,20,0.55) 0%, transparent 55%),
+        radial-gradient(ellipse 200% 15% at 50% 40%, rgba(255,145,30,0.35) 0%, transparent 45%),
+        radial-gradient(ellipse 120% 35% at 20% 35%, rgba(140,30,90,0.35)  0%, transparent 50%),
+        radial-gradient(ellipse 120% 35% at 80% 35%, rgba(100,20,120,0.30) 0%, transparent 50%),
+        radial-gradient(ellipse 80%  60% at 50% 100%, rgba(5,18,50,0.7)    0%, transparent 60%),
+        linear-gradient(
+          180deg,
+          #060218  0%,
+          #110832 12%,
+          #240e50 24%,
+          #7a2800 40%,
+          #c06000 44%,
+          #7a3800 50%,
+          #0c1628 66%,
+          #050e1c 100%
+        );
+      background-attachment: fixed;
     }
 
-    /* ── Loading overlay ─────────────────────────────────────────────────── */
+    /* ── Loading ────────────────────────────────────────────────────────── */
     #loading {
       position: fixed; inset: 0;
-      background: var(--navy);
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 16px;
-      z-index: 999;
-      transition: opacity 0.4s;
+      background: #060218;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; z-index: 999; transition: opacity 0.4s;
     }
     #loading.hidden { opacity: 0; pointer-events: none; }
 
     .loader-ring {
       width: 44px; height: 44px;
-      border: 3px solid rgba(232,184,75,0.15);
+      border: 3px solid rgba(245,200,66,0.15);
       border-top-color: var(--gold);
       border-radius: 50%;
       animation: spin 0.85s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-brand { color: var(--gold); font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+    .loader-hint  { color: var(--text-sub); font-size: 12px; }
 
-    .loader-brand  { color: var(--gold); font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
-    .loader-hint   { color: var(--text-muted); font-size: 12px; }
-
-    /* ── Header ──────────────────────────────────────────────────────────── */
+    /* ── Header ─────────────────────────────────────────────────────────── */
     header {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 16px; padding: 11px 22px;
-      background: rgba(7, 13, 26, 0.94);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(232,184,75,0.11);
+      gap: 20px; padding: 12px 24px;
+      background: rgba(4, 8, 22, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(220,165,40,0.15);
     }
 
-    .logo { flex-shrink: 0; line-height: 1; }
+    /* Logo */
+    .logo { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      font-size: 28px; line-height: 1;
+      filter: drop-shadow(0 0 8px rgba(245,200,66,0.5));
+    }
+    .logo-text { line-height: 1.1; }
     .logo-name {
-      display: block;
-      font-size: 19px; font-weight: 800;
-      background: linear-gradient(130deg, var(--gold-bright) 20%, var(--gold));
+      display: block; font-size: 20px; font-weight: 900;
+      background: linear-gradient(130deg, #ffe066 10%, #f5a020 60%, #e07000);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; letter-spacing: -0.3px;
+      background-clip: text; letter-spacing: 0.5px;
     }
     .logo-sub {
-      display: block; font-size: 10px;
-      color: var(--text-muted); letter-spacing: 0.7px; text-transform: uppercase;
-      margin-top: 2px;
+      display: block; font-size: 9px; color: var(--text-sub);
+      letter-spacing: 1.2px; text-transform: uppercase; margin-top: 1px;
     }
 
-    /* Achievements bar */
+    /* Achievement badges */
     #ach-bar {
       flex: 1; display: flex; align-items: center;
-      justify-content: center; gap: 6px; flex-wrap: wrap;
+      justify-content: center; gap: 12px; flex-wrap: wrap;
     }
-    .ach-pill {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 5px 11px; border-radius: 20px;
-      background: rgba(232,184,75,0.08);
-      border: 1px solid rgba(232,184,75,0.22);
-      color: var(--gold); font-size: 12px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s; user-select: none;
+    .ach-badge {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; transition: transform 0.2s;
     }
-    .ach-pill:hover {
-      background: rgba(232,184,75,0.18); border-color: var(--gold);
-      transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,184,75,0.15);
+    .ach-badge:hover { transform: translateY(-3px); }
+    .ach-icon-ring {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #3a2000, #1a0e00);
+      border: 2px solid rgba(220,165,40,0.6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; line-height: 1;
+      box-shadow: 0 0 14px rgba(220,165,40,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
     }
-    .ach-emoji { font-size: 15px; }
-    .ach-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
+    .ach-count {
+      font-size: 13px; font-weight: 700; color: var(--gold);
+      text-shadow: 0 0 8px rgba(245,200,66,0.4);
+    }
+    .ach-empty { color: var(--text-sub); font-size: 12px; font-style: italic; }
 
     /* Search */
     .search-wrap { flex-shrink: 0; }
     #search {
-      display: block; width: 230px;
-      padding: 8px 14px 8px 34px;
+      width: 220px; padding: 8px 14px 8px 34px;
       background: rgba(255,255,255,0.05)
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%237a95bb' stroke-width='2.2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
         no-repeat 10px center;
-      border: 1px solid rgba(232,184,75,0.2);
+      border: 1px solid rgba(220,165,40,0.25);
       border-radius: 22px; color: var(--text);
       font-size: 13px; outline: none; transition: all 0.2s;
     }
-    #search::placeholder { color: var(--text-muted); }
+    #search::placeholder { color: rgba(180,180,180,0.5); }
     #search:focus {
-      border-color: rgba(232,184,75,0.45);
+      border-color: rgba(220,165,40,0.55);
       background-color: rgba(255,255,255,0.08);
-      box-shadow: 0 0 0 3px rgba(232,184,75,0.08);
+      box-shadow: 0 0 0 3px rgba(220,165,40,0.1);
     }
 
-    /* ── Stats bar ───────────────────────────────────────────────────────── */
+    /* ── Stats bar ──────────────────────────────────────────────────────── */
     .stats-bar {
       display: flex; justify-content: center;
-      background: rgba(13,31,60,0.4);
+      background: rgba(4,8,22,0.55);
       border-bottom: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
     }
     .stat-item {
-      display: flex; flex-direction: column; align-items: center;
-      padding: 9px 28px;
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 24px;
       border-right: 1px solid rgba(255,255,255,0.07);
     }
     .stat-item:last-child { border-right: none; }
-    .stat-val { font-size: 22px; font-weight: 700; color: var(--gold-bright); line-height: 1; }
-    .stat-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+    .stat-icon { font-size: 16px; opacity: 0.75; }
+    .stat-text { line-height: 1.2; }
+    .stat-val  { display: block; font-size: 17px; font-weight: 700; color: var(--gold); line-height: 1; }
+    .stat-lbl  { display: block; font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
 
-    /* ── Cards grid ──────────────────────────────────────────────────────── */
+    /* ── Cards grid ─────────────────────────────────────────────────────── */
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 10px;
       padding: 16px 16px 28px;
-      max-width: 1400px; margin: 0 auto;
+      max-width: 1440px; margin: 0 auto;
     }
 
-    /* ── Card ────────────────────────────────────────────────────────────── */
+    /* ── Card (ГОРИЗОНТАЛЬНАЯ: аватар слева, контент справа) ────────────── */
     .card {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--gold-border);
       border-radius: 12px;
-      padding: 12px 10px 10px;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 7px;
-      backdrop-filter: blur(8px);
-      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(12px);
+      min-height: 100px;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
       position: relative; overflow: hidden;
     }
+    /* верхняя полоска-блик */
     .card::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.025) 0%, transparent 45%);
-      pointer-events: none;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,220,80,0.25) 50%, transparent 100%);
     }
     .card:hover {
-      border-color: rgba(232,184,75,0.38);
+      border-color: rgba(220,165,40,0.65);
       transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(0,0,0,0.38);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.5);
     }
     .card.card-done {
-      border-color: rgba(232,184,75,0.45);
-      box-shadow: 0 0 18px rgba(232,184,75,0.1), 0 2px 14px rgba(0,0,0,0.32);
+      border-color: rgba(245,200,66,0.6);
+      box-shadow: 0 0 22px rgba(245,200,66,0.14), 0 4px 18px rgba(0,0,0,0.45);
+    }
+    /* внутреннее золотое свечение у завершённых */
+    .card.card-done::after {
+      content: ''; position: absolute; inset: 0; border-radius: 12px;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(245,200,66,0.05) 0%, transparent 70%);
+      pointer-events: none;
     }
 
     /* Avatar */
-    .avatar-wrap { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+    .avatar-wrap { position: relative; flex-shrink: 0; }
     .avatar {
-      width: 60px; height: 60px; border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(232,184,75,0.25);
-      display: block;
+      width: 70px; height: 70px; border-radius: 50%;
+      object-fit: cover; display: block;
+      border: 2px solid rgba(220,165,40,0.4);
     }
     .avatar-fb {
-      width: 60px; height: 60px; border-radius: 50%;
-      background: rgba(232,184,75,0.12);
-      border: 2px solid rgba(232,184,75,0.25);
+      width: 70px; height: 70px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #2a1a00, #0d0820);
+      border: 2px solid rgba(220,165,40,0.35);
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 700; color: var(--gold); letter-spacing: -1px;
+      font-size: 22px; font-weight: 700; color: var(--gold);
+      letter-spacing: -1px;
     }
     .sdot {
-      position: absolute; bottom: 1px; right: 1px;
-      width: 13px; height: 13px; border-radius: 50%;
-      border: 2px solid #0d1f3c;
+      position: absolute; bottom: 2px; right: 2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid #060e1e;
     }
     .sdot-paid { background: var(--blue-dot); }
     .sdot-don  { background: var(--green-dot); }
 
-    /* Name */
+    /* Card content */
+    .card-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+
     .card-name {
-      text-align: center; font-size: 12px; font-weight: 500;
-      color: var(--text); line-height: 1.3;
-      word-break: break-word; max-width: 100%;
+      font-size: 14px; font-weight: 700; color: #fff;
+      line-height: 1.2; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* Modules */
-    .modules { width: 100%; display: flex; flex-direction: column; gap: 4px; }
-    .mrow    { display: flex; align-items: center; gap: 4px; }
-    .mlbl    {
-      width: 18px; flex-shrink: 0;
-      font-size: 9px; font-weight: 700; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.3px;
+    /* Module rows */
+    .module-row {
+      display: flex; align-items: center; gap: 6px;
     }
-    .cells   { display: flex; gap: 3px; flex: 1; }
-    .cell {
-      width: 17px; height: 17px; border-radius: 3px;
-      background: var(--cell-empty);
-      border: 1px solid rgba(255,255,255,0.06);
-      flex-shrink: 0; transition: background 0.2s, box-shadow 0.2s;
+    .mlbl {
+      font-size: 9px; font-weight: 600; color: var(--text-sub);
+      text-transform: uppercase; letter-spacing: 0.4px;
+      width: 52px; flex-shrink: 0;
     }
-    .cell.done {
-      background: var(--cell-done);
-      border-color: rgba(255,200,50,0.35);
-      box-shadow: 0 0 5px rgba(232,184,75,0.38);
+    .stars { display: flex; gap: 2px; }
+    .star  { font-size: 15px; color: var(--star-empty); line-height: 1; transition: color 0.2s; }
+    .star.lit {
+      color: var(--gold);
+      filter: drop-shadow(0 0 3px rgba(245,200,66,0.55));
     }
 
-    /* Chest / certificate icon */
+    /* Chest icon */
     .chest {
-      width: 20px; height: 18px; flex-shrink: 0;
-      color: var(--gold-bright); opacity: 0.18;
+      margin-left: 4px; font-size: 16px; opacity: 0.18;
       transition: opacity 0.3s, filter 0.3s;
+      line-height: 1;
     }
     .chest.lit {
       opacity: 1;
-      filter: drop-shadow(0 0 5px rgba(255,216,77,0.8));
-      animation: chest-glow 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 6px rgba(245,200,66,0.8));
+      animation: chest-pulse 2.5s ease-in-out infinite;
     }
-    @keyframes chest-glow {
-      0%, 100% { filter: drop-shadow(0 0 5px  rgba(255,216,77,0.7)); }
-      50%       { filter: drop-shadow(0 0 11px rgba(255,216,77,1)); }
+    @keyframes chest-pulse {
+      0%, 100% { filter: drop-shadow(0 0 5px  rgba(245,200,66,0.7)); }
+      50%       { filter: drop-shadow(0 0 12px rgba(245,200,66,1)); }
     }
 
-    /* ── Achievement popup ───────────────────────────────────────────────── */
+    /* ── Achievement popup ──────────────────────────────────────────────── */
     #popup {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.72);
-      backdrop-filter: blur(5px);
-      z-index: 200;
-      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+      z-index: 200; display: flex; align-items: center; justify-content: center;
       padding: 20px;
     }
     #popup.hidden { display: none; }
     .popup-box {
-      background: #0d1f3c;
-      border: 1px solid rgba(232,184,75,0.3);
-      border-radius: 16px; padding: 24px;
+      background: linear-gradient(160deg, #12082a, #060e22);
+      border: 1px solid rgba(220,165,40,0.4);
+      border-radius: 16px; padding: 26px;
       max-width: 380px; width: 100%;
       max-height: 65vh; overflow-y: auto;
     }
-    .popup-title { color: var(--gold); font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+    .popup-icon { font-size: 36px; text-align: center; margin-bottom: 8px; }
+    .popup-title { color: var(--gold); font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 16px; }
     .popup-list  { list-style: none; display: flex; flex-direction: column; gap: 4px; }
     .popup-list li {
-      padding: 5px 10px; background: rgba(255,255,255,0.04);
-      border-radius: 6px; font-size: 12px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.04); border-radius: 6px; font-size: 12px;
     }
     .popup-close {
-      display: block; width: 100%; margin-top: 16px; padding: 8px;
-      background: rgba(232,184,75,0.1); border: 1px solid rgba(232,184,75,0.25);
-      border-radius: 8px; color: var(--gold); font-size: 13px; font-weight: 500;
+      display: block; width: 100%; margin-top: 16px; padding: 9px;
+      background: rgba(220,165,40,0.12); border: 1px solid rgba(220,165,40,0.3);
+      border-radius: 8px; color: var(--gold); font-size: 13px; font-weight: 600;
       cursor: pointer; transition: background 0.2s;
     }
-    .popup-close:hover { background: rgba(232,184,75,0.2); }
+    .popup-close:hover { background: rgba(220,165,40,0.22); }
 
-    /* ── Empty state ─────────────────────────────────────────────────────── */
+    /* ── Empty / Error ──────────────────────────────────────────────────── */
     .no-results {
       grid-column: 1 / -1; text-align: center;
-      padding: 64px 20px; color: var(--text-muted); font-size: 15px;
+      padding: 64px 20px; color: var(--text-sub); font-size: 15px;
     }
     .error-msg {
-      grid-column: 1 / -1; text-align: center; padding: 48px;
-      color: #ff7070;
+      grid-column: 1 / -1; text-align: center; padding: 48px; color: #ff7070;
     }
     .error-msg small { display: block; margin-top: 8px; opacity: 0.6; font-size: 11px; }
 
-    /* ── Footer ──────────────────────────────────────────────────────────── */
+    /* ── Footer ─────────────────────────────────────────────────────────── */
     footer {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 22px; margin-top: 4px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      color: var(--text-muted); font-size: 11px;
-      flex-wrap: wrap; gap: 10px;
+      padding: 12px 22px; flex-wrap: wrap; gap: 10px;
+      background: rgba(4,8,22,0.7); backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-sub); font-size: 11px;
     }
-    .legend { display: flex; align-items: center; gap: 16px; }
+    .legend { display: flex; align-items: center; gap: 18px; }
     .leg-item { display: flex; align-items: center; gap: 5px; }
     .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
     .leg-dot.paid { background: var(--blue-dot); }
@@ -312,6 +334,7 @@
 <!-- Achievement popup -->
 <div id="popup" class="hidden">
   <div class="popup-box">
+    <div class="popup-icon" id="popup-icon"></div>
     <div class="popup-title" id="popup-title"></div>
     <ul class="popup-list" id="popup-list"></ul>
     <button class="popup-close" id="popup-close">Закрыть</button>
@@ -321,21 +344,48 @@
 <!-- Header -->
 <header>
   <div class="logo">
-    <span class="logo-name">AI VIBE</span>
-    <span class="logo-sub">for Teachers 2026</span>
+    <span class="logo-icon">🌴</span>
+    <div class="logo-text">
+      <span class="logo-name">AI VIBE</span>
+      <span class="logo-sub">for Teachers 2026</span>
+    </div>
   </div>
   <div id="ach-bar"></div>
   <div class="search-wrap">
-    <input id="search" type="search" placeholder="Поиск по фамилии..." autocomplete="off" spellcheck="false">
+    <input id="search" type="search" placeholder="Search by name" autocomplete="off" spellcheck="false">
   </div>
 </header>
 
 <!-- Stats bar -->
 <div class="stats-bar">
-  <div class="stat-item"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">участников</div></div>
-  <div class="stat-item"><div class="stat-val" id="s-m1">—</div><div class="stat-lbl">завершили М1</div></div>
-  <div class="stat-item"><div class="stat-val" id="s-m2">—</div><div class="stat-lbl">завершили М2</div></div>
-  <div class="stat-item"><div class="stat-val" id="s-both">—</div><div class="stat-lbl">оба модуля</div></div>
+  <div class="stat-item">
+    <span class="stat-icon">👥</span>
+    <div class="stat-text">
+      <span class="stat-val" id="s-total">—</span>
+      <span class="stat-lbl">Total Members</span>
+    </div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-icon">📚</span>
+    <div class="stat-text">
+      <span class="stat-val" id="s-modules">2</span>
+      <span class="stat-lbl">Modules</span>
+    </div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-icon">📈</span>
+    <div class="stat-text">
+      <span class="stat-val" id="s-progress">—</span>
+      <span class="stat-lbl">Avg Progress</span>
+    </div>
+  </div>
+  <div class="stat-item">
+    <span class="stat-icon">🕐</span>
+    <div class="stat-text">
+      <span class="stat-val" id="s-updated">—</span>
+      <span class="stat-lbl">Last Updated</span>
+    </div>
+  </div>
 </div>
 
 <!-- Cards grid -->
@@ -344,19 +394,17 @@
 <!-- Footer -->
 <footer>
   <div class="legend">
-    <div class="leg-item"><div class="leg-dot paid"></div><span>Платник</span></div>
-    <div class="leg-item"><div class="leg-dot don"></div><span>Донор</span></div>
+    <div class="leg-item"><div class="leg-dot paid"></div><span>Premium Member</span></div>
+    <div class="leg-item"><div class="leg-dot don"></div><span>Donor Member</span></div>
   </div>
-  <div>Обновлено: <span id="last-updated">—</span></div>
+  <div>AI VIBE for Teachers 2026 — Progress Tracker</div>
 </footer>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getFirestore, collection, getDocs }
-                                  from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getFirestore, collection, getDocs }    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
-/* ── Firebase config (не секрет — защита через Security Rules) ── */
 const firebaseConfig = {
   apiKey:            "AIzaSyAX6RrYU7vxVHnEKyg1_Fd0ZjW17cD1F4k",
   authDomain:        "ai-vibe2026.firebaseapp.com",
@@ -369,35 +417,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-/* ── State ── */
-let allSubs   = [];        // [{vk_id, first_name, last_name, photo_url, status, module_1_done, …}]
-let projByVk  = {};        // vk_id -> { "1_1": 1, "2_3": 0, … }
-let achByCode = {};        // code  -> { title, emoji, people: [] }
+let allSubs   = [];
+let projByVk  = {};
+let achByCode = {};
 
-/* Emoji-карта известных кодов достижений (можно расширять) */
 const ACH_EMOJI = {
-  set_sail:      '⛵',
-  first_blood:   '🎯',
-  speedrun:      '⚡',
-  deep_dive:     '🤿',
-  all_modules:   '🏆',
-  early_bird:    '🌅',
-  collaborator:  '🤝',
-  innovator:     '💡',
-  perfectionist: '💎',
-  first_star:    '⭐',
+  set_sail: '⛵', first_blood: '🎯', speedrun: '⚡', deep_dive: '🤿',
+  all_modules: '🏆', early_bird: '🌅', collaborator: '🤝',
+  innovator: '💡', perfectionist: '💎', first_star: '⭐',
+  crown: '👑', flame: '🔥',
 };
 
-/* ── SVG сундучка (inline, чтобы можно было красить через color) ── */
-const CHEST_SVG = `<svg viewBox="0 0 24 20" xmlns="http://www.w3.org/2000/svg" width="20" height="18" aria-hidden="true">
-  <path d="M2 9 Q2 4 12 4 Q22 4 22 9Z" fill="currentColor" opacity="0.78"/>
-  <rect x="1.5" y="9" width="21" height="10.5" rx="2" fill="currentColor"/>
-  <rect x="9" y="7" width="6" height="5" rx="1" fill="rgba(0,0,0,0.22)"/>
-  <circle cx="12" cy="15" r="1.5" fill="rgba(0,0,0,0.2)"/>
-  <line x1="1.5" y1="12" x2="22.5" y2="12" stroke="rgba(0,0,0,0.14)" stroke-width="1"/>
-</svg>`;
-
-/* ── Загрузка данных из Firestore ── */
+/* ── Загрузка ── */
 async function loadData() {
   const [subSnap, projSnap, achSnap] = await Promise.all([
     getDocs(collection(db, 'subscribers')),
@@ -420,8 +451,8 @@ async function loadData() {
     const d = doc.data();
     if (!achByCode[d.achievement_code]) {
       achByCode[d.achievement_code] = {
-        title:  d.title || d.achievement_code,
-        emoji:  ACH_EMOJI[d.achievement_code] || '🏅',
+        title: d.title || d.achievement_code,
+        emoji: ACH_EMOJI[d.achievement_code] || '🏅',
         people: [],
       };
     }
@@ -430,7 +461,7 @@ async function loadData() {
     achByCode[d.achievement_code].people.push(name);
   });
 
-  /* Сортировка: сначала оба модуля, потом по фамилии */
+  /* Сортировка: завершившие оба модуля — первые, дальше по фамилии */
   allSubs.sort((a, b) => {
     const aDone = (a.module_1_done ? 1 : 0) + (a.module_2_done ? 1 : 0);
     const bDone = (b.module_1_done ? 1 : 0) + (b.module_2_done ? 1 : 0);
@@ -439,7 +470,7 @@ async function loadData() {
   });
 }
 
-/* ── Рендер строки достижений в шапке ── */
+/* ── Шапка с достижениями ── */
 function renderAchBar() {
   const bar     = document.getElementById('ach-bar');
   const entries = Object.entries(achByCode);
@@ -447,52 +478,54 @@ function renderAchBar() {
     bar.innerHTML = '<span class="ach-empty">Достижения появятся здесь</span>';
     return;
   }
-  bar.innerHTML = entries.map(([code, a]) =>
-    `<button class="ach-pill" data-code="${code}" title="${a.title}">
-       <span class="ach-emoji">${a.emoji}</span>
-       <span>${a.people.length}</span>
-     </button>`
+  bar.innerHTML = entries.map(([code, a]) => `
+    <div class="ach-badge" data-code="${code}" title="${a.title}">
+      <div class="ach-icon-ring">${a.emoji}</div>
+      <span class="ach-count">${a.people.length}</span>
+    </div>`
   ).join('');
-  bar.querySelectorAll('.ach-pill').forEach(btn =>
-    btn.addEventListener('click', () => showAchPopup(btn.dataset.code))
+  bar.querySelectorAll('.ach-badge').forEach(el =>
+    el.addEventListener('click', () => showAchPopup(el.dataset.code))
   );
 }
 
-/* ── Рендер статистики ── */
+/* ── Статистика ── */
 function renderStats() {
-  const m1   = allSubs.filter(s => s.module_1_done).length;
-  const m2   = allSubs.filter(s => s.module_2_done).length;
-  const both = allSubs.filter(s => s.module_1_done && s.module_2_done).length;
   document.getElementById('s-total').textContent = allSubs.length;
-  document.getElementById('s-m1').textContent    = m1;
-  document.getElementById('s-m2').textContent    = m2;
-  document.getElementById('s-both').textContent  = both;
+
+  /* Средний прогресс: каждый проект = 1/8 от 100% */
+  let totalStars = 0;
+  allSubs.forEach(s => {
+    const p = projByVk[s.vk_id] || {};
+    [1,2].forEach(mod => [1,2,3,4].forEach(n => { if (p[`${mod}_${n}`]) totalStars++; }));
+  });
+  const maxStars = allSubs.length * 8;
+  const pct = maxStars > 0 ? Math.round(totalStars / maxStars * 100) : 0;
+  document.getElementById('s-progress').textContent = pct + '%';
 
   const dates = allSubs.map(s => s.last_updated).filter(Boolean).sort();
-  if (dates.length)
-    document.getElementById('last-updated').textContent = dates.at(-1).slice(0, 10);
+  document.getElementById('s-updated').textContent = dates.length
+    ? dates.at(-1).slice(0, 10) : '—';
 }
 
 /* ── HTML одной карточки ── */
+function stars(mod, vkId) {
+  const p = projByVk[vkId] || {};
+  return [1,2,3,4].map(n =>
+    `<span class="star${p[`${mod}_${n}`] ? ' lit' : ''}">★</span>`
+  ).join('');
+}
+
 function cardHTML(s) {
-  const p      = projByVk[s.vk_id] || {};
-  const m1done = !!s.module_1_done;
-  const m2done = !!s.module_2_done;
+  const m1done  = !!s.module_1_done;
+  const m2done  = !!s.module_2_done;
   const allDone = m1done && m2done;
 
-  const cells = (mod) =>
-    [1,2,3,4].map(n =>
-      `<div class="cell${p[`${mod}_${n}`] ? ' done' : ''}"></div>`
-    ).join('');
-
-  const chest = (done) =>
-    `<div class="chest${done ? ' lit' : ''}" title="${done ? '🎉 Сертификат доступен!' : 'Завершите все 4 проекта'}">${CHEST_SVG}</div>`;
-
-  const dot = s.status === 'paid' ? '<span class="sdot sdot-paid" title="Платник"></span>'
-            : s.status === 'don'  ? '<span class="sdot sdot-don"  title="Донор"></span>'
+  const dot = s.status === 'paid' ? '<span class="sdot sdot-paid" title="Premium Member"></span>'
+            : s.status === 'don'  ? '<span class="sdot sdot-don"  title="Donor Member"></span>'
             : '';
 
-  const initials = `${(s.first_name || '')[0] || ''}${(s.last_name || '')[0] || ''}`.toUpperCase();
+  const initials = `${(s.first_name||'')[0]||''}${(s.last_name||'')[0]||''}`.toUpperCase();
 
   const avatarHtml = s.photo_url
     ? `<img class="avatar" src="${s.photo_url}" alt="${initials}" loading="lazy"
@@ -502,15 +535,23 @@ function cardHTML(s) {
 
   return `<div class="card${allDone ? ' card-done' : ''}">
     <div class="avatar-wrap">${avatarHtml}${dot}</div>
-    <div class="card-name">${s.first_name || ''} ${s.last_name || ''}</div>
-    <div class="modules">
-      <div class="mrow"><span class="mlbl">М1</span><div class="cells">${cells(1)}</div>${chest(m1done)}</div>
-      <div class="mrow"><span class="mlbl">М2</span><div class="cells">${cells(2)}</div>${chest(m2done)}</div>
+    <div class="card-content">
+      <div class="card-name">${s.first_name||''} ${s.last_name||''}</div>
+      <div class="module-row">
+        <span class="mlbl">Module 1</span>
+        <div class="stars">${stars(1, s.vk_id)}</div>
+        <span class="chest${m1done ? ' lit' : ''}" title="${m1done ? 'Сертификат доступен!' : ''}">🎁</span>
+      </div>
+      <div class="module-row">
+        <span class="mlbl">Module 2</span>
+        <div class="stars">${stars(2, s.vk_id)}</div>
+        <span class="chest${m2done ? ' lit' : ''}" title="${m2done ? 'Сертификат доступен!' : ''}">🎁</span>
+      </div>
     </div>
   </div>`;
 }
 
-/* ── Рендер сетки карточек (с фильтром по имени) ── */
+/* ── Рендер сетки ── */
 function renderCards(query = '') {
   const q    = query.trim().toLowerCase();
   const list = q
@@ -519,17 +560,17 @@ function renderCards(query = '') {
         (s.first_name || '').toLowerCase().includes(q))
     : allSubs;
 
-  const grid = document.getElementById('grid');
-  grid.innerHTML = list.length
+  document.getElementById('grid').innerHTML = list.length
     ? list.map(cardHTML).join('')
     : `<div class="no-results">По запросу «${query}» никого не найдено</div>`;
 }
 
-/* ── Попап «кто получил достижение» ── */
+/* ── Попап достижения ── */
 function showAchPopup(code) {
   const a = achByCode[code];
   if (!a) return;
-  document.getElementById('popup-title').textContent = `${a.emoji} ${a.title}`;
+  document.getElementById('popup-icon').textContent  = a.emoji;
+  document.getElementById('popup-title').textContent = a.title;
   document.getElementById('popup-list').innerHTML    = a.people.length
     ? a.people.map(n => `<li>${n}</li>`).join('')
     : '<li>Пока никто не получил это достижение</li>';
@@ -542,14 +583,14 @@ document.getElementById('popup').addEventListener('click', e => {
   if (e.target === e.currentTarget) document.getElementById('popup').classList.add('hidden');
 });
 
-/* ── Поиск (debounce 150ms) ── */
+/* ── Поиск ── */
 let searchTimer;
 document.getElementById('search').addEventListener('input', e => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => renderCards(e.target.value), 150);
 });
 
-/* ── Инициализация ── */
+/* ── Init ── */
 (async () => {
   try {
     await loadData();
@@ -559,8 +600,7 @@ document.getElementById('search').addEventListener('input', e => {
   } catch (err) {
     console.error('Ошибка загрузки:', err);
     document.getElementById('grid').innerHTML =
-      `<div class="error-msg">Ошибка загрузки данных
-       <small>${err.message}</small></div>`;
+      `<div class="error-msg">Ошибка загрузки данных<small>${err.message}</small></div>`;
   } finally {
     const loader = document.getElementById('loading');
     loader.classList.add('hidden');
@@ -568,6 +608,5 @@ document.getElementById('search').addEventListener('input', e => {
   }
 })();
 </script>
-
 </body>
 </html>
