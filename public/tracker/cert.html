@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сертификат — AI VIBE for Teachers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sofia+Sans+Condensed:wght@100..900&family=Montserrat:wght@100..900&family=Advent+Pro:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-night:         #0f2038;
+      --bg-overlay:       rgba(8, 16, 36, 0.25);
+      --glass-bg:         rgba(20, 38, 66, 0.55);
+      --glass-border:     rgba(255, 255, 255, 0.10);
+      --glass-border-top: rgba(255, 255, 255, 0.18);
+      --gold:             #f5c451;
+      --gold-bright:      #ffd97a;
+      --gold-deep:        #b8860b;
+      --gold-glow:        rgba(245, 196, 81, 0.45);
+      --text-main:        #f0f4fa;
+      --text-dim:         #9fb0c8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+      color: var(--text-main);
+      background:
+        linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+        url('bg-tropical-night.png') center / cover fixed no-repeat,
+        var(--bg-night);
+    }
+    body.modal-open { overflow: hidden; }
+
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    /* ── Shell ── */
+    .shell { max-width: 1680px; margin: 0 auto; padding: 20px; }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; padding: 16px 24px;
+      border-radius: 20px; margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .logo { height: 52px; width: auto; filter: drop-shadow(0 0 10px var(--gold-glow)); }
+    .hdr-title h1 { font-size: 20px; font-weight: 800; color: var(--gold); line-height: 1.2; }
+    .hdr-title p  { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+    #btn-dl {
+      min-width: 200px; min-height: 54px; padding: 0 24px;
+      background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 60%, var(--gold-deep) 100%);
+      color: #1a0e00; font-family: inherit; font-size: 15px; font-weight: 800;
+      border: none; border-radius: 16px; cursor: pointer;
+      box-shadow: 0 8px 24px var(--gold-glow);
+      transition: transform .16s, box-shadow .16s, opacity .16s;
+    }
+    #btn-dl:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 32px var(--gold-glow); }
+    #btn-dl:disabled { opacity: 0.5; cursor: wait; }
+
+    /* ── Layout ── */
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 20px; align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      border-radius: 20px; padding: 20px;
+      position: sticky; top: 20px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .panel { display: flex; flex-direction: column; gap: 12px; }
+    .panel-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--gold);
+      padding-bottom: 8px; border-bottom: 1px solid rgba(245,196,81,0.2);
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 11px; color: var(--text-dim); font-weight: 600; letter-spacing: 0.5px; }
+    .field input, .field select {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--glass-border-top);
+      border-radius: 10px; padding: 9px 12px;
+      color: var(--text-main); font-family: inherit; font-size: 13px; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow);
+    }
+    .field-row { display: flex; gap: 8px; }
+    .field-row .field { width: 72px; flex-shrink: 0; }
+    .field-row .field input[type=number] { padding: 6px 8px; font-size: 12px; width: 72px; }
+    .field-row .field label { font-size: 10px; }
+    input[type=number] { -moz-appearance: textfield; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .slider-wrap { display: flex; flex-direction: column; gap: 5px; }
+    .slider-hdr { display: flex; justify-content: space-between; align-items: center; }
+    .slider-hdr span { font-size: 11px; color: var(--text-dim); font-weight: 600; letter-spacing: 0.5px; }
+    .slider-val {
+      font-size: 11px; font-weight: 700; color: var(--text-main);
+      background: rgba(245,196,81,0.12); border-radius: 999px; padding: 2px 8px;
+    }
+    input[type=range] {
+      width: 100%; padding: 0; border: none;
+      background: rgba(255,255,255,0.12); height: 4px; border-radius: 999px;
+      accent-color: var(--gold); cursor: ew-resize;
+    }
+
+    /* ── Stage ── */
+    .stage {
+      border-radius: 20px; padding: 20px;
+      background: rgba(4, 10, 20, 0.7);
+      border: 1px solid var(--glass-border);
+    }
+    #status-msg { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
+    .canvas-wrap {
+      overflow: auto; border-radius: 14px; padding: 16px;
+      background:
+        repeating-conic-gradient(rgba(255,255,255,0.03) 0% 25%, transparent 0% 50%) 0 0 / 24px 24px;
+    }
+    #canvas {
+      display: block; width: 100%; max-width: 1100px; height: auto;
+      margin: 0 auto; border-radius: 10px; background: #fff;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+
+    /* ── Modal ── */
+    #modal {
+      position: fixed; inset: 0; z-index: 500;
+      display: grid; place-items: center; padding: 20px;
+      transition: opacity .22s ease, visibility .22s ease;
+    }
+    #modal[aria-hidden="true"]  { opacity: 0; visibility: hidden; pointer-events: none; }
+    #modal[aria-hidden="false"] { opacity: 1; visibility: visible; }
+    .modal-backdrop {
+      position: absolute; inset: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(5, 10, 20, 0.78);
+    }
+    .modal-box {
+      position: relative; width: min(680px, 100%);
+      background: rgba(10, 20, 44, 0.97);
+      border: 1px solid var(--glass-border-top);
+      border-radius: 28px; padding: 36px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      transform: translateY(16px) scale(.97);
+      transition: transform .24s ease;
+    }
+    #modal[aria-hidden="false"] .modal-box { transform: translateY(0) scale(1); }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 38px; height: 38px; border: none; border-radius: 50%;
+      background: rgba(255,255,255,0.08); color: var(--text-main);
+      font-size: 22px; line-height: 38px; text-align: center; cursor: pointer;
+      transition: background .15s, transform .15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.16); transform: rotate(90deg); }
+    .modal-kicker { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .modal-title  { font-size: clamp(22px, 3vw, 34px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+    .modal-body   { display: flex; flex-direction: column; gap: 12px; font-size: 15px; line-height: 1.65; }
+    .modal-body p { margin: 0; }
+    .modal-body strong { color: var(--gold); }
+    .modal-cta {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 240px; min-height: 56px; margin-top: 24px; padding: 0 28px;
+      border-radius: 999px; text-decoration: none;
+      background: linear-gradient(135deg, #fff 0%, var(--gold-bright) 48%, var(--gold) 100%);
+      color: #1a0e00; font-size: 15px; font-weight: 800;
+      box-shadow: 0 12px 28px var(--gold-glow);
+      animation: cta-pulse 1.5s ease-in-out infinite;
+      transition: transform .18s;
+    }
+    .modal-cta:hover { transform: translateY(-2px); }
+    @keyframes cta-pulse {
+      0%,100% { box-shadow: 0 12px 28px var(--gold-glow), 0 0 0 0   rgba(245,196,81,.3); }
+      50%      { box-shadow: 0 14px 32px var(--gold-glow), 0 0 0 12px rgba(245,196,81,0); }
+    }
+
+    @media (max-width: 1000px) { .editor-layout { grid-template-columns: 1fr; } .sidebar { position: static; } }
+    @media (max-width: 600px)  { .shell { padding: 12px; } header { gap: 12px; } #btn-dl { width: 100%; min-width: 0; } }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="glass">
+    <img src="assets/logo-deal-full.png" class="logo" alt="DE&AL">
+    <div class="hdr-title">
+      <h1 id="page-title">Редактор сертификата</h1>
+      <p id="status-msg">Загружаем шаблон…</p>
+    </div>
+    <button id="btn-dl" disabled>⬇ Скачать сертификат</button>
+  </header>
+
+  <main class="editor-layout">
+
+    <aside class="sidebar glass">
+      <div class="panel">
+        <div class="panel-title">Имя</div>
+        <div class="field">
+          <label for="name-input">Текст</label>
+          <input id="name-input" type="text" placeholder="Имя Фамилия" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="font-select">Шрифт</label>
+          <select id="font-select"></select>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span>Размер</span><span class="slider-val" id="name-size-val">147</span></div>
+          <input id="name-size" type="range" min="12" max="300" value="147">
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span>Жирность</span><span class="slider-val" id="name-weight-val">686</span></div>
+          <input id="name-weight" type="range" min="100" max="900" step="1" value="686">
+        </div>
+        <div class="field-row">
+          <div class="field"><label>X</label><input id="name-x" type="number" value="1379"></div>
+          <div class="field"><label>Y</label><input id="name-y" type="number" value="935"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Дата</div>
+        <div class="field">
+          <label for="date-input">Текст</label>
+          <input id="date-input" type="text" inputmode="numeric">
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span>Размер</span><span class="slider-val" id="date-size-val">50</span></div>
+          <input id="date-size" type="range" min="12" max="160" value="50">
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span>Жирность</span><span class="slider-val" id="date-weight-val">400</span></div>
+          <input id="date-weight" type="range" min="100" max="900" step="1" value="400">
+        </div>
+        <div class="field-row">
+          <div class="field"><label>X</label><input id="date-x" type="number" value="1851"></div>
+          <div class="field"><label>Y</label><input id="date-y" type="number" value="1181"></div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div class="canvas-wrap">
+        <canvas id="canvas"></canvas>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Celebration modal -->
+<div id="modal" aria-hidden="true">
+  <div class="modal-backdrop" id="modal-bd"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close">×</button>
+    <p class="modal-kicker">Сертификат уже у вас</p>
+    <h2 class="modal-title">ТОРЖЕСТВЕННО ПОЗДРАВЛЯЮ!</h2>
+    <div class="modal-body">
+      <p>Вы сделали это! Вы просто не представляете, насколько сильно я вами горжусь. Вы проделали такой сложный путь, проявили невероятную выдержку и усидчивость. Обнимаю изо всех сил!</p>
+      <p>Желаю творческих свершений и очередных подвигов! Прошу оставить отзыв и был бы рад, если похвастаетесь наработками в соцсети. Напишите пост, оставьте тег <strong>#AI_DEAL</strong> — приду нахвалю!</p>
+      <p>Увидимся в следующих проектах!</p>
+    </div>
+    <a class="modal-cta"
+       href="https://vk.ru/market/product/ii-kurs-sajty-i-igry-137991294-12123345"
+       target="_blank" rel="noopener noreferrer">Оставить отзыв ✨</a>
+  </div>
+</div>
+
+<script>
+const FONTS = [
+  { label: 'Sofia Sans Condensed', value: '"Sofia Sans Condensed", sans-serif' },
+  { label: 'Montserrat',           value: '"Montserrat", Arial, sans-serif' },
+  { label: 'Advent Pro',           value: '"Advent Pro", sans-serif' },
+  { label: 'Times New Roman',      value: '"Times New Roman", Georgia, serif' },
+  { label: 'Georgia',              value: 'Georgia, serif' },
+  { label: 'Arial',                value: 'Arial, sans-serif' },
+  { label: 'Verdana',              value: 'Verdana, sans-serif' },
+  { label: 'Courier New',          value: '"Courier New", monospace' },
+];
+const DATE_FONT  = '"Montserrat", "Arial Narrow", Arial, sans-serif';
+const NAME_COLOR = '#24207a';
+const DATE_COLOR = '#414141';
+
+const MODULES = {
+  '1': { title: 'Сертификат — Модуль 1', img: 'assets/cert1.png', key: 'aivibe-cert1-v1' },
+  '2': { title: 'Сертификат — Модуль 2', img: 'assets/cert2.png', key: 'aivibe-cert2-v1' },
+};
+const params = new URLSearchParams(location.search);
+const mod    = MODULES[params.get('module')] ? params.get('module') : '1';
+const cfg    = MODULES[mod];
+
+const DEFAULTS = {
+  nameX: 1379, nameY: 935,
+  nameFontFamily: FONTS[0].value, nameFontWeight: '686', nameFontSize: 147,
+  dateX: 1851, dateY: 1181, dateFontWeight: '400', dateFontSize: 50,
+};
+const stored = (() => { try { return JSON.parse(localStorage.getItem(cfg.key)) || {}; } catch { return {}; } })();
+const state  = {
+  ...DEFAULTS, ...stored,
+  name: params.get('name') || stored.name || 'Имя Фамилия',
+  date: formatToday(),
+};
+
+const canvas = document.getElementById('canvas');
+const ctx    = canvas.getContext('2d');
+const tmpl   = new Image();
+tmpl.crossOrigin = 'anonymous'; // нужно для toDataURL без SecurityError
+let   loaded = false;
+
+const $ = id => document.getElementById(id);
+const nameInput    = $('name-input');
+const fontSel      = $('font-select');
+const nameSizeR    = $('name-size');    const nameSizeV  = $('name-size-val');
+const nameWeightR  = $('name-weight');  const nameWeightV= $('name-weight-val');
+const nameXR       = $('name-x');
+const nameYR       = $('name-y');
+const dateInput    = $('date-input');
+const dateSizeR    = $('date-size');    const dateSizeV  = $('date-size-val');
+const dateWeightR  = $('date-weight');  const dateWeightV= $('date-weight-val');
+const dateXR       = $('date-x');
+const dateYR       = $('date-y');
+const btnDl        = $('btn-dl');
+const statusMsg    = $('status-msg');
+const modal        = $('modal');
+
+// Page title
+document.title = cfg.title + ' — AI VIBE';
+$('page-title').textContent = cfg.title;
+
+// Font options
+fontSel.innerHTML = FONTS.map(f => `<option value="${esc(f.value)}">${esc(f.label)}</option>`).join('');
+
+// Init inputs from state
+nameInput.value    = state.name;
+fontSel.value      = state.nameFontFamily;
+nameSizeR.value    = state.nameFontSize;    nameSizeV.textContent  = state.nameFontSize;
+nameWeightR.value  = state.nameFontWeight;  nameWeightV.textContent= state.nameFontWeight;
+nameXR.value       = state.nameX;
+nameYR.value       = state.nameY;
+dateInput.value    = state.date;
+dateSizeR.value    = state.dateFontSize;    dateSizeV.textContent  = state.dateFontSize;
+dateWeightR.value  = state.dateFontWeight;  dateWeightV.textContent= state.dateFontWeight;
+dateXR.value       = state.dateX;
+dateYR.value       = state.dateY;
+
+// Bindings
+nameInput.addEventListener('input',    () => { state.name = nameInput.value; draw(); });
+fontSel.addEventListener('change',     () => { state.nameFontFamily = fontSel.value; persist(); draw(); });
+nameSizeR.addEventListener('input',    () => { state.nameFontSize = +nameSizeR.value; nameSizeV.textContent = state.nameFontSize; persist(); draw(); });
+nameWeightR.addEventListener('input',  () => { state.nameFontWeight = nameWeightR.value; nameWeightV.textContent = state.nameFontWeight; persist(); draw(); });
+nameXR.addEventListener('input',       () => { state.nameX = +nameXR.value; persist(); draw(); });
+nameYR.addEventListener('input',       () => { state.nameY = +nameYR.value; persist(); draw(); });
+dateInput.addEventListener('input',    () => { state.date = dateInput.value; draw(); });
+dateSizeR.addEventListener('input',    () => { state.dateFontSize = +dateSizeR.value; dateSizeV.textContent = state.dateFontSize; persist(); draw(); });
+dateWeightR.addEventListener('input',  () => { state.dateFontWeight = dateWeightR.value; dateWeightV.textContent = state.dateFontWeight; persist(); draw(); });
+dateXR.addEventListener('input',       () => { state.dateX = +dateXR.value; persist(); draw(); });
+dateYR.addEventListener('input',       () => { state.dateY = +dateYR.value; persist(); draw(); });
+btnDl.addEventListener('click', download);
+
+// Modal
+$('modal-close').addEventListener('click', closeModal);
+$('modal-bd').addEventListener('click', closeModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Load template image
+tmpl.onload = async () => {
+  canvas.width  = tmpl.naturalWidth;
+  canvas.height = tmpl.naturalHeight;
+  await document.fonts.ready.catch(() => {});
+  draw();
+  loaded = true;
+  btnDl.disabled = false;
+  statusMsg.textContent = 'Готово. Меняй параметры слева — результат виден сразу.';
+};
+tmpl.onerror = () => {
+  canvas.width  = 2480;
+  canvas.height = 1754;
+  drawPlaceholder();
+  loaded = true;
+  btnDl.disabled = false;
+  statusMsg.textContent = 'Шаблон ещё не добавлен — используется заглушка.';
+};
+tmpl.src = cfg.img;
+
+function draw() {
+  if (!canvas.width) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (tmpl.complete && tmpl.naturalWidth) {
+    ctx.drawImage(tmpl, 0, 0, canvas.width, canvas.height);
+  } else {
+    drawPlaceholder();
+  }
+  text(state.name, state.nameX, state.nameY, state.nameFontSize, state.nameFontWeight, state.nameFontFamily, NAME_COLOR);
+  text(state.date, state.dateX, state.dateY, state.dateFontSize, state.dateFontWeight, DATE_FONT, DATE_COLOR);
+}
+
+function text(str, x, y, size, weight, family, color) {
+  if (!str) return;
+  ctx.save();
+  ctx.fillStyle    = color;
+  ctx.font         = `${weight} ${size}px ${family}`;
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(str, x, y);
+  ctx.restore();
+}
+
+function drawPlaceholder() {
+  const w = canvas.width, h = canvas.height;
+  ctx.fillStyle = '#0f2038'; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(245,196,81,0.4)'; ctx.lineWidth = 20;
+  ctx.strokeRect(40, 40, w - 80, h - 80);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#f5c451'; ctx.font = 'bold 100px Arial';
+  ctx.fillText(`СЕРТИФИКАТ — МОДУЛЬ ${mod}`, w / 2, h / 2 - 100);
+  ctx.fillStyle = '#9fb0c8'; ctx.font = '60px Arial';
+  ctx.fillText('Шаблон появится позже', w / 2, h / 2 + 80);
+}
+
+async function download() {
+  if (!loaded) return;
+  btnDl.disabled = true;
+  statusMsg.textContent = 'Готовим PNG…';
+  try {
+    await document.fonts.ready.catch(() => {});
+    draw();
+    const slug = (state.name || 'student').toLowerCase().replace(/\s+/g, '-').replace(/[^a-zа-яё0-9-]/gi, '');
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `sertifikat-modul${mod}-${slug || 'student'}.png`;
+    a.click();
+    statusMsg.textContent = 'PNG скачан!';
+    openModal();
+  } catch (err) {
+    console.error('Ошибка скачивания:', err);
+    statusMsg.textContent = `Ошибка: ${err.message || 'не удалось создать PNG'}`;
+  } finally {
+    btnDl.disabled = false;
+  }
+}
+
+function openModal()  { modal.setAttribute('aria-hidden', 'false'); document.body.classList.add('modal-open'); }
+function closeModal() { modal.setAttribute('aria-hidden', 'true');  document.body.classList.remove('modal-open'); }
+
+function persist() {
+  try {
+    localStorage.setItem(cfg.key, JSON.stringify({
+      nameFontFamily: state.nameFontFamily, nameFontWeight: state.nameFontWeight,
+      nameFontSize: state.nameFontSize, nameX: state.nameX, nameY: state.nameY,
+      dateFontWeight: state.dateFontWeight, dateFontSize: state.dateFontSize,
+      dateX: state.dateX, dateY: state.dateY,
+    }));
+  } catch {}
+}
+
+function formatToday() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
