@@ -23,11 +23,6 @@
       --gold-deep:            #b8860b;
       --gold-glow:            rgba(245, 196, 81, 0.45);
 
-      --status-premium:       #4aa3ff;
-      --status-premium-glow:  rgba(74, 163, 255, 0.5);
-      --status-donor:         #34d399;
-      --status-donor-glow:    rgba(52, 211, 153, 0.5);
-
       --text-main:            #f0f4fa;
       --text-dim:             #9fb0c8;
       --text-faint:           #5e7a9c;
@@ -198,16 +193,6 @@
       border: 2px solid rgba(255,255,255,0.25);
       box-shadow: 0 0 0 2px var(--bg-night);
     }
-    /* Premium (paid) — золотое кольцо + свечение */
-    .avatar.premium {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 2px var(--bg-night), 0 0 14px var(--gold-glow);
-    }
-    /* Donor (don) — зелёное кольцо + свечение */
-    .avatar.donor {
-      border-color: var(--status-donor);
-      box-shadow: 0 0 0 2px var(--bg-night), 0 0 14px var(--status-donor-glow);
-    }
     .avatar-fb {
       width: 52px; height: 52px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -215,22 +200,6 @@
       background: rgba(15, 30, 60, 0.8);
       border: 2px solid rgba(255,255,255,0.25);
       box-shadow: 0 0 0 2px var(--bg-night);
-    }
-    .avatar-fb.premium {
-      color: var(--gold);
-      border-color: var(--gold);
-      box-shadow: 0 0 0 2px var(--bg-night), 0 0 14px var(--gold-glow);
-    }
-    .avatar-fb.donor {
-      border-color: var(--status-donor);
-      box-shadow: 0 0 0 2px var(--bg-night), 0 0 14px var(--status-donor-glow);
-    }
-
-    /* Кристалл донора (img) — левый верхний угол карточки */
-    .donor-gem {
-      position: absolute; top: 8px; left: 8px;
-      width: 18px; height: 18px;
-      filter: drop-shadow(0 0 8px var(--status-donor-glow));
     }
 
     .card-name {
@@ -329,8 +298,6 @@
       display: inline-block; width: 12px; height: 12px;
       border-radius: 50%; vertical-align: -1px;
     }
-    .legend-dot.premium { background: var(--status-premium); box-shadow: 0 0 6px var(--status-premium-glow); }
-    .legend-dot.donor   { background: var(--status-donor);   box-shadow: 0 0 6px var(--status-donor-glow); }
     .footer-stats { display: flex; gap: 20px; align-items: center; }
     .footer-stats span { display: flex; align-items: center; gap: 6px; }
     .footer-stats img  { height: 18px; width: auto; opacity: 0.75; }
@@ -504,21 +471,14 @@ function cardHTML(s) {
   const m2done  = !!s.module_2_done;
   const frameClass = m1done && m2done ? ' gold' : (m1done || m2done) ? ' silver' : '';
 
-  // premium → золотое кольцо у аватара
-  // donor   → зелёное кольцо у аватара + кристалл gem-donor в углу карточки
-  const statusClass = s.status === 'paid' ? 'premium' : s.status === 'don' ? 'donor' : '';
-  const donorGem    = s.status === 'don'
-    ? '<img src="assets/gem-donor.png" class="donor-gem" alt="Донор">'
-    : '';
-
   const initials = `${(s.first_name||'')[0]||''}${(s.last_name||'')[0]||''}`.toUpperCase();
 
   const avatarHTML = s.photo_url
-    ? `<img class="avatar${statusClass ? ' ' + statusClass : ''}"
+    ? `<img class="avatar"
             src="${s.photo_url}" alt="${initials}" loading="lazy"
             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-       <div class="avatar-fb${statusClass ? ' ' + statusClass : ''}" style="display:none">${initials}</div>`
-    : `<div class="avatar-fb${statusClass ? ' ' + statusClass : ''}">${initials}</div>`;
+       <div class="avatar-fb" style="display:none">${initials}</div>`
+    : `<div class="avatar-fb">${initials}</div>`;
 
   const fullName = `${s.first_name||''} ${s.last_name||''}`.trim();
 
@@ -529,7 +489,6 @@ function cardHTML(s) {
           alt="" title="${unlocked ? 'Получить сертификат!' : ''}">`;
 
   return `<div class="card glass${frameClass}">
-    ${donorGem}
     <div class="card-head">
       <div class="avatar-wrap">${avatarHTML}</div>
       <div class="card-name">${fullName}</div>

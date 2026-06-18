@@ -209,15 +209,10 @@
     .cb.proj:hover          { border-color: rgba(245,196,81,.45); background: rgba(245,196,81,.06); }
     .cb.proj.on             { background: rgba(245,196,81,.18); border-color: var(--gold); color: var(--gold); }
 
-    /* Paid — blue */
-    .cb.paid                { color: rgba(74,163,255,.35); font-size: 15px; border-color: rgba(74,163,255,.2); }
-    .cb.paid:hover          { border-color: rgba(74,163,255,.5); color: rgba(74,163,255,.6); }
-    .cb.paid.on             { background: rgba(74,163,255,.18); border-color: var(--blue); color: var(--blue); box-shadow: 0 0 8px var(--blue-glow); }
-
-    /* Donor — green */
-    .cb.don                 { color: rgba(52,211,153,.35); font-size: 15px; border-color: rgba(52,211,153,.2); }
-    .cb.don:hover           { border-color: rgba(52,211,153,.5); color: rgba(52,211,153,.6); }
-    .cb.don.on              { background: rgba(52,211,153,.18); border-color: var(--green); color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+    /* Payment module — gold */
+    .cb.pm                  { color: rgba(245,196,81,.35); font-size: 11px; font-weight: 700; border-color: rgba(245,196,81,.2); }
+    .cb.pm:hover            { border-color: rgba(245,196,81,.5); color: rgba(245,196,81,.7); }
+    .cb.pm.on               { background: rgba(245,196,81,.18); border-color: var(--gold); color: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
 
     /* Chest indicator */
     .chest { font-size: 15px; margin-left: 3px; opacity: .18; transition: all .2s; flex-shrink: 0; }
@@ -262,7 +257,8 @@
     </div>
     <div class="filters">
       <button class="fbtn active" data-f="all">Все</button>
-      <button class="fbtn" data-f="paid">💳 Платники</button>
+      <button class="fbtn" data-f="pm1">💳 М1 оплачен</button>
+      <button class="fbtn" data-f="pm2">💰 М2 оплачен</button>
       <button class="fbtn" data-f="don">💎 Доноры</button>
       <button class="fbtn" data-f="m1">М1 ✓</button>
       <button class="fbtn" data-f="m2">М2 ✓</button>
@@ -276,7 +272,7 @@
 
   <div class="thead tbl-cols">
     <div class="th">Участник</div>
-    <div class="th c">Статус</div>
+    <div class="th c">Оплата</div>
     <div class="th c">Модуль 1 · проекты · 🎁</div>
     <div class="th c">Модуль 2 · проекты · 🎁</div>
   </div>
@@ -403,10 +399,11 @@ function rowHTML(s) {
     ? `<img class="av" src="${s.photo_url}" loading="lazy" alt="${ini}" onerror="this.replaceWith(fb('${ini}'))">`
     : `<div class="av-fb">${ini}</div>`;
 
-  const paid = s.status === 'paid';
-  const don  = s.status === 'don';
-  const m1d  = [1,2,3,4].every(n => p[`1_${n}`]);
-  const m2d  = [1,2,3,4].every(n => p[`2_${n}`]);
+  const pm1 = (s.paid_module_1 || 0) === 1;
+  const pm2 = (s.paid_module_2 || 0) === 1;
+  const isDonor = !pm1 && !pm2;
+  const m1d = [1,2,3,4].every(n => p[`1_${n}`]);
+  const m2d = [1,2,3,4].every(n => p[`2_${n}`]);
 
   const projs = mod => [1,2,3,4].map(n => {
     const on = !!p[`${mod}_${n}`];
@@ -416,13 +413,15 @@ function rowHTML(s) {
   return `<div class="row tbl-cols"
     data-vk="${id}"
     data-name="${((s.first_name||'')+' '+(s.last_name||'')).toLowerCase()}"
-    data-status="${s.status||''}"
+    data-pm1="${pm1?'1':'0'}"
+    data-pm2="${pm2?'1':'0'}"
+    data-don="${isDonor?'1':'0'}"
     data-m1="${m1d?'1':'0'}"
     data-m2="${m2d?'1':'0'}">
     <div class="col-name">${av}<span class="row-name">${s.first_name||''} ${s.last_name||''}</span></div>
     <div class="col-status">
-      <button class="cb paid${paid?' on':''}" data-vk="${id}" data-st="paid" id="cs-p-${id}" title="Платник">💳</button>
-      <button class="cb don${don?' on':''}"   data-vk="${id}" data-st="don"  id="cs-d-${id}" title="Донор">💎</button>
+      <button class="cb pm${pm1?' on':''}" data-vk="${id}" data-pm="1" id="cpm1-${id}" title="М1 оплачен">М1</button>
+      <button class="cb pm${pm2?' on':''}" data-vk="${id}" data-pm="2" id="cpm2-${id}" title="М2 оплачен">М2</button>
     </div>
     <div class="col-mod">${projs(1)}<span class="chest${m1d?' lit':''}" id="ch-${id}-1">🎁</span></div>
     <div class="col-mod">${projs(2)}<span class="chest${m2d?' lit':''}" id="ch-${id}-2">🎁</span></div>
@@ -450,10 +449,11 @@ function applyFilter() {
     const ok =
       (!q || row.dataset.name.includes(q)) &&
       (activeF === 'all'
-        || (activeF === 'paid' && row.dataset.status === 'paid')
-        || (activeF === 'don'  && row.dataset.status === 'don')
-        || (activeF === 'm1'   && row.dataset.m1 === '1')
-        || (activeF === 'm2'   && row.dataset.m2 === '1'));
+        || (activeF === 'pm1' && row.dataset.pm1 === '1')
+        || (activeF === 'pm2' && row.dataset.pm2 === '1')
+        || (activeF === 'don' && row.dataset.don === '1')
+        || (activeF === 'm1'  && row.dataset.m1  === '1')
+        || (activeF === 'm2'  && row.dataset.m2  === '1'));
     row.style.display = ok ? '' : 'none';
     if (ok) vis++;
   });
@@ -481,36 +481,45 @@ listEl.addEventListener('click', e => {
   if (!cb) return;
   const vkId = +cb.dataset.vk;
   if (!vkId) return;
-  if (cb.dataset.st)  toggleStatus(vkId, cb.dataset.st);
+  if (cb.dataset.pm)  togglePaid(vkId, +cb.dataset.pm);
   else if (cb.dataset.mod) toggleProject(vkId, +cb.dataset.mod, +cb.dataset.pn);
 });
 
-/* ══ STATUS TOGGLE ═══════════════════════════════════════════════════════ */
-async function toggleStatus(vkId, st) {
+/* ══ PAYMENT TOGGLE ══════════════════════════════════════════════════════ */
+async function togglePaid(vkId, mod) {
   const s   = subsMap[vkId];
-  const old = s.status || '';
-  const val = old === st ? '' : st;
+  const key = mod === 1 ? 'paid_module_1' : 'paid_module_2';
+  const old = s[key] || 0;
+  const val = old === 1 ? 0 : 1;
 
-  s.status = val;
-  statusUI(vkId, val);
+  s[key] = val;
+  paidUI(vkId);
 
   try {
-    await updateDoc(doc(db, 'subscribers', String(vkId)), { status: val });
+    await updateDoc(doc(db, 'subscribers', String(vkId)), { [key]: val });
     toast('Сохранено');
   } catch (err) {
-    s.status = old;
-    statusUI(vkId, old);
+    s[key] = old;
+    paidUI(vkId);
     toast('Ошибка: ' + err.message, true);
   }
 }
 
-function statusUI(vkId, status) {
-  const p = $(`cs-p-${vkId}`);
-  const d = $(`cs-d-${vkId}`);
-  if (p) p.classList.toggle('on', status === 'paid');
-  if (d) d.classList.toggle('on', status === 'don');
+function paidUI(vkId) {
+  const s    = subsMap[vkId];
+  const pm1  = (s.paid_module_1 || 0) === 1;
+  const pm2  = (s.paid_module_2 || 0) === 1;
+  const b1   = $(`cpm1-${vkId}`);
+  const b2   = $(`cpm2-${vkId}`);
+  if (b1) b1.classList.toggle('on', pm1);
+  if (b2) b2.classList.toggle('on', pm2);
   const row = listEl.querySelector(`.row[data-vk="${vkId}"]`);
-  if (row) { row.dataset.status = status; applyFilter(); }
+  if (row) {
+    row.dataset.pm1 = pm1 ? '1' : '0';
+    row.dataset.pm2 = pm2 ? '1' : '0';
+    row.dataset.don = (!pm1 && !pm2) ? '1' : '0';
+    applyFilter();
+  }
 }
 
 /* ══ PROJECT TOGGLE ══════════════════════════════════════════════════════ */
