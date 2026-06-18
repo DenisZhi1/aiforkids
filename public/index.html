@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админка — AI VIBE for Teachers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-night:         #0f2038;
+      --bg-overlay:       rgba(8, 16, 36, 0.55);
+      --glass-bg:         rgba(20, 38, 66, 0.55);
+      --glass-border:     rgba(255, 255, 255, 0.10);
+      --glass-border-top: rgba(255, 255, 255, 0.18);
+      --gold:             #f5c451;
+      --gold-bright:      #ffd97a;
+      --gold-deep:        #b8860b;
+      --gold-glow:        rgba(245, 196, 81, 0.45);
+      --blue:             #4aa3ff;
+      --blue-glow:        rgba(74, 163, 255, 0.4);
+      --green:            #34d399;
+      --green-glow:       rgba(52, 211, 153, 0.4);
+      --red:              #ff6b6b;
+      --text-main:        #f0f4fa;
+      --text-dim:         #9fb0c8;
+      --text-faint:       #5e7a9c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      color: var(--text-main);
+      background:
+        linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+        url('../tracker/bg-tropical-night.png') center / cover fixed no-repeat,
+        var(--bg-night);
+    }
+
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-top-color: var(--glass-border-top);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .hidden { display: none !important; }
+
+    /* ═══════════ LOGIN ═══════════════════════════════════════════════════ */
+    #login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-box {
+      width: 100%; max-width: 360px; border-radius: 24px; padding: 36px;
+      display: flex; flex-direction: column; align-items: center; gap: 22px;
+    }
+    .logo { height: 48px; width: auto; filter: drop-shadow(0 0 10px var(--gold-glow)); }
+    .login-box h2 { font-size: 17px; font-weight: 700; color: var(--text-main); }
+    #login-form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .ifield {
+      width: 100%; padding: 11px 14px;
+      background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border-top);
+      border-radius: 12px; color: var(--text-main); font-family: inherit; font-size: 14px;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .ifield:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+    .ifield::placeholder { color: var(--text-faint); }
+    #login-err {
+      font-size: 12px; color: var(--red); text-align: center;
+      padding: 7px 12px; background: rgba(255,107,107,0.1); border-radius: 8px;
+    }
+    .btn-gold {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold) 60%, var(--gold-deep));
+      color: #1a0e00; font-family: inherit; font-size: 14px; font-weight: 800;
+      border: none; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 6px 18px var(--gold-glow);
+      transition: transform .15s, opacity .15s;
+    }
+    .btn-gold:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn-gold:disabled { opacity: 0.5; cursor: wait; }
+
+    /* ═══════════ ADMIN ═══════════════════════════════════════════════════ */
+    #admin-screen { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── Header ── */
+    .adm-hdr {
+      position: sticky; top: 12px; z-index: 100;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 18px; margin: 12px 12px 0;
+      border-radius: 18px; flex-wrap: wrap;
+    }
+    .adm-hdr .logo { height: 38px; }
+
+    .search-wrap { position: relative; flex: 1; min-width: 160px; max-width: 320px; }
+    .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; opacity: .65; pointer-events: none; }
+    #search {
+      width: 100%; padding: 8px 12px 8px 34px;
+      background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border-top);
+      border-radius: 10px; color: var(--text-main); font-family: inherit; font-size: 13px;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    #search:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-glow); }
+    #search::placeholder { color: var(--text-faint); }
+
+    .filters { display: flex; gap: 5px; flex-wrap: wrap; }
+    .fbtn {
+      padding: 5px 11px; border-radius: 999px;
+      border: 1px solid var(--glass-border-top);
+      background: rgba(0,0,0,0.25); color: var(--text-dim);
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .fbtn:hover  { border-color: rgba(245,196,81,.4); color: var(--text-main); }
+    .fbtn.active { background: rgba(245,196,81,.12); border-color: var(--gold); color: var(--gold); }
+
+    .hdr-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+    #counter    { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+    #user-email { font-size: 11px; color: var(--text-faint); white-space: nowrap; }
+    .btn-out {
+      padding: 5px 13px; border-radius: 10px;
+      background: rgba(255,107,107,.1); border: 1px solid rgba(255,107,107,.3);
+      color: var(--red); font-family: inherit; font-size: 11px; font-weight: 700;
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-out:hover { background: rgba(255,107,107,.2); }
+
+    /* ── Table head ── */
+    .tbl-cols {
+      display: grid;
+      grid-template-columns: minmax(160px, 220px) 82px 190px 190px;
+      align-items: center;
+      width: fit-content;
+    }
+    #list { overflow-x: auto; }
+    .thead { width: fit-content; max-width: calc(100% - 24px); }
+    .thead {
+      position: sticky; top: 84px; z-index: 50;
+      padding: 7px 18px; margin: 8px 12px 0;
+      border-radius: 12px 12px 0 0;
+      background: rgba(8, 18, 42, 0.92);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+    }
+    .th {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-faint); padding: 0 8px;
+    }
+    .th.c { text-align: center; }
+
+    /* ── List ── */
+    #list {
+      flex: 1; margin: 0 12px 20px;
+      border: 1px solid var(--glass-border); border-top: none;
+      border-radius: 0 0 16px 16px; overflow: hidden;
+    }
+    #load-msg { padding: 48px; text-align: center; color: var(--text-dim); }
+
+    /* ── Row ── */
+    .row {
+      padding: 5px 18px; min-height: 46px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: background .1s;
+    }
+    .row:nth-child(odd)  { background: rgba(255,255,255,0.025); }
+    .row:nth-child(even) { background: transparent; }
+    .row:hover           { background: rgba(245,196,81,0.04); }
+    .row:last-child      { border-bottom: none; }
+
+    /* ── Name col ── */
+    .col-name { display: flex; align-items: center; gap: 9px; padding-right: 8px; overflow: hidden; }
+    .av {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      object-fit: cover; border: 1px solid rgba(255,255,255,0.12);
+    }
+    .av-fb {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(20,40,80,0.8); border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: var(--text-dim);
+    }
+    .row-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Status col ── */
+    .col-status { display: flex; gap: 5px; justify-content: center; }
+
+    /* ── Module col ── */
+    .col-mod { display: flex; align-items: center; gap: 4px; padding: 0 8px; }
+
+    /* ── Checkboxes ── */
+    .cb {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 7px;
+      background: rgba(0,0,0,0.2);
+      cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .12s; user-select: none; color: transparent;
+    }
+    .cb:active { transform: scale(.92); }
+
+    /* Project — gold tick */
+    .cb.proj:hover          { border-color: rgba(245,196,81,.45); background: rgba(245,196,81,.06); }
+    .cb.proj.on             { background: rgba(245,196,81,.18); border-color: var(--gold); color: var(--gold); }
+
+    /* Payment module — gold */
+    .cb.pm                  { color: rgba(245,196,81,.35); font-size: 11px; font-weight: 700; border-color: rgba(245,196,81,.2); }
+    .cb.pm:hover            { border-color: rgba(245,196,81,.5); color: rgba(245,196,81,.7); }
+    .cb.pm.on               { background: rgba(245,196,81,.18); border-color: var(--gold); color: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
+
+    /* Chest indicator */
+    .chest { font-size: 15px; margin-left: 3px; opacity: .18; transition: all .2s; flex-shrink: 0; }
+    .chest.lit { opacity: 1; filter: drop-shadow(0 0 5px var(--gold-glow)); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      padding: 9px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
+      z-index: 999; pointer-events: none; white-space: nowrap;
+      transition: opacity .3s ease;
+    }
+    #toast.ok    { background: rgba(52,211,153,0.92); color: #0a1a10; opacity: 1; }
+    #toast.err   { background: rgba(255,107,107,0.92); color: #fff;    opacity: 1; }
+    #toast.off   { opacity: 0; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box glass">
+    <img class="logo" src="../tracker/assets/logo-deal-full.png" alt="DE&AL">
+    <h2>Вход в систему</h2>
+    <form id="login-form" autocomplete="on">
+      <input class="ifield" id="f-email"    type="email"    placeholder="Логин (email)"  required autocomplete="email">
+      <input class="ifield" id="f-password" type="password" placeholder="Пароль"          required autocomplete="current-password">
+      <div id="login-err" class="hidden"></div>
+      <button class="btn-gold" id="btn-login" type="submit">Войти</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ ADMIN ════════════════════════════════════════════════════════════ -->
+<div id="admin-screen" class="hidden">
+
+  <header class="adm-hdr glass">
+    <img class="logo" src="../tracker/assets/logo-deal-full.png" alt="">
+    <div class="search-wrap">
+      <img class="search-icon" src="../tracker/assets/icon-search.png" alt="">
+      <input id="search" type="search" placeholder="Поиск по фамилии…" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="filters">
+      <button class="fbtn active" data-f="all">Все</button>
+      <button class="fbtn" data-f="pm1">💳 М1 оплачен</button>
+      <button class="fbtn" data-f="pm2">💰 М2 оплачен</button>
+      <button class="fbtn" data-f="don">💎 Доноры</button>
+      <button class="fbtn" data-f="m1">М1 ✓</button>
+      <button class="fbtn" data-f="m2">М2 ✓</button>
+    </div>
+    <div class="hdr-right">
+      <span id="counter">—</span>
+      <span id="user-email"></span>
+      <button class="btn-out" id="btn-out">Выйти</button>
+    </div>
+  </header>
+
+  <div class="thead tbl-cols">
+    <div class="th">Участник</div>
+    <div class="th c">Оплата</div>
+    <div class="th c">Модуль 1 · проекты · 🎁</div>
+    <div class="th c">Модуль 2 · проекты · 🎁</div>
+  </div>
+
+  <div id="list"><div id="load-msg">Загружаем данные…</div></div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast" class="off"></div>
+
+<!-- ═══ SCRIPT ══════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from
+  'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getFirestore, collection, getDocs, doc, updateDoc, setDoc } from
+  'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, signOut,
+         onAuthStateChanged, browserLocalPersistence, setPersistence } from
+  'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey:            'AIzaSyAX6RrYU7vxVHnEKyg1_Fd0ZjW17cD1F4k',
+  authDomain:        'ai-vibe2026.firebaseapp.com',
+  projectId:         'ai-vibe2026',
+  storageBucket:     'ai-vibe2026.firebasestorage.app',
+  messagingSenderId: '587262570672',
+  appId:             '1:587262570672:web:f36cb3cb981c9ea039cb75',
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+/* ── state ── */
+let allSubs   = [];
+let totalCnt  = 0;
+const subsMap = {};    // vkId → sub object (live)
+const projMap = {};    // vkId → { '1_1': bool, ... }
+let   activeF = 'all';
+
+/* ── DOM refs ── */
+const $ = id => document.getElementById(id);
+const loginScreen = $('login-screen');
+const adminScreen = $('admin-screen');
+const loginErr    = $('login-err');
+const btnLogin    = $('btn-login');
+const searchEl    = $('search');
+const listEl      = $('list');
+const counterEl   = $('counter');
+const userEmailEl = $('user-email');
+
+/* ══ AUTH ════════════════════════════════════════════════════════════════ */
+setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginScreen.classList.add('hidden');
+    adminScreen.classList.remove('hidden');
+    userEmailEl.textContent = user.email;
+    loadData();
+  } else {
+    loginScreen.classList.remove('hidden');
+    adminScreen.classList.add('hidden');
+    listEl.innerHTML = '<div id="load-msg">Загружаем данные…</div>';
+  }
+});
+
+$('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  loginErr.classList.add('hidden');
+  btnLogin.disabled    = true;
+  btnLogin.textContent = 'Входим…';
+  try {
+    await signInWithEmailAndPassword(auth,
+      $('f-email').value.trim(),
+      $('f-password').value
+    );
+  } catch {
+    loginErr.textContent = 'Неверный логин или пароль';
+    loginErr.classList.remove('hidden');
+  } finally {
+    btnLogin.disabled    = false;
+    btnLogin.textContent = 'Войти';
+  }
+});
+
+$('btn-out').addEventListener('click', () => signOut(auth));
+
+/* ══ DATA ════════════════════════════════════════════════════════════════ */
+async function loadData() {
+  listEl.innerHTML = '<div id="load-msg">Загружаем данные…</div>';
+  try {
+    const [ss, ps] = await Promise.all([
+      getDocs(collection(db, 'subscribers')),
+      getDocs(collection(db, 'projects')),
+    ]);
+
+    ss.forEach(d => { const s = d.data(); subsMap[s.vk_id] = s; });
+
+    ps.forEach(d => {
+      const p = d.data();
+      if (!projMap[p.vk_id]) projMap[p.vk_id] = {};
+      projMap[p.vk_id][`${p.module}_${p.project_no}`] = !!p.done;
+    });
+
+    allSubs = Object.values(subsMap).sort((a, b) => {
+      const c = (a.last_name||'').localeCompare(b.last_name||'', 'ru', { sensitivity: 'base' });
+      return c !== 0 ? c : (a.first_name||'').localeCompare(b.first_name||'', 'ru', { sensitivity: 'base' });
+    });
+    totalCnt = allSubs.length;
+    renderList();
+  } catch (err) {
+    listEl.innerHTML = `<div id="load-msg" style="color:#ff6b6b">Ошибка загрузки: ${err.message}</div>`;
+  }
+}
+
+/* ══ RENDER ══════════════════════════════════════════════════════════════ */
+function rowHTML(s) {
+  const id  = s.vk_id;
+  const p   = projMap[id] || {};
+  const ini = `${(s.first_name||'')[0]||''}${(s.last_name||'')[0]||''}`.toUpperCase();
+  const av  = s.photo_url
+    ? `<img class="av" src="${s.photo_url}" loading="lazy" alt="${ini}" onerror="this.replaceWith(fb('${ini}'))">`
+    : `<div class="av-fb">${ini}</div>`;
+
+  const pm1 = (s.paid_module_1 || 0) === 1;
+  const pm2 = (s.paid_module_2 || 0) === 1;
+  const isDonor = !pm1 && !pm2;
+  const m1d = [1,2,3,4].every(n => p[`1_${n}`]);
+  const m2d = [1,2,3,4].every(n => p[`2_${n}`]);
+
+  const projs = mod => [1,2,3,4].map(n => {
+    const on = !!p[`${mod}_${n}`];
+    return `<button class="cb proj${on?' on':''}" data-vk="${id}" data-mod="${mod}" data-pn="${n}" id="cp-${id}-${mod}-${n}" title="Проект ${n}">${on?'✓':''}</button>`;
+  }).join('');
+
+  return `<div class="row tbl-cols"
+    data-vk="${id}"
+    data-name="${((s.first_name||'')+' '+(s.last_name||'')).toLowerCase()}"
+    data-pm1="${pm1?'1':'0'}"
+    data-pm2="${pm2?'1':'0'}"
+    data-don="${isDonor?'1':'0'}"
+    data-m1="${m1d?'1':'0'}"
+    data-m2="${m2d?'1':'0'}">
+    <div class="col-name">${av}<span class="row-name">${s.first_name||''} ${s.last_name||''}</span></div>
+    <div class="col-status">
+      <button class="cb pm${pm1?' on':''}" data-vk="${id}" data-pm="1" id="cpm1-${id}" title="М1 оплачен">М1</button>
+      <button class="cb pm${pm2?' on':''}" data-vk="${id}" data-pm="2" id="cpm2-${id}" title="М2 оплачен">М2</button>
+    </div>
+    <div class="col-mod">${projs(1)}<span class="chest${m1d?' lit':''}" id="ch-${id}-1">🎁</span></div>
+    <div class="col-mod">${projs(2)}<span class="chest${m2d?' lit':''}" id="ch-${id}-2">🎁</span></div>
+  </div>`;
+}
+
+/* вспомогалка для onerror аватара (создаёт fb-заглушку) */
+window.fb = ini => {
+  const d = document.createElement('div');
+  d.className = 'av-fb';
+  d.textContent = ini;
+  return d;
+};
+
+function renderList() {
+  listEl.innerHTML = allSubs.map(rowHTML).join('');
+  applyFilter();
+}
+
+/* ══ FILTER ══════════════════════════════════════════════════════════════ */
+function applyFilter() {
+  const q = searchEl.value.trim().toLowerCase();
+  let vis = 0;
+  listEl.querySelectorAll('.row').forEach(row => {
+    const ok =
+      (!q || row.dataset.name.includes(q)) &&
+      (activeF === 'all'
+        || (activeF === 'pm1' && row.dataset.pm1 === '1')
+        || (activeF === 'pm2' && row.dataset.pm2 === '1')
+        || (activeF === 'don' && row.dataset.don === '1')
+        || (activeF === 'm1'  && row.dataset.m1  === '1')
+        || (activeF === 'm2'  && row.dataset.m2  === '1'));
+    row.style.display = ok ? '' : 'none';
+    if (ok) vis++;
+  });
+  counterEl.textContent = `Показано ${vis} из ${totalCnt}`;
+}
+
+let srchT;
+searchEl.addEventListener('input', () => {
+  clearTimeout(srchT);
+  srchT = setTimeout(applyFilter, 100);
+});
+
+document.querySelectorAll('.fbtn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.fbtn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    activeF = b.dataset.f;
+    applyFilter();
+  });
+});
+
+/* ══ CLICK DELEGATION ════════════════════════════════════════════════════ */
+listEl.addEventListener('click', e => {
+  const cb = e.target.closest('.cb');
+  if (!cb) return;
+  const vkId = +cb.dataset.vk;
+  if (!vkId) return;
+  if (cb.dataset.pm)  togglePaid(vkId, +cb.dataset.pm);
+  else if (cb.dataset.mod) toggleProject(vkId, +cb.dataset.mod, +cb.dataset.pn);
+});
+
+/* ══ PAYMENT TOGGLE ══════════════════════════════════════════════════════ */
+async function togglePaid(vkId, mod) {
+  const s   = subsMap[vkId];
+  const key = mod === 1 ? 'paid_module_1' : 'paid_module_2';
+  const old = s[key] || 0;
+  const val = old === 1 ? 0 : 1;
+
+  s[key] = val;
+  paidUI(vkId);
+
+  try {
+    await updateDoc(doc(db, 'subscribers', String(vkId)), { [key]: val });
+    toast('Сохранено');
+  } catch (err) {
+    s[key] = old;
+    paidUI(vkId);
+    toast('Ошибка: ' + err.message, true);
+  }
+}
+
+function paidUI(vkId) {
+  const s    = subsMap[vkId];
+  const pm1  = (s.paid_module_1 || 0) === 1;
+  const pm2  = (s.paid_module_2 || 0) === 1;
+  const b1   = $(`cpm1-${vkId}`);
+  const b2   = $(`cpm2-${vkId}`);
+  if (b1) b1.classList.toggle('on', pm1);
+  if (b2) b2.classList.toggle('on', pm2);
+  const row = listEl.querySelector(`.row[data-vk="${vkId}"]`);
+  if (row) {
+    row.dataset.pm1 = pm1 ? '1' : '0';
+    row.dataset.pm2 = pm2 ? '1' : '0';
+    row.dataset.don = (!pm1 && !pm2) ? '1' : '0';
+    applyFilter();
+  }
+}
+
+/* ══ PROJECT TOGGLE ══════════════════════════════════════════════════════ */
+async function toggleProject(vkId, mod, pn) {
+  if (!projMap[vkId]) projMap[vkId] = {};
+  const key    = `${mod}_${pn}`;
+  const oldVal = !!projMap[vkId][key];
+  const newVal = !oldVal;
+
+  projMap[vkId][key] = newVal;
+  projUI(vkId, mod, pn, newVal);
+
+  const s    = subsMap[vkId];
+  const oldM1 = !!s.module_1_done;
+  const oldM2 = !!s.module_2_done;
+  const m1d   = [1,2,3,4].every(n => !!projMap[vkId][`1_${n}`]);
+  const m2d   = [1,2,3,4].every(n => !!projMap[vkId][`2_${n}`]);
+  s.module_1_done = m1d ? 1 : 0;
+  s.module_2_done = m2d ? 1 : 0;
+  modUI(vkId, m1d, m2d);
+
+  try {
+    await setDoc(doc(db, 'projects', `${vkId}_${mod}_${pn}`), {
+      vk_id: vkId, module: mod, project_no: pn, done: newVal,
+      checked_by: auth.currentUser?.email || '',
+      checked_at: new Date().toISOString(),
+    }, { merge: true });
+
+    const upd = {};
+    if (m1d !== oldM1) upd.module_1_done = m1d ? 1 : 0;
+    if (m2d !== oldM2) upd.module_2_done = m2d ? 1 : 0;
+    if (Object.keys(upd).length)
+      await updateDoc(doc(db, 'subscribers', String(vkId)), upd);
+
+    toast('Сохранено');
+  } catch (err) {
+    // rollback
+    projMap[vkId][key] = oldVal;
+    s.module_1_done = oldM1 ? 1 : 0;
+    s.module_2_done = oldM2 ? 1 : 0;
+    projUI(vkId, mod, pn, oldVal);
+    modUI(vkId, oldM1, oldM2);
+    toast('Ошибка: ' + err.message, true);
+  }
+}
+
+function projUI(vkId, mod, pn, done) {
+  const cb = $(`cp-${vkId}-${mod}-${pn}`);
+  if (!cb) return;
+  cb.classList.toggle('on', done);
+  cb.textContent = done ? '✓' : '';
+}
+
+function modUI(vkId, m1d, m2d) {
+  const c1 = $(`ch-${vkId}-1`);
+  const c2 = $(`ch-${vkId}-2`);
+  if (c1) c1.className = `chest${m1d ? ' lit' : ''}`;
+  if (c2) c2.className = `chest${m2d ? ' lit' : ''}`;
+  const row = listEl.querySelector(`.row[data-vk="${vkId}"]`);
+  if (row) { row.dataset.m1 = m1d ? '1' : '0'; row.dataset.m2 = m2d ? '1' : '0'; }
+}
+
+/* ══ TOAST ═══════════════════════════════════════════════════════════════ */
+let toastT;
+function toast(msg, err = false) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className   = err ? 'err' : 'ok';
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.className = 'off', 2200);
+}
+</script>
+</body>
+</html>
