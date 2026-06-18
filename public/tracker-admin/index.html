@@ -218,6 +218,72 @@
     .chest { font-size: 15px; margin-left: 3px; opacity: .18; transition: all .2s; flex-shrink: 0; }
     .chest.lit { opacity: 1; filter: drop-shadow(0 0 5px var(--gold-glow)); }
 
+    /* ── Achievements panel ── */
+    .btn-ach {
+      padding: 5px 13px; border-radius: 10px;
+      background: rgba(245,196,81,.1); border: 1px solid rgba(245,196,81,.3);
+      color: var(--gold); font-family: inherit; font-size: 11px; font-weight: 700;
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-ach:hover  { background: rgba(245,196,81,.2); }
+    .btn-ach.active { background: rgba(245,196,81,.2); border-color: var(--gold); }
+
+    #ach-panel {
+      margin: 8px 12px 0; border-radius: 16px; padding: 16px 20px;
+      max-height: 460px; overflow-y: auto;
+    }
+    .ach-person-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px; flex-wrap: wrap;
+      padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .ach-person-row label { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+    .ach-person-wrap { position: relative; }
+    #ach-person-input {
+      padding: 7px 12px;
+      background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border-top);
+      border-radius: 10px; color: var(--text-main); font-family: inherit; font-size: 13px;
+      outline: none; width: 200px; transition: border-color .2s, box-shadow .2s;
+    }
+    #ach-person-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-glow); }
+    #ach-person-input::placeholder { color: var(--text-faint); }
+    .ach-drop {
+      position: absolute; top: calc(100% + 4px); left: 0; width: 240px; z-index: 200;
+      background: rgba(8, 16, 36, 0.97); border: 1px solid var(--glass-border-top);
+      border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    }
+    .ach-drop-item {
+      padding: 8px 12px; font-size: 13px; cursor: pointer;
+      color: var(--text-main); transition: background .1s;
+    }
+    .ach-drop-item:hover { background: rgba(245,196,81,.08); }
+    .ach-sel-person { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--gold); }
+    .btn-clear-sel  { background: none; border: none; color: var(--text-faint); cursor: pointer; font-size: 14px; padding: 0 2px; line-height: 1; }
+    .btn-clear-sel:hover { color: var(--red); }
+
+    .ach-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .ach-row:last-child { border-bottom: none; }
+    .ach-row-icon  { width: 36px; height: 36px; flex-shrink: 0; }
+    .ach-row-title { font-size: 13px; font-weight: 600; color: var(--text-main); flex: 1; min-width: 120px; }
+    .ach-row-owner { font-size: 12px; color: var(--text-faint); min-width: 150px; }
+    .ach-row-owner.has { color: var(--green); }
+    .btn-award {
+      padding: 4px 10px; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 700;
+      background: rgba(74,163,255,.12); border: 1px solid rgba(74,163,255,.35);
+      color: var(--blue); cursor: pointer; transition: background .15s; white-space: nowrap;
+    }
+    .btn-award:hover:not(:disabled) { background: rgba(74,163,255,.22); }
+    .btn-award:disabled { opacity: 0.35; cursor: default; }
+    .btn-revoke {
+      padding: 4px 10px; border-radius: 8px; font-family: inherit; font-size: 11px; font-weight: 700;
+      background: rgba(255,107,107,.1); border: 1px solid rgba(255,107,107,.25);
+      color: var(--red); cursor: pointer; transition: background .15s; white-space: nowrap;
+    }
+    .btn-revoke:hover { background: rgba(255,107,107,.2); }
+
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -265,10 +331,24 @@
     </div>
     <div class="hdr-right">
       <span id="counter">—</span>
+      <button class="btn-ach" id="btn-ach">🏅 Достижения</button>
       <span id="user-email"></span>
       <button class="btn-out" id="btn-out">Выйти</button>
     </div>
   </header>
+
+  <!-- Achievements panel -->
+  <div id="ach-panel" class="hidden glass">
+    <div class="ach-person-row">
+      <label>Выдаёт:</label>
+      <div class="ach-person-wrap">
+        <input id="ach-person-input" type="text" placeholder="Поиск по фамилии…" autocomplete="off">
+        <div id="ach-drop" class="ach-drop hidden"></div>
+      </div>
+      <div id="ach-sel-display"></div>
+    </div>
+    <div id="ach-list"></div>
+  </div>
 
   <div class="thead tbl-cols">
     <div class="th">Участник</div>
@@ -288,7 +368,7 @@
 <script type="module">
 import { initializeApp } from
   'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getFirestore, collection, getDocs, doc, updateDoc, setDoc } from
+import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, deleteDoc } from
   'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword, signOut,
          onAuthStateChanged, browserLocalPersistence, setPersistence } from
@@ -308,11 +388,14 @@ const db   = getFirestore(app);
 const auth = getAuth(app);
 
 /* ── state ── */
-let allSubs   = [];
-let totalCnt  = 0;
-const subsMap = {};    // vkId → sub object (live)
-const projMap = {};    // vkId → { '1_1': bool, ... }
-let   activeF = 'all';
+let allSubs    = [];
+let totalCnt   = 0;
+const subsMap  = {};    // vkId → sub object (live)
+const projMap  = {};    // vkId → { '1_1': bool, ... }
+let   activeF  = 'all';
+let achCatalog = [];
+let achMap     = {};    // code → { vk_id, ownerName }
+let achSelVk   = null;
 
 /* ── DOM refs ── */
 const $ = id => document.getElementById(id);
@@ -366,9 +449,11 @@ $('btn-out').addEventListener('click', () => signOut(auth));
 async function loadData() {
   listEl.innerHTML = '<div id="load-msg">Загружаем данные…</div>';
   try {
-    const [ss, ps] = await Promise.all([
+    const [ss, ps, achS, catS] = await Promise.all([
       getDocs(collection(db, 'subscribers')),
       getDocs(collection(db, 'projects')),
+      getDocs(collection(db, 'achievements')),
+      getDocs(collection(db, 'achievements_catalog')),
     ]);
 
     ss.forEach(d => { const s = d.data(); subsMap[s.vk_id] = s; });
@@ -379,12 +464,29 @@ async function loadData() {
       projMap[p.vk_id][`${p.module}_${p.project_no}`] = !!p.done;
     });
 
+    achCatalog = [];
+    catS.forEach(d => achCatalog.push(d.data()));
+    achCatalog.sort((a, b) => a.order - b.order);
+
+    achMap = {};
+    achS.forEach(d => {
+      const aw  = d.data();
+      const sub = subsMap[aw.vk_id];
+      achMap[aw.achievement_code] = {
+        vk_id:     aw.vk_id,
+        ownerName: sub
+          ? `${sub.first_name || ''} ${sub.last_name || ''}`.trim()
+          : `#${aw.vk_id}`,
+      };
+    });
+
     allSubs = Object.values(subsMap).sort((a, b) => {
       const c = (a.last_name||'').localeCompare(b.last_name||'', 'ru', { sensitivity: 'base' });
       return c !== 0 ? c : (a.first_name||'').localeCompare(b.first_name||'', 'ru', { sensitivity: 'base' });
     });
     totalCnt = allSubs.length;
     renderList();
+    setupAchPersonPicker();
   } catch (err) {
     listEl.innerHTML = `<div id="load-msg" style="color:#ff6b6b">Ошибка загрузки: ${err.message}</div>`;
   }
@@ -581,6 +683,113 @@ function modUI(vkId, m1d, m2d) {
   const row = listEl.querySelector(`.row[data-vk="${vkId}"]`);
   if (row) { row.dataset.m1 = m1d ? '1' : '0'; row.dataset.m2 = m2d ? '1' : '0'; }
 }
+
+/* ══ ACHIEVEMENTS PANEL ══════════════════════════════════════════════════ */
+function renderAchPanel() {
+  const list = document.getElementById('ach-list');
+  list.innerHTML = achCatalog.map(cat => {
+    const aw = achMap[cat.code];
+    const ownerHtml = aw
+      ? `<span class="ach-row-owner has">${aw.ownerName}</span>`
+      : `<span class="ach-row-owner">не выдано</span>`;
+    const awardLabel = aw ? 'Заменить' : 'Выдать';
+    const awardBtn   = `<button class="btn-award" data-code="${cat.code}"${achSelVk ? '' : ' disabled'}>${awardLabel}</button>`;
+    const revokeBtn  = aw ? `<button class="btn-revoke" data-code="${cat.code}">Снять</button>` : '';
+    return `<div class="ach-row">
+      <img class="ach-row-icon" src="../tracker/assets/${cat.icon}" alt="">
+      <span class="ach-row-title">${cat.title}</span>
+      ${ownerHtml}
+      <div style="display:flex;gap:6px">${awardBtn}${revokeBtn}</div>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.btn-award').forEach(btn =>
+    btn.addEventListener('click', () => awardAchievement(btn.dataset.code)));
+  list.querySelectorAll('.btn-revoke').forEach(btn =>
+    btn.addEventListener('click', () => removeAchievement(btn.dataset.code)));
+}
+
+async function awardAchievement(code) {
+  if (!achSelVk) return;
+  const cat = achCatalog.find(c => c.code === code);
+  const aw  = achMap[code];
+  if (aw) {
+    if (!confirm(`У достижения «${cat.title}» уже есть обладатель: ${aw.ownerName}. Заменить?`)) return;
+  }
+  const sel       = subsMap[achSelVk];
+  const ownerName = `${sel.first_name || ''} ${sel.last_name || ''}`.trim();
+  try {
+    await setDoc(doc(db, 'achievements', code), {
+      vk_id: achSelVk, achievement_code: code, title: cat.title,
+      awarded_at: new Date().toISOString(),
+      awarded_by: auth.currentUser?.email || '',
+    });
+    achMap[code] = { vk_id: achSelVk, ownerName };
+    renderAchPanel();
+    toast('Достижение выдано');
+  } catch (err) { toast('Ошибка: ' + err.message, true); }
+}
+
+async function removeAchievement(code) {
+  const cat = achCatalog.find(c => c.code === code);
+  const aw  = achMap[code];
+  if (!aw || !confirm(`Снять «${cat.title}» у ${aw.ownerName}?`)) return;
+  try {
+    await deleteDoc(doc(db, 'achievements', code));
+    delete achMap[code];
+    renderAchPanel();
+    toast('Достижение снято');
+  } catch (err) { toast('Ошибка: ' + err.message, true); }
+}
+
+function setupAchPersonPicker() {
+  const input = document.getElementById('ach-person-input');
+  const drop  = document.getElementById('ach-drop');
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { drop.classList.add('hidden'); return; }
+    const hits = allSubs.filter(s =>
+      (s.last_name  || '').toLowerCase().includes(q) ||
+      (s.first_name || '').toLowerCase().includes(q)
+    ).slice(0, 8);
+    if (!hits.length) { drop.classList.add('hidden'); return; }
+    drop.innerHTML = hits.map(s =>
+      `<div class="ach-drop-item" data-vk="${s.vk_id}">${s.first_name} ${s.last_name}</div>`
+    ).join('');
+    drop.classList.remove('hidden');
+    drop.querySelectorAll('.ach-drop-item').forEach(item =>
+      item.addEventListener('click', () => selectAchPerson(+item.dataset.vk)));
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.ach-person-wrap')) drop.classList.add('hidden');
+  });
+}
+
+function selectAchPerson(vkId) {
+  achSelVk = vkId;
+  const s    = subsMap[vkId];
+  const name = `${s.first_name || ''} ${s.last_name || ''}`.trim();
+  document.getElementById('ach-person-input').value = '';
+  document.getElementById('ach-drop').classList.add('hidden');
+  document.getElementById('ach-sel-display').innerHTML =
+    `<span class="ach-sel-person">${name}
+       <button class="btn-clear-sel" id="btn-clear-ach">✕</button>
+     </span>`;
+  document.getElementById('btn-clear-ach').addEventListener('click', () => {
+    achSelVk = null;
+    document.getElementById('ach-sel-display').innerHTML = '';
+    renderAchPanel();
+  });
+  renderAchPanel();
+}
+
+document.getElementById('btn-ach').addEventListener('click', () => {
+  const panel   = document.getElementById('ach-panel');
+  const isHidden = panel.classList.contains('hidden');
+  panel.classList.toggle('hidden');
+  document.getElementById('btn-ach').classList.toggle('active', isHidden);
+  if (isHidden) renderAchPanel();
+});
 
 /* ══ TOAST ═══════════════════════════════════════════════════════════════ */
 let toastT;
