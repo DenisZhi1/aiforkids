@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Сладкая школа 3-в-ряд</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffd166'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="scene-vignette"></div>
+
+    <main class="game-shell" aria-label="Сладкая школа">
+      <section class="left-hud" aria-label="Панель уровня">
+        <div class="star-score">
+          <div class="stars" aria-label="Звезды уровня">
+            <span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="score-pill"><span>Очки</span><strong id="scoreValue">0</strong></div>
+        </div>
+
+        <div class="hud-card moves-card">
+          <span>Ходы</span>
+          <strong id="movesValue">30</strong>
+        </div>
+
+        <div class="hud-card goal-card" id="goalCard">
+          <span>Цель</span>
+          <div id="goalRows"></div>
+        </div>
+
+        <div class="level-badge" id="levelBadge">Уровень 1</div>
+        <div class="streak-badge">Серия <strong id="streakValue">0</strong></div>
+
+        <a href="https://vk.com/@deandal-ii-kurs-ai-vibe-dlya-pedagogov?anchor=sposob-2-rasslablennyj-dlya-tekh-kto-tsenit-svobodu"
+           target="_blank" rel="noopener noreferrer"
+           class="wantyou-btn" aria-label="Хочу научиться делать такие игры">
+          <img src="assets/ui/btn_wantyou.png" alt="Хочу научиться делать такие игры">
+        </a>
+      </section>
+
+      <section class="play-area" aria-label="Игровая область">
+        <div class="game-title">
+          <h1>Сладкая школа</h1>
+          <p id="statusText">Собери фишки и реши бонусный вопрос</p>
+        </div>
+
+        <div class="board-frame">
+          <div id="board" class="board" role="grid" aria-label="Поле 8 на 8">
+            <div id="boardCells" class="board-cells" aria-hidden="true"></div>
+            <div id="pieceLayer" class="piece-layer"></div>
+            <div id="fxLayer" class="fx-layer" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="message-ribbon" id="messageStrip" aria-live="polite"></div>
+      </section>
+
+      <aside class="right-hud" aria-label="Бустеры и настройки">
+        <button class="round-button settings-button" id="settingsBtn" type="button" title="Настройки" aria-label="Настройки">
+          <img src="assets/ui/icon_settings.png" alt="Настройки">
+        </button>
+        <button class="booster" type="button" data-booster="hammer" title="Молоток: убирает одну фишку" aria-label="Молоток">
+          <img src="assets/ui/booster_hammer.png" alt="Молоток">
+          <b id="boosterCountHammer">3</b>
+        </button>
+        <button class="booster" type="button" data-booster="rocket" title="Ракета: убирает строку или столбец" aria-label="Ракета">
+          <img src="assets/ui/booster_rocket.png" alt="Ракета">
+          <b id="boosterCountRocket">3</b>
+        </button>
+        <button class="booster" type="button" data-booster="rainbow" title="Радуга: убирает все фишки одного цвета" aria-label="Радуга">
+          <img src="assets/ui/booster_candy.png" alt="Радуга">
+          <b id="boosterCountRainbow">3</b>
+        </button>
+        <button class="booster" type="button" data-booster="bomb" title="Бомба: взрывает 3×3 фишки вокруг" aria-label="Бомба">
+          <img src="assets/pieces/spec_bomb.png" alt="Бомба">
+          <b id="boosterCountBomb">3</b>
+        </button>
+      </aside>
+    </main>
+
+    <dialog id="settingsDialog" class="dialog">
+      <form method="dialog" class="game-modal settings-modal">
+        <button class="modal-close" id="closeSettingsBtn" type="button" aria-label="Закрыть">×</button>
+        <div class="modal-plaque">Настройки</div>
+        <div class="settings-actions">
+          <button class="round-action" id="soundBtn" type="button" aria-label="Звук">
+            <img id="soundIcon" src="assets/ui/icon_sound_on.png" alt="Звук">
+            <span class="action-label">Звук</span>
+          </button>
+          <button class="round-action" id="themeBtn" type="button" aria-label="Сменить тему">
+            <span class="action-icon">◐</span>
+            <span class="action-label">Тема</span>
+          </button>
+          <button class="round-action" id="leaderboardBtn" type="button" aria-label="Лидеры">
+            <img src="assets/ui/icon_star.png" alt="Лидеры">
+            <span class="action-label">Лидеры</span>
+          </button>
+          <button class="round-action" id="pauseBtn" type="button" aria-label="Пауза">
+            <img src="assets/ui/icon_pause.png" alt="Пауза">
+            <span class="action-label">Пауза</span>
+          </button>
+          <button class="round-action" id="newGameBtn" type="button" aria-label="Новая игра">
+            <span class="action-icon">↻</span>
+            <span class="action-label">Заново</span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="taskDialog" class="dialog">
+      <form method="dialog" class="game-modal task-modal">
+        <div class="modal-plaque" id="taskKind">Бонус</div>
+        <h2 id="taskTitle">Бонусный вопрос</h2>
+        <p id="taskQuestion" class="task-question"></p>
+        <div id="taskBody" class="task-body"></div>
+        <p id="taskResult" class="task-result" aria-live="polite"></p>
+        <div class="dialog-actions">
+          <button id="submitTaskBtn" class="primary-button" type="button">Ответить</button>
+          <button id="continueTaskBtn" class="secondary-button hidden" type="button">Дальше</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="pauseDialog" class="dialog">
+      <form method="dialog" class="game-modal">
+        <div class="modal-plaque">Пауза</div>
+        <h2>Игра ждет тебя</h2>
+        <div class="dialog-actions">
+          <button id="resumeBtn" class="primary-button" type="button">Продолжить</button>
+          <button id="restartFromPauseBtn" class="secondary-button" type="button">Новая игра</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="gameOverDialog" class="dialog">
+      <form method="dialog" class="game-modal">
+        <div class="modal-plaque" id="gameOverTitle">Финиш</div>
+        <h2>Твой результат: <span id="finalScore">0</span></h2>
+        <label class="input-label" for="playerName">Имя для таблицы</label>
+        <input id="playerName" maxlength="12" autocomplete="off" placeholder="Игрок" />
+        <div class="dialog-actions">
+          <button id="saveScoreBtn" class="primary-button" type="button">Сохранить</button>
+          <button id="playAgainBtn" class="secondary-button" type="button">Еще раз</button>
+        </div>
+        <ol id="finalLeaderboard" class="leaderboard-list"></ol>
+      </form>
+    </dialog>
+
+    <dialog id="leaderboardDialog" class="dialog">
+      <form method="dialog" class="game-modal">
+        <div class="modal-plaque">Лидеры</div>
+        <h2>Лучшие результаты</h2>
+        <ol id="leaderboardList" class="leaderboard-list"></ol>
+        <div class="dialog-actions">
+          <button id="closeLeaderboardBtn" class="primary-button" type="button">Закрыть</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
