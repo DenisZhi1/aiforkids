@@ -369,62 +369,50 @@
 </footer>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
-<script type="module">
-import { initializeApp }                     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyAX6RrYU7vxVHnEKyg1_Fd0ZjW17cD1F4k",
-  authDomain:        "ai-vibe2026.firebaseapp.com",
-  projectId:         "ai-vibe2026",
-  storageBucket:     "ai-vibe2026.firebasestorage.app",
-  messagingSenderId: "587262570672",
-  appId:             "1:587262570672:web:f36cb3cb981c9ea039cb75"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-let allSubs   = [];
-let projByVk  = {};
-let achByCode = {};
+<script>
+let allSubs    = [];
+let projByVk   = {};
+let achByCode  = {};
 let achCatalog = [];
+let generatedAt = '';
 
-/* ── Загрузка ── */
+/* ── Загрузка из снимка ── */
 async function loadData() {
-  const [subSnap, projSnap, achSnap, catSnap] = await Promise.all([
-    getDocs(collection(db, 'subscribers')),
-    getDocs(collection(db, 'projects')),
-    getDocs(collection(db, 'achievements')),
-    getDocs(collection(db, 'achievements_catalog')),
-  ]);
+  const res  = await fetch('progress.json?v=' + Date.now());
+  const data = await res.json();
 
-  allSubs = [];
-  subSnap.forEach(doc => allSubs.push(doc.data()));
+  allSubs = data.people || [];
 
+  /* projects: { "vk_id": { "module": [номера сделанных] } } → projByVk[vk_id]["mod_n"] = true */
   projByVk = {};
-  projSnap.forEach(doc => {
-    const d = doc.data();
-    if (!projByVk[d.vk_id]) projByVk[d.vk_id] = {};
-    projByVk[d.vk_id][`${d.module}_${d.project_no}`] = d.done;
-  });
+  for (const [vidStr, mods] of Object.entries(data.projects || {})) {
+    const vid = +vidStr;
+    projByVk[vid] = {};
+    for (const [modStr, doneArr] of Object.entries(mods)) {
+      for (const n of doneArr) {
+        projByVk[vid][`${modStr}_${n}`] = true;
+      }
+    }
+  }
+
+  /* achievements_awarded: { code: vk_id } → achByCode[code] = { vk_id, owner } */
+  const peopleMap = {};
+  allSubs.forEach(s => { peopleMap[s.vk_id] = s; });
 
   achByCode = {};
-  achSnap.forEach(doc => {
-    const d   = doc.data();
-    const sub = allSubs.find(s => s.vk_id === d.vk_id);
-    achByCode[d.achievement_code] = {
-      vk_id: d.vk_id,
+  for (const [code, vkId] of Object.entries(data.achievements_awarded || {})) {
+    const sub = peopleMap[vkId];
+    achByCode[code] = {
+      vk_id: vkId,
       owner: sub ? {
         name:  `${sub.first_name || ''} ${sub.last_name || ''}`.trim(),
         photo: sub.photo_url || '',
       } : null,
     };
-  });
+  }
 
-  achCatalog = [];
-  catSnap.forEach(doc => achCatalog.push(doc.data()));
-  achCatalog.sort((a, b) => a.order - b.order);
+  achCatalog = (data.achievements_catalog || []).slice().sort((a, b) => a.order - b.order);
+  generatedAt = data.generated_at || '';
 
   /* Сортировка по фамилии, затем по имени */
   allSubs.sort((a, b) => {
@@ -467,8 +455,7 @@ function renderStats() {
   const maxNodes = allSubs.length * 8;
   const pct = maxNodes > 0 ? Math.round(totalNodes / maxNodes * 100) : 0;
 
-  const dates = allSubs.map(s => s.last_updated).filter(Boolean).sort();
-  const updated = dates.length ? dates.at(-1).slice(0, 10) : '—';
+  const updated = generatedAt ? generatedAt.slice(0, 10) : '—';
 
   document.getElementById('f-total').textContent    = allSubs.length;
   document.getElementById('f-progress').textContent = pct + '%';
