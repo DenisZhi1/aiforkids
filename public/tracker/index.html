@@ -320,6 +320,28 @@
     .footer-stats b    { color: var(--text-main); font-size: 16px; }
 
     .hidden { display: none !important; }
+
+    /* ── Временный ивент: Red Balloon — орбитальный шарик ── */
+    .achv-wrap[data-code="red_balloon"] { overflow: visible; }
+    .achv-wrap[data-code="red_balloon"]::after {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      top: 50%; left: 50%;
+      margin-top: -5px; margin-left: -5px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff 0%, #ff6b6b 45%, #cc1111 100%);
+      box-shadow:
+        0 0 6px 2px rgba(255, 80, 80, 0.95),
+        0 0 16px 5px rgba(255, 40, 40, 0.55),
+        0 0 28px 8px rgba(200, 0, 0, 0.25);
+      animation: redBalloonOrbit 2.2s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes redBalloonOrbit {
+      from { transform: rotate(0deg)   translateY(-32px); }
+      to   { transform: rotate(360deg) translateY(-32px); }
+    }
   </style>
 </head>
 <body>
@@ -438,7 +460,13 @@ function renderAchBar() {
   bar.querySelectorAll('.achv-wrap').forEach(el => {
     el.addEventListener('mouseenter', e => showAchvTip(e, el.dataset.code));
     el.addEventListener('mouseleave', hideAchvTip);
-    el.addEventListener('click', () => showAchPopup(el.dataset.code));
+    el.addEventListener('click', () => {
+      if (el.dataset.code === 'red_balloon') {
+        window.open('https://deniszhi1.github.io/ShermanChest/', '_blank');
+        return;
+      }
+      showAchPopup(el.dataset.code);
+    });
   });
 }
 
