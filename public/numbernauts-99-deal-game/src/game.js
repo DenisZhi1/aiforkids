@@ -5,7 +5,7 @@
   const HEIGHT = 900;
   const WORLD_WIDTH = 5200;
   const MAX_CAMERA_X = WORLD_WIDTH - WIDTH;
-  const CAMERA_SCROLL_SPEED = 1.56;
+  const CAMERA_SCROLL_SPEED = 3.12;
   const UI_FONT = '"Trebuchet MS", "Segoe UI", Arial, sans-serif';
   const ASSET_ROOT = "./public/assets/";
   const MENU_VIDEO_SRC = "./public/assets/07-screens/menu-background-video.mp4?v=20260702-27";
@@ -33,8 +33,8 @@
       type: "standard",
       min: 1,
       max: 20,
-      duration: 60,
-      targetScore: 1200,
+      duration: 90,
+      targetScore: 1000,
       replays: 99,
     },
     {
@@ -44,8 +44,8 @@
       type: "standard",
       min: 1,
       max: 99,
-      duration: 75,
-      targetScore: 1850,
+      duration: 90,
+      targetScore: 1550,
       replays: 99,
     },
     {
@@ -54,8 +54,8 @@
       subtitle: "13 OR 30?",
       type: "teenTy",
       pool: TEEN_TY_NUMBERS,
-      duration: 60,
-      targetScore: 1750,
+      duration: 90,
+      targetScore: 1450,
       replays: 5,
     },
     {
@@ -65,8 +65,8 @@
       type: "audio",
       min: 1,
       max: 99,
-      duration: 60,
-      targetScore: 1800,
+      duration: 90,
+      targetScore: 1500,
       replays: 3,
     },
     {
@@ -76,7 +76,7 @@
       type: "memory",
       min: 1,
       max: 99,
-      duration: 75,
+      duration: 90,
       requiredChains: 4,
       replays: 3,
     },
@@ -87,8 +87,8 @@
       type: "exam",
       min: 1,
       max: 99,
-      duration: 60,
-      targetScore: 2200,
+      duration: 90,
+      targetScore: 1850,
       replays: 1,
       lives: 3,
     },
@@ -916,7 +916,7 @@
       this.cameraX = MAX_CAMERA_X / 2;
       this.cameraTargetX = MAX_CAMERA_X / 2;
       this.createBonuses();
-      for (let index = 0; index < 15; index += 1) this.targets.push(this.createTarget(index));
+      for (let index = 0; index < 22; index += 1) this.targets.push(this.createTarget(index));
       if (savedRun) {
         this.score = Math.max(0, Number(savedRun.score) || 0);
         this.combo = Math.max(0, Number(savedRun.combo) || 0);
@@ -972,7 +972,7 @@
       const direction = Math.random() < 0.5 ? -1 : 1;
       target.type = TARGET_TYPES[Math.floor(Math.random() * TARGET_TYPES.length)];
       target.number = this.randomUnusedNumber(target);
-      target.x = direction > 0 ? -160 : WORLD_WIDTH + 160;
+      target.x = randomBetween(120, WORLD_WIDTH - 120);
       target.baseY = 165 + depth * 390;
       target.y = target.baseY;
       target.vx = direction * randomBetween(55, 112) * (1.32 - depth * 0.22);
@@ -1120,6 +1120,7 @@
       this.feedback = { text: `BONUS +${points}`, color: "#62eaff", until: now + 720 };
       this.addEffect("effectCorrect", bonus.x, bonus.y, 0.48, 560, 0, true);
       this.addEffect("effectParticles", this.worldToScreenX(bonus.x), bonus.y, 0.72, 700, 0, false);
+      this.maybeCompleteMission(now);
       this.saveActiveRun();
     }
 
@@ -1132,6 +1133,7 @@
       const echoMultiplier = now < this.echoUntil ? 2 : 1;
       const points = Math.max(80, 150 + distanceBonus + this.combo * 18) * echoMultiplier;
       this.score += Math.round(points);
+      this.roundRemaining += 3;
       this.energy = clamp(this.energy + 17 + Math.min(10, this.combo), 0, 100);
       this.screenShake = 8;
       this.audio.correct();
@@ -1142,20 +1144,20 @@
         if (this.memoryIndex >= this.memorySequence.length) {
           this.chainsCompleted += 1;
           this.feedback = {
-            text: `CHAIN ${this.chainsCompleted}/${this.currentMission.requiredChains}`,
+            text: `CHAIN ${this.chainsCompleted}/${this.currentMission.requiredChains}  +3 SEC`,
             color: "#ffe04d",
             until: now + 850,
           };
         } else {
           this.feedback = {
-            text: `SIGNAL ${this.memoryIndex + 1}/3`,
+            text: `SIGNAL ${this.memoryIndex + 1}/3  +3 SEC`,
             color: "#62eaff",
             until: now + 650,
           };
         }
       } else {
         this.feedback = {
-          text: this.combo >= 4 ? `COMBO x${this.combo}` : "PERFECT",
+          text: this.combo >= 4 ? `COMBO x${this.combo}  +3 SEC` : "PERFECT  +3 SEC",
           color: "#ffe04d",
           until: now + 700,
         };
@@ -1201,6 +1203,8 @@
 
     maybeCompleteMission(now) {
       if (!this.missionGoalReached() || this.missionCompleteAt) return;
+      this.evaluateMissionResult();
+      if (!this.missionPassed) return;
       this.missionCompleteAt = now + 760;
       this.promptLocked = true;
       this.nextPromptAt = 0;
@@ -1343,6 +1347,7 @@
       if (this.currentMission && now - this.lastRunSaveAt >= 1000) this.saveActiveRun();
 
       this.updateBonuses(now);
+      this.maybeCompleteMission(now);
       const speedMultiplier = now < this.echoUntil ? 0.38 : 1;
       this.targets.forEach((target) => {
         const reactionAge = now - target.reactionAt;
@@ -1457,15 +1462,6 @@
         ctx.imageSmoothingQuality = "high";
         ctx.globalAlpha = state === "locked" ? 0.72 : 1;
         ctx.drawImage(image, this.pointer.x - width * 0.15, this.pointer.y - height * 0.035, width, height);
-        if (state === "locked") {
-          ctx.globalAlpha = 1;
-          ctx.strokeStyle = "#ff6048";
-          ctx.lineWidth = 5;
-          ctx.beginPath();
-          ctx.moveTo(this.pointer.x + 8, this.pointer.y + 12);
-          ctx.lineTo(this.pointer.x + 52, this.pointer.y - 32);
-          ctx.stroke();
-        }
         ctx.restore();
         return;
       }
@@ -1576,8 +1572,8 @@
       const locked = state === "locked";
       const slider = state === "slider";
       const engaged = state === "hover" || slider;
-      const primary = locked ? "#ff6048" : engaged ? "#ffd23f" : "#6ef3ff";
-      const secondary = locked ? "#ffb23d" : "#ff8142";
+      const primary = engaged ? "#ffd23f" : "#6ef3ff";
+      const secondary = "#ff8142";
       const radius = pressed ? 19 : engaged ? 29 : 25;
       const rotation = now / 430;
       const breathe = Math.sin(now / 150) * 2.2;
@@ -1699,14 +1695,7 @@
         ctx.stroke();
       }
 
-      if (locked) {
-        ctx.strokeStyle = "#ff684f";
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.moveTo(-21, 21);
-        ctx.lineTo(21, -21);
-        ctx.stroke();
-      } else {
+      if (!locked) {
         ctx.fillStyle = "#ff7a45";
         ctx.strokeStyle = "rgba(7, 20, 28, 0.85)";
         ctx.lineWidth = 3;
