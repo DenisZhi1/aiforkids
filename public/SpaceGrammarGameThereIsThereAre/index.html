@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Space Grammar Cat is a playful English grammar game for children practising there is, there are and short answers."
+    />
+    <meta name="theme-color" content="#071129" />
+    <meta name="color-scheme" content="dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Space Grammar Cat" />
+    <meta
+      property="og:description"
+      content="Practise there is and there are with a friendly astronaut cat."
+    />
+    <meta property="og:image" content="assets/space/ui/start-scene.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>Space Grammar Cat</title>
+    <link rel="icon" type="image/png" href="assets/space/ui/icon-home-cosmic.png" />
+    <link rel="apple-touch-icon" href="assets/space/ui/icon-home-cosmic.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css?v=20260711-sheet-cat" />
+  </head>
+  <body>
+    <main class="game-shell" aria-label="Space Grammar Cat game">
+      <section class="screen screen-start is-active" id="startScreen">
+        <div class="start-copy">
+          <div class="title-logo" aria-label="Space Grammar Cat">
+            <h1>Space Grammar Cat</h1>
+          </div>
+          <p>Zap the correct grammar alien</p>
+        </div>
+        <button class="primary-button start-button" id="startButton" type="button">
+          <span>Start</span>
+        </button>
+        <a class="creator-link" href="https://vk.com/deandal" target="_blank" rel="noopener noreferrer">
+          <span>Created by</span>
+          <strong>Deandal</strong>
+        </a>
+        <div class="volume-control start-volume-control" id="startVolumeControl">
+          <button class="volume-toggle" id="startVolumeToggle" type="button" aria-label="Mute sound" aria-pressed="false">
+            <img src="assets/space/ui/icon-volume-new.png" alt="" />
+          </button>
+          <input id="startVolumeSlider" type="range" min="0" max="1" step="0.01" value="0.65" aria-label="Volume" />
+        </div>
+      </section>
+
+      <section class="screen screen-game" id="gameScreen">
+        <div class="hud">
+          <div class="score-card">
+            <span>Score</span>
+            <strong id="scoreValue">0</strong>
+          </div>
+          <div class="question-card">
+            <span id="questionText">_____ a rocket near the moon.</span>
+          </div>
+          <div class="score-card">
+            <span>Combo</span>
+            <strong id="comboValue">0</strong>
+          </div>
+        </div>
+
+        <div class="message" id="messageText" aria-live="polite">Read. Tap the right answer.</div>
+
+        <div class="play-field" id="playField">
+          <div class="object-layer" id="objectLayer" aria-hidden="true"></div>
+          <div class="alien-layer" id="alienLayer"></div>
+          <div class="bonus-layer" id="bonusLayer"></div>
+          <div class="shot-layer" id="shotLayer" aria-hidden="true"></div>
+
+          <div class="cat-rig" id="catRig">
+            <img
+              class="cat"
+              id="cat"
+              src="assets/space/characters/cat-astronaut-idle-game.png"
+              alt="Ginger cat astronaut"
+            />
+            <img class="blaster" id="blaster" src="assets/space/props/space-blaster.png" alt="" />
+          </div>
+          <img class="effect impact-effect" id="impactEffect" src="assets/space/effects/laser-hit-burst.png" alt="" />
+          <img class="effect wrong-effect" id="wrongEffect" src="assets/space/effects/wrong-dodge-puff.png" alt="" />
+          <div class="aim-dot" id="aimDot" aria-hidden="true"></div>
+        </div>
+
+        <div class="bottom-bar">
+          <button class="icon-button icon-only" id="homeButton" type="button" aria-label="Go to main menu">
+            <img src="assets/space/ui/icon-home-cosmic.png" alt="" />
+          </button>
+          <button class="icon-button" id="restartButton" type="button" aria-label="Restart game">
+            <img src="assets/space/ui/icon-replay.png" alt="" />
+            <span>Replay</span>
+          </button>
+          <span id="roundText">1 / 12</span>
+          <div class="volume-control" id="volumeControl">
+            <button class="volume-toggle" id="volumeToggle" type="button" aria-label="Mute sound" aria-pressed="false">
+              <img src="assets/space/ui/icon-volume-new.png" alt="" />
+            </button>
+            <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="0.65" aria-label="Volume" />
+          </div>
+          <button class="icon-button" id="nextButton" type="button" aria-label="Next question">
+            <span>Next</span>
+            <img src="assets/space/ui/icon-next.png" alt="" />
+          </button>
+        </div>
+      </section>
+
+      <section class="screen screen-result" id="resultScreen">
+        <div class="result-panel">
+          <h2 id="resultTitle">Mission Complete!</h2>
+          <p id="resultScore">Score: 0</p>
+          <div class="stars" id="resultStars" aria-label="Result stars"></div>
+          <div class="result-actions">
+            <button class="primary-button small result-button next-level-button" id="nextLevelButton" type="button" hidden>
+              <span>Level 2</span>
+            </button>
+            <button class="primary-button small result-button play-again-button" id="playAgainButton" type="button">
+              <span>Play Again</span>
+            </button>
+            <button class="primary-button small muted result-button menu-button" id="backToMenuButton" type="button">
+              <span>Menu</span>
+            </button>
+          </div>
+          <a
+            class="result-creator-link"
+            id="resultCreatorLink"
+            href="https://vk.com/deandal"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Created by Deandal on VK"
+            hidden
+          >
+            <span>Created by</span>
+            <strong>Deandal</strong>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <script src="game.js?v=20260711-sheet-cat"></script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "Space Grammar Cat",
+  "short_name": "Grammar Cat",
+  "description": "A playful English grammar game for children practising there is and there are.",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#071129",
+  "theme_color": "#071129",
+  "icons": [
+    {
+      "src": "assets/space/ui/icon-home-cosmic.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
