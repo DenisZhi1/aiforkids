@@ -515,11 +515,17 @@ function cardHTML(s) {
 
   const fullName = `${s.first_name||''} ${s.last_name||''}`.trim();
 
-  const chest = (unlocked, moduleNum) =>
-    `<img src="assets/chest-${unlocked ? 'unlocked' : 'locked'}.png"
+  const chest = (unlocked, moduleNum) => {
+    const showModule2Offer = moduleNum === 1 && (
+      s.show_module_2_offer === true ||
+      s.show_module_2_offer === 1 ||
+      s.show_module_2_offer === '1'
+    );
+    return `<img src="assets/chest-${unlocked ? 'unlocked' : 'locked'}.png"
           class="chest${unlocked ? ' unlocked' : ''}"
-          ${unlocked ? `data-module="${moduleNum}" data-name="${fullName.replace(/"/g,'&quot;')}"` : ''}
+          ${unlocked ? `data-module="${moduleNum}" data-name="${fullName.replace(/"/g,'&quot;')}" data-offer2="${showModule2Offer ? '1' : '0'}"` : ''}
           alt="" title="${unlocked ? 'Получить сертификат!' : ''}">`;
+  };
 
   return `<div class="card glass${frameClass}">
     <div class="card-head">
@@ -614,7 +620,8 @@ document.getElementById('popup').addEventListener('click', e => {
 document.getElementById('grid').addEventListener('click', e => {
   const chest = e.target.closest('.chest.unlocked[data-module]');
   if (!chest) return;
-  const url = `cert.html?module=${chest.dataset.module}&name=${encodeURIComponent(chest.dataset.name)}`;
+  const offerParam = chest.dataset.offer2 === '1' ? '&offer2=1' : '';
+  const url = `cert.html?module=${chest.dataset.module}&name=${encodeURIComponent(chest.dataset.name)}${offerParam}`;
   window.open(url, '_blank');
 });
 

@@ -59,15 +59,39 @@
     .hdr-title p  { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
 
     #btn-dl {
+      position: relative; overflow: hidden;
       min-width: 200px; min-height: 54px; padding: 0 24px;
       background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 60%, var(--gold-deep) 100%);
       color: #1a0e00; font-family: inherit; font-size: 15px; font-weight: 800;
       border: none; border-radius: 16px; cursor: pointer;
       box-shadow: 0 8px 24px var(--gold-glow);
       transition: transform .16s, box-shadow .16s, opacity .16s;
+      animation: download-pulse 1.9s ease-in-out infinite;
     }
     #btn-dl:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 32px var(--gold-glow); }
-    #btn-dl:disabled { opacity: 0.5; cursor: wait; }
+    #btn-dl:disabled { opacity: 0.5; cursor: wait; animation: none; }
+    #btn-dl::before {
+      content: "";
+      position: absolute; inset: -40% auto -40% -55%;
+      width: 46%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.68), transparent);
+      transform: skewX(-18deg);
+      animation: download-shine 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    #btn-dl::first-letter { display: inline-block; }
+    @keyframes download-pulse {
+      0%, 100% {
+        box-shadow: 0 8px 24px var(--gold-glow), 0 0 0 0 rgba(245,196,81,0.36);
+      }
+      50% {
+        box-shadow: 0 14px 34px rgba(245,196,81,0.62), 0 0 0 12px rgba(245,196,81,0);
+      }
+    }
+    @keyframes download-shine {
+      0%, 38% { left: -55%; }
+      68%, 100% { left: 112%; }
+    }
 
     /* ── Layout ── */
     .editor-layout {
@@ -174,9 +198,19 @@
     .modal-body   { display: flex; flex-direction: column; gap: 12px; font-size: 15px; line-height: 1.65; }
     .modal-body p { margin: 0; }
     .modal-body strong { color: var(--gold); }
+    .modal-gold-word {
+      color: var(--gold-bright);
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      text-shadow: 0 0 14px rgba(245,196,81,0.35);
+    }
+    .modal-actions {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+      margin-top: 24px;
+    }
     .modal-cta {
       display: inline-flex; align-items: center; justify-content: center;
-      min-width: 240px; min-height: 56px; margin-top: 24px; padding: 0 28px;
+      min-width: 220px; min-height: 56px; padding: 0 28px;
       border-radius: 999px; text-decoration: none;
       background: linear-gradient(135deg, #fff 0%, var(--gold-bright) 48%, var(--gold) 100%);
       color: #1a0e00; font-size: 15px; font-weight: 800;
@@ -185,6 +219,15 @@
       transition: transform .18s;
     }
     .modal-cta:hover { transform: translateY(-2px); }
+    .modal-cta[hidden] { display: none !important; }
+    .modal-cta.secondary {
+      min-width: 190px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-main);
+      border: 1px solid var(--glass-border-top);
+      box-shadow: none;
+      animation: none;
+    }
     @keyframes cta-pulse {
       0%,100% { box-shadow: 0 12px 28px var(--gold-glow), 0 0 0 0   rgba(245,196,81,.3); }
       50%      { box-shadow: 0 14px 32px var(--gold-glow), 0 0 0 12px rgba(245,196,81,0); }
@@ -270,14 +313,15 @@
     <button class="modal-close" id="modal-close">×</button>
     <p class="modal-kicker">Сертификат уже у вас</p>
     <h2 class="modal-title">ТОРЖЕСТВЕННО ПОЗДРАВЛЯЮ!</h2>
-    <div class="modal-body">
-      <p>Вы сделали это! Вы просто не представляете, насколько сильно я вами горжусь. Вы проделали такой сложный путь, проявили невероятную выдержку и усидчивость. Обнимаю изо всех сил!</p>
-      <p>Желаю творческих свершений и очередных подвигов! Прошу оставить отзыв и был бы рад, если похвастаетесь наработками в соцсети. Напишите пост, оставьте тег <strong>#AI_DEAL</strong> — приду нахвалю!</p>
-      <p>Увидимся в следующих проектах!</p>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions">
+      <a class="modal-cta" id="offer-link"
+         href="https://payform.ru/5mbsVjl/"
+         target="_blank" rel="noopener noreferrer">Забрать модуль 2 со скидкой</a>
+      <a class="modal-cta secondary" id="review-link"
+         href="https://vk.com/market/product/neyroseti-dlya-uchiteley-137991294-12890578"
+         target="_blank" rel="noopener noreferrer">Оставить отзыв</a>
     </div>
-    <a class="modal-cta"
-       href="https://vk.ru/market/product/ii-kurs-sajty-i-igry-137991294-12123345"
-       target="_blank" rel="noopener noreferrer">Оставить отзыв ✨</a>
   </div>
 </div>
 
@@ -297,21 +341,35 @@ const NAME_COLOR = '#24207a';
 const DATE_COLOR = '#414141';
 
 const MODULES = {
-  '1': { title: 'Сертификат — Модуль 1', img: 'assets/cert1.png', key: 'aivibe-cert1-v1' },
-  '2': { title: 'Сертификат — Модуль 2', img: 'assets/cert2.png', key: 'aivibe-cert2-v1' },
+  '1': {
+    title: 'Сертификат — Модуль 1',
+    img: 'assets/cert1.png',
+    key: 'aivibe-cert1-v3',
+    defaults: {
+      nameX: 1365, nameY: 820,
+      nameFontFamily: FONTS[0].value, nameFontWeight: '720', nameFontSize: 128,
+      dateX: 1130, dateY: 1318, dateFontWeight: '500', dateFontSize: 35,
+    },
+  },
+  '2': {
+    title: 'Сертификат — Модуль 2',
+    img: 'assets/cert2.png',
+    key: 'aivibe-cert2-v1',
+    defaults: {
+      nameX: 1379, nameY: 935,
+      nameFontFamily: FONTS[0].value, nameFontWeight: '686', nameFontSize: 147,
+      dateX: 1851, dateY: 1181, dateFontWeight: '400', dateFontSize: 50,
+    },
+  },
 };
 const params = new URLSearchParams(location.search);
 const mod    = MODULES[params.get('module')] ? params.get('module') : '1';
 const cfg    = MODULES[mod];
+const showModule2Offer = params.get('offer2') === '1';
 
-const DEFAULTS = {
-  nameX: 1379, nameY: 935,
-  nameFontFamily: FONTS[0].value, nameFontWeight: '686', nameFontSize: 147,
-  dateX: 1851, dateY: 1181, dateFontWeight: '400', dateFontSize: 50,
-};
 const stored = (() => { try { return JSON.parse(localStorage.getItem(cfg.key)) || {}; } catch { return {}; } })();
 const state  = {
-  ...DEFAULTS, ...stored,
+  ...cfg.defaults, ...stored,
   name: params.get('name') || stored.name || 'Имя Фамилия',
   date: formatToday(),
 };
@@ -341,6 +399,7 @@ const modal        = $('modal');
 // Page title
 document.title = cfg.title + ' — AI VIBE';
 $('page-title').textContent = cfg.title;
+setupModalText();
 
 // Font options
 fontSel.innerHTML = FONTS.map(f => `<option value="${esc(f.value)}">${esc(f.label)}</option>`).join('');
@@ -388,12 +447,9 @@ tmpl.onload = async () => {
   statusMsg.textContent = 'Готово. Меняй параметры слева — результат виден сразу.';
 };
 tmpl.onerror = () => {
-  canvas.width  = 2480;
-  canvas.height = 1754;
-  drawPlaceholder();
-  loaded = true;
-  btnDl.disabled = false;
-  statusMsg.textContent = 'Шаблон ещё не добавлен — используется заглушка.';
+  loaded = false;
+  btnDl.disabled = true;
+  statusMsg.textContent = 'Не удалось загрузить шаблон сертификата.';
 };
 tmpl.src = cfg.img;
 
@@ -402,8 +458,6 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (tmpl.complete && tmpl.naturalWidth) {
     ctx.drawImage(tmpl, 0, 0, canvas.width, canvas.height);
-  } else {
-    drawPlaceholder();
   }
   text(state.name, state.nameX, state.nameY, state.nameFontSize, state.nameFontWeight, state.nameFontFamily, NAME_COLOR);
   text(state.date, state.dateX, state.dateY, state.dateFontSize, state.dateFontWeight, DATE_FONT, DATE_COLOR);
@@ -418,18 +472,6 @@ function text(str, x, y, size, weight, family, color) {
   ctx.textBaseline = 'middle';
   ctx.fillText(str, x, y);
   ctx.restore();
-}
-
-function drawPlaceholder() {
-  const w = canvas.width, h = canvas.height;
-  ctx.fillStyle = '#0f2038'; ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = 'rgba(245,196,81,0.4)'; ctx.lineWidth = 20;
-  ctx.strokeRect(40, 40, w - 80, h - 80);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#f5c451'; ctx.font = 'bold 100px Arial';
-  ctx.fillText(`СЕРТИФИКАТ — МОДУЛЬ ${mod}`, w / 2, h / 2 - 100);
-  ctx.fillStyle = '#9fb0c8'; ctx.font = '60px Arial';
-  ctx.fillText('Шаблон появится позже', w / 2, h / 2 + 80);
 }
 
 async function download() {
@@ -456,6 +498,30 @@ async function download() {
 
 function openModal()  { modal.setAttribute('aria-hidden', 'false'); document.body.classList.add('modal-open'); }
 function closeModal() { modal.setAttribute('aria-hidden', 'true');  document.body.classList.remove('modal-open'); }
+
+function setupModalText() {
+  const base = [
+    'Когда путешествие только начиналось, остров выглядел красивой картинкой: море, пещера, странные знаки, обещание открытий. Но настоящий маршрут начался там, где пришлось пробовать самим: писать запросы, спорить с ответами, собирать звук, изображение, видео и доводить идеи до результата.',
+    'По пути были конкурсы, ачивки, красные шарики и сундучок Шермана. Были моменты, когда что-то не получалось с первого раза, и именно в них появлялось настоящее понимание: нейросети раскрываются тем, кто задаёт вопросы точнее и не бросает на полпути.',
+    'Вы дошли до финала первого модуля. <span class="modal-gold-word">Сертификат</span> можно считать найденным артефактом с острова AI VIBE.',
+  ];
+  const body = $('modal-body');
+  const offerLink = $('offer-link');
+  const reviewLink = $('review-link');
+  const paragraphs = showModule2Offer
+    ? [
+        ...base,
+        'Если хочется идти дальше, для второго модуля открыт секретный переход: скидка <strong>30%</strong> по слову <strong>GONEXT</strong>, действует до <strong>2 августа 2026</strong>. Буду бесконечно рад, если напишите пост о курсе в своих соц сетях с хештегом <strong>#AIVIBE2026</strong>.',
+      ]
+    : [
+        ...base,
+        'Буду бесконечно рад, если напишите пост о курсе в своих соц сетях с хештегом <strong>#AIVIBE2026</strong>.',
+      ];
+
+  body.innerHTML = paragraphs.map(text => `<p>${text}</p>`).join('');
+  offerLink.hidden = !showModule2Offer;
+  reviewLink.classList.toggle('secondary', showModule2Offer);
+}
 
 function persist() {
   try {
