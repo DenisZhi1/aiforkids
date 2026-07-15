@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grammar Millionaire Junior</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png?v=game-icon-1">
+  <link rel="shortcut icon" href="assets/favicon.ico?v=game-icon-1">
+  <link rel="stylesheet" href="styles.css?v=custom-cursor-1">
+</head>
+<body>
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+  <div class="stage-app">
+    <section class="intro-screen main-menu-screen" id="introScreen" aria-labelledby="introTitle">
+      <div class="intro-copy menu-card">
+        <div class="brand-lockup menu-brand">
+          <img class="brand-mark" src="assets/grammar-millionaire-logo.png" alt="">
+          <div>
+            <h1 id="introTitle">Grammar Millionaire Junior</h1>
+          </div>
+        </div>
+
+        <p class="intro-lead">Классическая игра в стиле «Кто хочет стать миллионером»: 20 случайных грамматических вопросов, призовая лестница, подсказки и финальный миллион.</p>
+
+        <div class="classic-menu-rules" aria-label="Правила игры">
+          <div>
+            <span>20 вопросов</span>
+            <strong>от $100 до $1,000,000</strong>
+          </div>
+          <div>
+            <span>Подсказки</span>
+            <strong>50/50, класс, совет</strong>
+          </div>
+          <div>
+            <span>Несгораемые суммы</span>
+            <strong>$1,000 и $32,000</strong>
+          </div>
+        </div>
+
+        <div class="hero-actions menu-actions">
+          <button class="primary-action menu-play-button generated-play-button" id="startGame" type="button">
+            <img class="play-button-art" src="assets/play-button.png" alt="" aria-hidden="true">
+            <span class="menu-play-text">Играть</span>
+          </button>
+        </div>
+
+        <div class="topic-cloud" id="topicCloud" aria-label="Темы игры">
+          <span>to be</span>
+          <span>a / an</span>
+          <span>plurals</span>
+          <span>have got</span>
+          <span>can / can't</span>
+          <span>there is / are</span>
+          <span>present simple</span>
+          <span>present continuous</span>
+          <span>some / any</span>
+          <span>was / were</span>
+          <span>going to</span>
+          <span>comparatives</span>
+          <span>pronouns</span>
+          <span>this / these</span>
+          <span>how much / many</span>
+          <span>'s possessive</span>
+          <span>past simple</span>
+        </div>
+      </div>
+
+      <div class="intro-visual">
+        <div class="mascot-stage">
+          <img class="mascot-large menu-mascot" src="assets/menu-mascot.png" alt="Friendly game host mascot">
+        </div>
+        <div class="show-ticket" aria-hidden="true">
+          <span>20 missions</span>
+          <strong>$1,000,000</strong>
+          <small>Grammar Galaxy Prize</small>
+        </div>
+      </div>
+
+      <a class="creator-credit" href="https://vk.com/deandal" target="_blank" rel="noopener noreferrer" aria-label="Автор проекта в VK">
+        <img class="creator-plaque-art" src="assets/creator-plaque-cropped.png" alt="" aria-hidden="true">
+        <span class="creator-star" aria-hidden="true">★</span>
+        <span>Автор проекта</span>
+        <strong>vk.com/deandal</strong>
+      </a>
+    </section>
+
+    <section class="game-screen" id="gameScreen" hidden aria-label="Grammar Millionaire game">
+      <header class="game-header">
+        <div class="brand">
+          <img class="brand-logo" src="assets/grammar-millionaire-logo.png" alt="">
+          <div>
+            <p class="eyebrow">English Grammar Quest</p>
+            <h2>Grammar Millionaire Junior</h2>
+          </div>
+        </div>
+
+        <button class="home-button" id="homeButton" type="button" aria-label="Вернуться в главное меню">
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <path class="home-roof" d="M10 31.5 32 12l22 19.5-5.1 5.7L32 22.1 15.1 37.2 10 31.5Z"></path>
+            <path class="home-body" d="M17.5 34.4 32 21.6l14.5 12.8v17.1a4 4 0 0 1-4 4h-7.8V40.2h-5.4v15.3h-7.8a4 4 0 0 1-4-4V34.4Z"></path>
+            <path class="home-spark" d="M43.8 11.2 46 16l4.8 2.2L46 20.4l-2.2 4.8-2.2-4.8-4.8-2.2 4.8-2.2 2.2-4.8Z"></path>
+          </svg>
+        </button>
+
+        <div class="status-pills" aria-label="Статус игры">
+          <div class="status-pill">
+            <span>Вопрос</span>
+            <strong id="questionCounter">1 / 20</strong>
+          </div>
+          <div class="status-pill">
+            <span>Тема</span>
+            <strong id="topicCounter">to be</strong>
+          </div>
+          <div class="status-pill">
+            <span>Банк</span>
+            <strong id="bankCounter">$0</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="game-layout classic-game-layout">
+        <aside class="classic-host-panel" aria-label="Ведущий игры">
+          <span class="classic-host-label">Professor Spark</span>
+          <img class="classic-host-mascot" src="assets/professor-spark.png" alt="">
+          <div class="classic-host-message">
+            <strong>Готовы сыграть?</strong>
+            <p id="coachMessage">Смотрим на вопрос, выбираем ответ и поднимаемся по лестнице.</p>
+          </div>
+          <div class="classic-stats" aria-label="Статистика игры">
+            <div>
+              <span>Приз</span>
+              <strong id="currentPrize">$100</strong>
+            </div>
+            <div>
+              <span>Верно</span>
+              <strong id="streakCounter">0</strong>
+            </div>
+          </div>
+        </aside>
+
+        <section class="play-panel" aria-labelledby="questionText">
+          <div class="progress-track" aria-hidden="true">
+            <span id="progressFill"></span>
+          </div>
+
+          <div class="turn-strip" aria-live="polite">
+            <span>Классический режим</span>
+            <strong>Один игрок</strong>
+          </div>
+
+          <div class="round-meta">
+            <span class="topic-badge" id="topicBadge">to be</span>
+            <span class="level-badge" id="levelBadge">Warm-up</span>
+          </div>
+
+          <div class="question-box">
+            <div class="question-shine" aria-hidden="true"></div>
+            <span class="question-label" id="questionPrize">$100 question</span>
+            <p id="questionText">Question text</p>
+          </div>
+
+          <div class="answers-grid" id="answersGrid" aria-label="Варианты ответа"></div>
+
+          <div class="lifeline-row" aria-label="Подсказки и управление">
+            <button class="lifeline-button" id="fiftyButton" type="button">
+              <span>50/50</span>
+            </button>
+            <button class="lifeline-button" id="audienceButton" type="button">
+              <span>Голос класса</span>
+            </button>
+            <button class="lifeline-button" id="hintButton" type="button">
+              <span>Совет</span>
+            </button>
+            <button class="secondary-action" id="restartButton" type="button">
+              <span>Новый набор</span>
+            </button>
+          </div>
+
+          <section class="feedback-panel" id="feedbackPanel" aria-live="polite" hidden></section>
+        </section>
+
+        <aside class="prize-panel classic-prize-panel" aria-labelledby="ladderTitle">
+          <div class="ladder-heading">
+            <h3 id="ladderTitle">Star Ladder</h3>
+            <span>safe: $1,000 / $32,000</span>
+          </div>
+          <ol class="prize-list" id="prizeList"></ol>
+        </aside>
+      </main>
+
+      <div class="game-centerpiece" aria-hidden="true">
+        <img src="assets/grammar-trophy-stage.png" alt="">
+      </div>
+
+      <details class="teacher-notes">
+        <summary>Идеи для урока</summary>
+        <p>Можно играть всем классом за одного участника: дети обсуждают вариант, выбирают ответ и после каждого вопроса вслух объясняют правило.</p>
+      </details>
+    </section>
+  </div>
+
+  <section class="final-overlay" id="finalOverlay" hidden aria-labelledby="finalTitle" role="dialog" aria-modal="true">
+    <div class="final-card">
+      <img id="finalMascot" src="assets/professor-spark.png" alt="">
+      <div>
+        <p class="eyebrow">Game Complete</p>
+        <h2 id="finalTitle">Grammar Galaxy Champion!</h2>
+        <p id="finalMessage">Вы прошли игру.</p>
+        <div class="final-results" id="finalResults" aria-label="Итог игры"></div>
+        <section class="answer-analysis" aria-labelledby="analysisTitle">
+          <h3 id="analysisTitle">Разбор ошибок</h3>
+          <div id="finalAnalysis"></div>
+        </section>
+        <button class="primary-action" id="playAgainButton" type="button">Играть еще раз</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="script.js?v=unambiguous-questions-1"></script>
+</body>
+</html>
