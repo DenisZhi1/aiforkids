@@ -1,0 +1,11 @@
+{
+  "name": "bee-collector",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A self-contained educational HTML5 spelling game for children.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "check": "node scripts/audit.js index.html"
+  }
+}
+
