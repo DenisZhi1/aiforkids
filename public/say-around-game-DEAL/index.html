@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5277f5">
+  <meta name="description" content="Say Around! — командная игра для уроков английского">
+  <title>Say Around! — игра на английском</title>
+  <style>
+    :root {
+      --ink: #2d2e5f;
+      --muted: #686b91;
+      --paper: #eef5ff;
+      --cream: #fffdf5;
+      --pink: #ff637d;
+      --yellow: #ffd94f;
+      --blue: #5277f5;
+      --green: #45d6a5;
+      --purple: #bda9ff;
+      --orange: #ffad61;
+      --line: #cbd5ef;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; min-height: 100%; background: var(--paper); }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        radial-gradient(circle at 8% 19%, rgba(255,217,79,.9) 0 5px, transparent 6px),
+        radial-gradient(circle at 91% 12%, rgba(255,99,125,.55) 0 7px, transparent 8px),
+        radial-gradient(circle at 80% 79%, rgba(69,214,165,.52) 0 6px, transparent 7px),
+        radial-gradient(circle at 23% 87%, rgba(82,119,245,.34) 0 4px, transparent 5px),
+        linear-gradient(135deg, rgba(255,255,255,.74), rgba(229,238,255,.8));
+      background-size: 180px 180px, 230px 230px, 210px 210px, 150px 150px, auto;
+      font-family: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
+    }
+    button, input, select { font: inherit; }
+    button, select { cursor: pointer; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+      outline: 4px solid #7862df;
+      outline-offset: 3px;
+    }
+    .app { min-height: 100vh; padding: 0 clamp(14px, 5vw, 76px) 40px; overflow: hidden; }
+    .topbar {
+      height: 94px;
+      max-width: 1450px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      text-align: left;
+    }
+    .brand-mark {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border: 3px solid var(--ink);
+      border-radius: 50% 50% 50% 13px;
+      background: var(--pink);
+      color: white;
+      box-shadow: 4px 5px 0 var(--ink);
+      font-size: 27px;
+      font-weight: 1000;
+      transform: rotate(-8deg);
+    }
+    .brand-copy { display: grid; gap: 4px; }
+    .brand-copy strong { font-size: 19px; letter-spacing: -.03em; }
+    .brand-copy small { color: #7560d3; font-size: 8px; font-weight: 1000; letter-spacing: .15em; }
+    .top-actions { display: flex; align-items: center; gap: 12px; }
+    .author-badge, .rules-button {
+      min-height: 49px;
+      display: flex;
+      align-items: center;
+      border: 3px solid var(--ink);
+      box-shadow: 4px 5px 0 var(--ink);
+      text-decoration: none;
+      transition: transform .13s, box-shadow .13s;
+    }
+    .author-badge:hover, .rules-button:hover { transform: translateY(-2px); box-shadow: 5px 7px 0 var(--ink); }
+    .author-badge { gap: 9px; padding: 5px 12px 5px 6px; border-radius: 16px; background: var(--purple); }
+    .author-icon { width: 34px; height: 34px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 10px; background: var(--blue); color: white; font-size: 10px; font-weight: 1000; }
+    .author-text { display: grid; gap: 2px; }
+    .author-text small { color: #575986; font-size: 7px; font-weight: 1000; letter-spacing: .13em; }
+    .author-text strong { font-size: 13px; }
+    .author-badge > b { font-size: 18px; }
+    .rules-button { gap: 8px; padding: 6px 14px 6px 8px; border-radius: 999px; background: white; font-size: 12px; font-weight: 1000; }
+    .rules-button i { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--yellow); font-style: normal; font-size: 16px; }
+
+    .screen { max-width: 1450px; margin: 0 auto; }
+    .setup {
+      min-height: calc(100vh - 125px);
+      display: grid;
+      grid-template-columns: minmax(480px, 1.12fr) minmax(445px, .88fr);
+      gap: clamp(42px, 6vw, 95px);
+      align-items: center;
+      padding: 18px 0 28px;
+    }
+    .hero { position: relative; }
+    .eyebrow {
+      width: max-content;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      background: var(--yellow);
+      box-shadow: 3px 3px 0 var(--ink);
+      font-size: 9px;
+      font-weight: 1000;
+      letter-spacing: .09em;
+      transform: rotate(-2deg);
+    }
+    .eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); }
+    h1 {
+      max-width: 750px;
+      margin: 25px 0 17px;
+      font-size: clamp(50px, 5.3vw, 83px);
+      line-height: .98;
+      letter-spacing: -.06em;
+      text-shadow: 2px 3px 0 white;
+    }
+    h1 span {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 3px 14px 8px;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: var(--pink);
+      color: white;
+      box-shadow: 6px 6px 0 var(--ink);
+      transform: rotate(-1.5deg);
+      text-shadow: none;
+    }
+    .lead { max-width: 680px; margin: 0; color: #5d618a; font-size: clamp(17px, 1.4vw, 21px); line-height: 1.45; font-weight: 750; }
+    .board-demo {
+      position: relative;
+      max-width: 665px;
+      min-height: 217px;
+      margin-top: 27px;
+      padding: 28px;
+      border: 4px solid var(--ink);
+      border-radius: 30px;
+      background: #fff7d6;
+      box-shadow: 8px 9px 0 var(--ink);
+      transform: rotate(-1deg);
+    }
+    .trail { display: grid; grid-template-columns: repeat(6, 51px); grid-template-rows: repeat(2, 51px); gap: 9px; }
+    .trail b { display: grid; place-items: center; border: 3px solid var(--ink); border-radius: 15px; background: white; box-shadow: 2px 3px 0 var(--ink); font-size: 12px; }
+    .trail b:nth-child(4n+1) { background: var(--pink); color: white; }
+    .trail b:nth-child(4n+2) { background: var(--yellow); }
+    .trail b:nth-child(4n+3) { background: var(--green); }
+    .trail b:nth-child(4n) { background: var(--purple); }
+    .trail b:first-child { grid-column: span 2; border-radius: 999px; font-size: 8px; }
+    .trail b:nth-child(7) { grid-column: 6; grid-row: 2; }
+    .trail b:nth-child(8) { grid-column: 5; grid-row: 2; }
+    .trail b:nth-child(9) { grid-column: 4; grid-row: 2; }
+    .trail b:nth-child(10) { grid-column: 3; grid-row: 2; }
+    .trail b:nth-child(11) { grid-column: 2; grid-row: 2; }
+    .trail b:nth-child(12) { grid-column: 1; grid-row: 2; font-size: 20px; }
+    .pawn { position: absolute; z-index: 2; width: 24px; height: 30px; border: 3px solid var(--ink); border-radius: 50% 50% 38% 38%; box-shadow: 2px 3px 0 var(--ink); }
+    .pawn::after { content: ""; position: absolute; left: -7px; right: -7px; bottom: -7px; height: 9px; border: 3px solid var(--ink); border-radius: 50%; background: inherit; }
+    .pawn.red { left: 122px; top: 66px; background: var(--pink); transform: rotate(-7deg); }
+    .pawn.blue { left: 303px; bottom: 40px; background: var(--blue); transform: rotate(8deg); }
+    .demo-die { position: absolute; right: 169px; bottom: 27px; width: 58px; height: 58px; display: grid; place-items: center; border: 3px solid var(--ink); border-radius: 14px; background: white; color: var(--purple); box-shadow: 4px 5px 0 var(--ink); font-size: 26px; transform: rotate(10deg); }
+    .demo-card { position: absolute; right: 22px; top: 41px; width: 143px; height: 106px; display: grid; place-items: center; align-content: center; gap: 10px; border: 3px solid var(--ink); border-radius: 16px; background: white; box-shadow: 5px 6px 0 var(--pink), 7px 9px 0 var(--ink); font-size: 25px; font-weight: 1000; transform: rotate(5deg); }
+    .demo-card small { padding: 5px 8px; border-radius: 999px; background: var(--yellow); font-size: 7px; }
+
+    .panel {
+      position: relative;
+      padding: clamp(23px, 3vw, 39px);
+      border: 4px solid var(--ink);
+      border-radius: 29px;
+      background: var(--cream);
+      box-shadow: 10px 11px 0 var(--ink);
+    }
+    .panel::before { content: "★"; position: absolute; right: 28px; top: -27px; width: 53px; height: 53px; display: grid; place-items: center; border: 3px solid var(--ink); border-radius: 50%; background: var(--yellow); font-size: 23px; transform: rotate(10deg); }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; margin-bottom: 26px; }
+    .panel-head small { color: #765fd2; font-size: 9px; font-weight: 1000; letter-spacing: .13em; }
+    .panel-head h2 { margin: 6px 0 0; font-size: 29px; letter-spacing: -.04em; }
+    .word-count { padding: 7px 10px; border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow); font-size: 9px; font-weight: 1000; white-space: nowrap; }
+    .field-title { display: block; margin-bottom: 9px; font-size: 12px; font-weight: 1000; }
+    .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 5px; border: 2px solid #d5ddef; border-radius: 16px; background: #eef1fb; }
+    .level { padding: 9px 5px 8px; border: 2px solid transparent; border-radius: 11px; background: transparent; }
+    .level strong, .level small { display: block; }.level strong { font-size: 16px; }.level small { margin-top: 2px; color: #7d81a6; font-size: 8px; }
+    .level.active { border-color: var(--ink); background: var(--blue); color: white; box-shadow: 3px 4px 0 var(--ink); transform: translateY(-2px); }
+    .level.active small { color: #e6eaff; }
+    .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin: 18px 0 20px; }
+    .settings-row label { font-size: 12px; font-weight: 1000; }
+    select { width: 100%; margin-top: 7px; padding: 11px 12px; border: 2px solid var(--ink); border-radius: 12px; background: white; color: var(--ink); font-weight: 800; box-shadow: 2px 3px 0 rgba(45,46,95,.18); }
+    .teams-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 1000; }
+    .teams-label small { color: #745fd0; font-size: 8px; letter-spacing: .1em; }
+    .team-fields { display: grid; gap: 7px; }
+    .team-field { display: grid; grid-template-columns: 31px 1fr 29px; align-items: center; padding: 4px 6px; border: 2px solid var(--ink); border-radius: 13px; background: white; box-shadow: 2px 3px 0 rgba(45,46,95,.15); }
+    .team-field > span { width: 25px; height: 25px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: var(--team); color: white; font-size: 9px; font-weight: 1000; }
+    .team-field input { min-width: 0; padding: 8px; border: 0; outline: 0; background: transparent; color: var(--ink); font-weight: 850; }
+    .team-field button { border: 0; background: transparent; color: #888baa; font-size: 19px; }
+    .add-team { padding: 10px 0; border: 0; background: transparent; color: var(--blue); font-size: 11px; font-weight: 1000; }
+    .main-button { width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 9px; border: 3px solid var(--ink); border-radius: 16px; background: var(--pink); color: white; box-shadow: 5px 6px 0 var(--ink); font-size: 15px; font-weight: 1000; transition: transform .13s, box-shadow .13s; }
+    .main-button:hover { transform: translateY(-3px); box-shadow: 6px 9px 0 var(--ink); }
+
+    .game { min-height: calc(100vh - 120px); display: grid; grid-template-columns: 285px minmax(0, 1fr); gap: 22px; padding-top: 20px; }
+    .scoreboard { height: max-content; padding: 20px; border: 4px solid var(--ink); border-radius: 24px; background: var(--ink); color: white; box-shadow: 7px 8px 0 rgba(45,46,95,.2); }
+    .score-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 10px; font-weight: 1000; letter-spacing: .08em; }
+    .score-title small { color: #dce0ff; letter-spacing: 0; }
+    .score-row { display: grid; grid-template-columns: 25px 1fr auto; align-items: center; gap: 9px; margin: 7px 0; padding: 12px 10px; border: 2px solid rgba(255,255,255,.22); border-radius: 14px; background: rgba(255,255,255,.08); opacity: .76; }
+    .score-row.current { border-color: white; background: var(--team); box-shadow: 3px 4px 0 white; opacity: 1; transform: translateX(3px); }
+    .score-pawn { position: relative; width: 19px; height: 23px; border: 2px solid white; border-radius: 50% 50% 38% 38%; background: var(--team); }
+    .score-pawn::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: -4px; height: 7px; border: 2px solid white; border-radius: 50%; background: inherit; }
+    .score-row div { min-width: 0; display: grid; }.score-row strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }.score-row small { margin-top: 2px; color: rgba(255,255,255,.72); font-size: 8px; }.score-row > b { font-size: 24px; }
+    .score-progress { margin: 20px 2px; }.progress-track { height: 10px; overflow: hidden; border: 2px solid white; border-radius: 99px; background: rgba(255,255,255,.18); }.progress-track i { display: block; height: 100%; background: var(--yellow); transition: width .3s; }.score-progress small { display: block; margin-top: 7px; color: #e2e4ff; font-size: 8px; }
+    .reset-button { width: 100%; padding: 9px; border: 2px solid rgba(255,255,255,.74); border-radius: 10px; background: rgba(255,255,255,.1); color: white; font-size: 10px; font-weight: 900; }
+    .play-area { position: relative; min-height: calc(100vh - 142px); display: grid; place-items: center; overflow: hidden; border: 4px solid var(--ink); border-radius: 31px; background-color: #dff8e8; background-image: linear-gradient(90deg, rgba(45,46,95,.035) 1px, transparent 1px), linear-gradient(rgba(45,46,95,.035) 1px, transparent 1px); background-size: 28px 28px; box-shadow: inset 0 0 0 10px rgba(255,255,255,.61), 8px 9px 0 rgba(45,46,95,.18); }
+    .play-area::before, .play-area::after { content: ""; position: absolute; width: 280px; height: 130px; border: 14px dotted rgba(82,119,245,.21); border-radius: 50%; transform: rotate(16deg); }
+    .play-area::before { left: -95px; bottom: -60px; }.play-area::after { right: -78px; top: -55px; border-color: rgba(255,99,125,.22); transform: rotate(-12deg); }
+    .stage { position: relative; z-index: 1; width: min(760px, 89%); padding: 35px 0; text-align: center; }
+    .tag { display: inline-block; padding: 8px 13px; border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow); box-shadow: 2px 3px 0 var(--ink); font-size: 9px; font-weight: 1000; letter-spacing: .1em; transform: rotate(-2deg); }
+    .turn-piece { width: 116px; height: 116px; display: grid; place-items: center; margin: 27px auto 22px; border: 4px dashed var(--team); border-radius: 50%; background: rgba(255,255,255,.58); }
+    .turn-piece b { width: 78px; height: 83px; display: grid; place-items: center; border: 3px solid var(--ink); border-radius: 50% 50% 38% 38%; background: var(--team); color: white; box-shadow: 6px 7px 0 var(--ink); font-size: 34px; }
+    .stage h2 { margin: 0; font-size: clamp(38px, 5vw, 61px); line-height: 1; letter-spacing: -.055em; text-shadow: 2px 3px 0 white; }
+    .stage > p { max-width: 570px; margin: 15px auto 23px; color: #5c607e; font-size: 14px; font-weight: 750; }
+    .english-only { width: max-content; max-width: 100%; margin: 0 auto 25px; padding: 9px 13px; border: 2px dashed var(--ink); border-radius: 11px; background: white; font-size: 8px; font-weight: 1000; letter-spacing: .09em; }
+    .stage .main-button { max-width: 355px; margin: 0 auto; }
+    .stage > small { display: block; margin-top: 13px; color: var(--muted); font-size: 9px; }
+
+    .round { position: relative; z-index: 1; width: min(785px, 92%); padding: 23px 0; }
+    .round-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+    .playing-team, .pause-button { border: 2px solid var(--ink); border-radius: 999px; background: white; box-shadow: 2px 3px 0 var(--ink); font-weight: 900; }
+    .playing-team { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; }.playing-team i { width: 12px; height: 12px; border: 2px solid var(--ink); border-radius: 50%; background: var(--team); }
+    .pause-button { padding: 8px 11px; font-size: 9px; }
+    .timer { width: 122px; margin: 0 auto 10px; text-align: center; }.timer-line { display: flex; align-items: end; justify-content: center; }.timer b { font-size: 56px; line-height: .95; letter-spacing: -.07em; }.timer small { padding-bottom: 7px; font-size: 7px; font-weight: 1000; }.timer-track { height: 8px; overflow: hidden; border: 2px solid var(--ink); border-radius: 99px; background: white; }.timer-track i { display: block; height: 100%; background: var(--blue); transition: width 1s linear; }.timer.urgent b { color: var(--pink); }.timer.urgent .timer-track i { background: var(--pink); }
+    .word-card { position: relative; min-height: 325px; display: grid; place-items: center; align-content: center; overflow: hidden; border: 4px solid var(--ink); border-radius: 28px; background: var(--cream); box-shadow: 10px 11px 0 var(--pink), 14px 15px 0 var(--ink); transform: rotate(-.5deg); }
+    .word-card::before { content: ""; position: absolute; inset: 13px; border: 3px dashed #cbd4ec; border-radius: 18px; }
+    .card-meta { position: absolute; z-index: 1; top: 28px; padding: 6px 9px; border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow); font-size: 8px; font-weight: 1000; }.card-number { left: 29px; }.card-category { right: 29px; background: var(--purple); }
+    .word-card h2 { position: relative; z-index: 1; max-width: 90%; margin: 0; padding: 28px; overflow-wrap: anywhere; font-size: clamp(46px, 7vw, 84px); line-height: .96; letter-spacing: -.065em; text-transform: lowercase; text-shadow: 3px 4px 0 #dce6ff; }
+    .word-card p { position: relative; z-index: 1; margin: 0; padding: 8px 13px; border-radius: 999px; background: #e6ecff; font-size: 11px; font-weight: 850; }
+    .word-card.paused h2 { color: var(--pink); text-transform: uppercase; text-shadow: none; }
+    .actions { display: grid; grid-template-columns: 1fr 1.42fr; gap: 14px; margin-top: 26px; }.action { min-height: 73px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 3px solid var(--ink); border-radius: 17px; box-shadow: 5px 6px 0 var(--ink); }.action:disabled { opacity: .45; cursor: not-allowed; }.action > b { width: 36px; height: 36px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: white; font-size: 17px; }.action span { display: grid; text-align: left; }.action strong { font-size: 14px; }.action small { margin-top: 2px; font-size: 8px; }.skip { background: var(--orange); }.correct { background: var(--green); }.correct > b { background: var(--ink); color: white; }
+    .round-stats { display: flex; justify-content: center; gap: 22px; margin-top: 18px; color: #5c607e; font-size: 9px; font-weight: 750; }.round-stats b { color: var(--ink); }
+    .result-score { width: 112px; height: 112px; display: grid; place-items: center; margin: 26px auto; border: 4px solid var(--ink); border-radius: 50%; background: var(--yellow); box-shadow: 7px 8px 0 var(--ink); font-size: 39px; font-weight: 1000; transform: rotate(-4deg); }
+    .result-grid { max-width: 440px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 auto 26px; }.result-grid span { display: grid; gap: 4px; padding: 11px 6px; border: 2px solid var(--ink); border-radius: 14px; background: white; box-shadow: 2px 3px 0 var(--ink); color: var(--muted); font-size: 9px; }.result-grid b { color: var(--ink); font-size: 20px; }
+    .trophy { width: 105px; height: 105px; display: grid; place-items: center; margin: 26px auto; border: 4px solid var(--ink); border-radius: 50%; background: var(--yellow); box-shadow: 7px 8px 0 var(--ink), 0 0 0 12px rgba(255,217,79,.28); font-size: 44px; }
+    .final-scores { max-width: 430px; display: grid; gap: 7px; margin: 0 auto 26px; }.final-scores span { display: grid; grid-template-columns: 24px 1fr auto; gap: 9px; align-items: center; padding: 9px 12px; border: 2px solid var(--ink); border-radius: 13px; background: white; box-shadow: 2px 3px 0 var(--ink); text-align: left; font-size: 11px; font-weight: 850; }.final-scores i { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #ece8ff; font-style: normal; font-size: 8px; }.final-scores b { font-size: 17px; }
+
+    .modal { position: fixed; z-index: 50; inset: 0; display: none; place-items: center; padding: 20px; background: rgba(45,46,95,.7); backdrop-filter: blur(5px); }.modal.open { display: grid; }.modal-card { position: relative; width: min(540px, 100%); max-height: 90vh; overflow: auto; padding: 38px; border: 4px solid var(--ink); border-radius: 27px; background: var(--cream); box-shadow: 10px 11px 0 var(--ink); }.modal-card h2 { margin: 5px 0 22px; font-size: 32px; }.modal-card ol { list-style: none; display: grid; gap: 17px; margin: 0; padding: 0; counter-reset: rule; }.modal-card li { counter-increment: rule; display: grid; grid-template-columns: 37px 1fr; gap: 3px 12px; }.modal-card li::before { content: counter(rule); grid-row: span 2; width: 33px; height: 33px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: var(--yellow); box-shadow: 2px 3px 0 var(--ink); font-size: 11px; font-weight: 1000; }.modal-card li b { font-size: 12px; }.modal-card li span { color: var(--muted); font-size: 11px; line-height: 1.4; }.close-modal { position: absolute; right: 16px; top: 14px; width: 32px; height: 32px; border: 2px solid var(--ink); border-radius: 50%; background: var(--pink); color: white; box-shadow: 2px 3px 0 var(--ink); font-size: 20px; }
+    .teacher-tip { margin-top: 23px; padding: 12px 14px; border: 2px solid var(--ink); border-left: 7px solid var(--green); border-radius: 12px; background: #e9f9d9; font-size: 10px; line-height: 1.4; }
+
+    @media (max-width: 1080px) {
+      .setup { grid-template-columns: 1fr; max-width: 760px; margin: auto; padding-top: 42px; }
+      .hero { text-align: center; }.eyebrow, .lead, .board-demo { margin-left: auto; margin-right: auto; }
+      .game { grid-template-columns: 1fr; }.scoreboard { display: grid; grid-template-columns: auto repeat(4, minmax(100px, 1fr)); gap: 7px; align-items: center; overflow-x: auto; }.score-title { margin: 0; display: grid; }.score-row { margin: 0; }.score-progress, .reset-button { display: none; }.play-area { min-height: 700px; }
+    }
+    @media (max-width: 650px) {
+      .app { padding-inline: 12px; }.topbar { height: 75px; gap: 8px; }.brand-mark { width: 42px; height: 42px; font-size: 22px; }.brand-copy strong { font-size: 15px; }.brand-copy small { display: none; }.top-actions { gap: 7px; }.author-badge { min-height: 41px; padding: 4px 7px 4px 4px; border-width: 2px; box-shadow: 3px 4px 0 var(--ink); }.author-icon { width: 30px; height: 30px; }.author-text small, .author-badge > b { display: none; }.author-text strong { font-size: 10px; }.rules-button { width: 41px; min-height: 41px; justify-content: center; padding: 4px; border-width: 2px; box-shadow: 3px 4px 0 var(--ink); font-size: 0; }.rules-button i { width: 29px; height: 29px; }
+      .setup { min-height: auto; padding-top: 35px; gap: 37px; }.hero h1 { font-size: 43px; }.hero h1 span { padding-inline: 8px; border-width: 2px; box-shadow: 4px 5px 0 var(--ink); }.lead { font-size: 15px; }
+      .board-demo { min-height: 184px; padding: 20px 14px; border-width: 3px; border-radius: 21px; box-shadow: 6px 7px 0 var(--ink); }.trail { grid-template-columns: repeat(6, 37px); grid-template-rows: repeat(2, 37px); gap: 5px; }.trail b { border-width: 2px; border-radius: 10px; font-size: 9px; }.demo-card { right: 12px; top: 42px; width: 103px; height: 79px; font-size: 19px; box-shadow: 3px 4px 0 var(--pink), 5px 6px 0 var(--ink); }.demo-card small { font-size: 6px; }.demo-die { display: none; }.pawn.red { left: 82px; top: 50px; }.pawn.blue { left: 211px; bottom: 28px; }
+      .panel { padding: 24px 17px; border-width: 3px; border-radius: 21px; box-shadow: 6px 7px 0 var(--ink); }.panel-head h2 { font-size: 23px; }.settings-row { grid-template-columns: 1fr; }
+      .game { padding-top: 10px; gap: 12px; }.scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 9px; border-width: 3px; }.score-title { grid-column: 1 / -1; display: flex; }.score-row { padding: 8px; }.play-area { min-height: calc(100vh - 220px); border-width: 3px; border-radius: 20px; box-shadow: inset 0 0 0 7px rgba(255,255,255,.6), 5px 6px 0 rgba(45,46,95,.18); }
+      .stage { width: 94%; padding-inline: 10px; }.stage h2 { font-size: 41px; }.turn-piece { width: 105px; height: 105px; }.turn-piece b { width: 70px; height: 75px; }
+      .round { width: 94%; }.word-card { min-height: 267px; border-width: 3px; box-shadow: 7px 8px 0 var(--pink), 10px 11px 0 var(--ink); }.word-card h2 { font-size: 46px; }.card-meta { top: 22px; padding: 5px 7px; border-width: 1.5px; }.card-number { left: 22px; }.card-category { right: 22px; }.actions { gap: 9px; }.action { min-height: 65px; gap: 6px; border-width: 2px; box-shadow: 3px 4px 0 var(--ink); }.action > b { width: 30px; height: 30px; }.action strong { font-size: 11px; }.round-stats { gap: 10px; flex-wrap: wrap; }
+      .modal-card { padding: 34px 20px 25px; border-width: 3px; }
+    }
+    @media (max-width: 410px) {
+      .author-text { display: none; }.author-badge { width: 41px; justify-content: center; padding: 4px; }.trail { grid-template-columns: repeat(6, 33px); grid-template-rows: repeat(2, 33px); }.demo-card { width: 93px; }.pawn.blue { left: 190px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <button class="brand" type="button" data-action="home" aria-label="На главную">
+        <span class="brand-mark">S</span>
+        <span class="brand-copy"><strong>SAY AROUND!</strong><small>EXPLAIN · GUESS · SCORE</small></span>
+      </button>
+      <div class="top-actions">
+        <a class="author-badge" href="https://vk.ru/deandal" target="_blank" rel="noopener noreferrer" aria-label="Профиль автора игры @deandal во ВКонтакте">
+          <span class="author-icon">VK</span><span class="author-text"><small>АВТОР ИГРЫ</small><strong>@deandal</strong></span><b>↗</b>
+        </a>
+        <button class="rules-button" type="button" data-action="rules"><i>?</i>Как играть</button>
+      </div>
+    </header>
+    <main class="screen" id="screen"></main>
+  </div>
+
+  <div class="modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="modal-card">
+      <button class="close-modal" type="button" data-action="close-rules" aria-label="Закрыть">×</button>
+      <span class="tag">БЫСТРАЯ ИНСТРУКЦИЯ</span>
+      <h2 id="rulesTitle">Как играть</h2>
+      <ol>
+        <li><b>Разделитесь на команды.</b><span>В каждом раунде выберите одного объясняющего игрока.</span></li>
+        <li><b>Объясняйте только по-английски.</b><span>Нельзя произносить само слово, его часть или перевод.</span></li>
+        <li><b>Угадывайте до сигнала.</b><span>Правильный ответ приносит 1 балл, пропуск — 0 баллов.</span></li>
+        <li><b>Передавайте ход.</b><span>Побеждает команда, первой набравшая выбранное число баллов.</span></li>
+      </ol>
+      <div class="teacher-tip"><b>Совет учителю:</b> для младших детей начните с уровня A1 и раундов по 60–90 секунд.</div>
+    </div>
+  </div>
+
+  <noscript>Для игры необходимо включить JavaScript в браузере.</noscript>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const WORDS = [
+        ["apple","A1","Food"],["banana","A1","Food"],["bread","A1","Food"],["breakfast","A1","Food"],["water","A1","Food"],
+        ["teacher","A1","People"],["friend","A1","People"],["family","A1","People"],["doctor","A1","People"],["baby","A1","People"],
+        ["school","A1","Places"],["park","A1","Places"],["shop","A1","Places"],["kitchen","A1","Places"],["beach","A1","Places"],
+        ["chair","A1","Things"],["phone","A1","Things"],["window","A1","Things"],["umbrella","A1","Things"],["clock","A1","Things"],
+        ["swim","A1","Actions"],["dance","A1","Actions"],["sleep","A1","Actions"],["laugh","A1","Actions"],["read","A1","Actions"],
+        ["happy","A1","Feelings"],["hungry","A1","Feelings"],["tired","A1","Feelings"],["cold","A1","Feelings"],["afraid","A1","Feelings"],
+        ["airport","A2","Places"],["museum","A2","Places"],["hospital","A2","Places"],["factory","A2","Places"],["island","A2","Places"],
+        ["neighbour","A2","People"],["passenger","A2","People"],["customer","A2","People"],["musician","A2","People"],["farmer","A2","People"],
+        ["backpack","A2","Things"],["calendar","A2","Things"],["mirror","A2","Things"],["ticket","A2","Things"],["keyboard","A2","Things"],
+        ["whisper","A2","Actions"],["borrow","A2","Actions"],["choose","A2","Actions"],["invite","A2","Actions"],["promise","A2","Actions"],
+        ["surprised","A2","Feelings"],["nervous","A2","Feelings"],["proud","A2","Feelings"],["lonely","A2","Feelings"],["excited","A2","Feelings"],
+        ["traffic jam","A2","Everyday life"],["birthday party","A2","Everyday life"],["homework","A2","Everyday life"],["weekend","A2","Everyday life"],["weather forecast","A2","Everyday life"],
+        ["achievement","B1","Ideas"],["adventure","B1","Ideas"],["decision","B1","Ideas"],["experience","B1","Ideas"],["opportunity","B1","Ideas"],
+        ["environment","B1","World"],["invention","B1","World"],["advertisement","B1","World"],["public transport","B1","World"],["social media","B1","World"],
+        ["complain","B1","Actions"],["encourage","B1","Actions"],["interrupt","B1","Actions"],["recommend","B1","Actions"],["solve","B1","Actions"],
+        ["generous","B1","Character"],["patient","B1","Character"],["reliable","B1","Character"],["stubborn","B1","Character"],["curious","B1","Character"],
+        ["run out of","B1","Phrases"],["change your mind","B1","Phrases"],["get in touch","B1","Phrases"],["look forward to","B1","Phrases"],["pay attention","B1","Phrases"]
+      ].map(([word, level, category]) => ({ word, level, category }));
+
+      const COLORS = ["#ff637d", "#5277f5", "#45b88d", "#e89d21"];
+      const screen = document.getElementById("screen");
+      const rulesModal = document.getElementById("rulesModal");
+      let timerId = null;
+
+      const state = {
+        phase: "setup",
+        level: "A1",
+        roundTime: 60,
+        targetScore: 20,
+        timeLeft: 60,
+        currentTeam: 0,
+        roundPoints: 0,
+        seen: 0,
+        deck: [],
+        cardIndex: 0,
+        teams: [
+          { name: "Red Foxes", score: 0, color: COLORS[0] },
+          { name: "Blue Owls", score: 0, color: COLORS[1] }
+        ]
+      };
+
+      const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" })[char]);
+      const shuffle = (items) => {
+        const copy = [...items];
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      };
+      const wordPool = () => {
+        const allowed = state.level === "A1" ? ["A1"] : state.level === "A2" ? ["A1","A2"] : ["A2","B1"];
+        return WORDS.filter(item => allowed.includes(item.level));
+      };
+      const currentCard = () => state.deck[state.cardIndex] || wordPool()[0];
+      const leader = () => [...state.teams].sort((a, b) => b.score - a.score)[0];
+      const clearClock = () => { if (timerId) window.clearInterval(timerId); timerId = null; };
+      const startClock = () => {
+        clearClock();
+        timerId = window.setInterval(() => {
+          if (state.phase !== "playing") return;
+          state.timeLeft -= 1;
+          if (state.timeLeft <= 0) endRound(); else render();
+        }, 1000);
+      };
+
+      function setupTemplate() {
+        const poolSize = wordPool().length;
+        const levelName = { A1: "Начальный", A2: "Базовый", B1: "Средний" };
+        const teamFields = state.teams.map((team, index) => `
+          <div class="team-field" style="--team:${team.color}">
+            <span>${index + 1}</span>
+            <input data-team-input="${index}" aria-label="Название команды ${index + 1}" maxlength="30" value="${escapeHtml(team.name)}">
+            ${state.teams.length > 2 ? `<button type="button" data-action="remove-team" data-index="${index}" aria-label="Удалить команду">×</button>` : `<i></i>`}
+          </div>`).join("");
+        const trail = ["START",2,3,4,5,6,7,8,9,10,11,"★"].map(item => `<b>${item}</b>`).join("");
+        return `
+          <section class="setup">
+            <div class="hero">
+              <div class="eyebrow">ДЕТСКАЯ НАСТОЛКА · ENGLISH</div>
+              <h1>Скажи иначе.<br><span>Только по-английски!</span></h1>
+              <p class="lead">Яркая командная игра для весёлой разминки на уроке английского.</p>
+              <div class="board-demo" aria-hidden="true">
+                <div class="trail">${trail}</div><i class="pawn red"></i><i class="pawn blue"></i><span class="demo-die">••<br>•</span><span class="demo-card">apple<small>FOOD · A1</small></span>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><div><small>ПЕРЕД СТАРТОМ</small><h2>Соберите команды</h2></div><span class="word-count">${poolSize} слов</span></div>
+              <span class="field-title">Уровень слов</span>
+              <div class="levels">
+                ${["A1","A2","B1"].map(level => `<button type="button" class="level ${state.level === level ? "active" : ""}" data-action="level" data-level="${level}"><strong>${level}</strong><small>${levelName[level]}</small></button>`).join("")}
+              </div>
+              <div class="settings-row">
+                <label>Время раунда<select id="roundTime"><option value="30" ${state.roundTime===30?"selected":""}>30 секунд</option><option value="45" ${state.roundTime===45?"selected":""}>45 секунд</option><option value="60" ${state.roundTime===60?"selected":""}>60 секунд</option><option value="90" ${state.roundTime===90?"selected":""}>90 секунд</option></select></label>
+                <label>Игра до<select id="targetScore"><option value="10" ${state.targetScore===10?"selected":""}>10 баллов</option><option value="15" ${state.targetScore===15?"selected":""}>15 баллов</option><option value="20" ${state.targetScore===20?"selected":""}>20 баллов</option><option value="30" ${state.targetScore===30?"selected":""}>30 баллов</option></select></label>
+              </div>
+              <div class="teams-label"><span>Команды</span><small>ОТ 2 ДО 4</small></div>
+              <div class="team-fields">${teamFields}</div>
+              ${state.teams.length < 4 ? `<button type="button" class="add-team" data-action="add-team">＋ Добавить команду</button>` : `<div style="height:10px"></div>`}
+              <button type="button" class="main-button" data-action="start-game">На игровое поле! <b>→</b></button>
+            </div>
+          </section>`;
+      }
+
+      function scoreboardTemplate() {
+        const top = leader();
+        const rows = state.teams.map((team, index) => `
+          <div class="score-row ${index === state.currentTeam && state.phase !== "gameOver" ? "current" : ""}" style="--team:${team.color}">
+            <span class="score-pawn"></span><div><strong>${escapeHtml(team.name)}</strong><small>${index === state.currentTeam && state.phase !== "gameOver" ? "Сейчас играет" : "Команда"}</small></div><b>${team.score}</b>
+          </div>`).join("");
+        return `<aside class="scoreboard"><div class="score-title"><span>ИГРОВОЙ СЧЁТ</span><small>до ${state.targetScore}</small></div>${rows}<div class="score-progress"><div class="progress-track"><i style="width:${Math.min(100, top.score/state.targetScore*100)}%"></i></div><small>Лидер: ${escapeHtml(top.name)}</small></div><button type="button" class="reset-button" data-action="home">↺ Новая игра</button></aside>`;
+      }
+
+      function readyTemplate() {
+        const team = state.teams[state.currentTeam];
+        return `<div class="stage" style="--team:${team.color}"><span class="tag">СЛЕДУЮЩИЙ ХОД</span><div class="turn-piece"><b>${state.currentTeam + 1}</b></div><h2>${escapeHtml(team.name)}</h2><p>Выберите одного объясняющего. Остальные игроки угадывают.</p><div class="english-only">ENGLISH ONLY · NO TRANSLATION · NO GESTURES</div><button type="button" class="main-button" data-action="start-round">Старт раунда <b>→</b></button><small>Таймер: ${state.roundTime} секунд</small></div>`;
+      }
+
+      function playingTemplate() {
+        const team = state.teams[state.currentTeam];
+        const card = currentCard();
+        const paused = state.phase === "paused";
+        return `<div class="round"><div class="round-head"><div class="playing-team" style="--team:${team.color}"><i></i>${escapeHtml(team.name)}</div><button type="button" class="pause-button" data-action="pause">${paused ? "▶ Продолжить" : "Ⅱ Пауза"}</button></div><div class="timer ${state.timeLeft <= 10 ? "urgent" : ""}"><div class="timer-line"><b>${state.timeLeft}</b><small>SEC</small></div><div class="timer-track"><i style="width:${state.timeLeft/state.roundTime*100}%"></i></div></div><div class="word-card ${paused ? "paused" : ""}"><span class="card-meta card-number">CARD #${String(state.cardIndex + 1).padStart(2,"0")}</span><span class="card-meta card-category">${card.level} · ${escapeHtml(card.category)}</span><h2>${paused ? "PAUSED" : escapeHtml(card.word)}</h2><p>${paused ? "Нажмите «Продолжить», когда будете готовы" : "Объясни это слово по-английски!"}</p></div><div class="actions"><button type="button" class="action skip" data-action="skip" ${paused ? "disabled" : ""}><b>↗</b><span><strong>Пропустить</strong><small>0 баллов</small></span></button><button type="button" class="action correct" data-action="correct" ${paused ? "disabled" : ""}><b>✓</b><span><strong>Угадано!</strong><small>+1 балл</small></span></button></div><div class="round-stats"><span>В этом раунде <b>+${state.roundPoints}</b></span><span>Карточек показано <b>${state.seen + 1}</b></span><span>SPACE — пауза</span></div></div>`;
+      }
+
+      function roundEndTemplate() {
+        const team = state.teams[state.currentTeam];
+        const next = state.teams[(state.currentTeam + 1) % state.teams.length];
+        return `<div class="stage"><span class="tag">РАУНД ЗАВЕРШЁН</span><div class="result-score">+${state.roundPoints}</div><h2>Отличный раунд!</h2><p><b>${escapeHtml(team.name)}</b> заработали ${state.roundPoints} баллов.</p><div class="result-grid"><span>Угадано<b>${state.roundPoints}</b></span><span>Показано<b>${state.seen}</b></span><span>Всего<b>${team.score}</b></span></div><button type="button" class="main-button" data-action="next-team">Передать ход <b>→</b></button><small>Следующая команда: ${escapeHtml(next.name)}</small></div>`;
+      }
+
+      function gameOverTemplate() {
+        const sorted = [...state.teams].sort((a,b) => b.score-a.score);
+        const winner = sorted[0];
+        return `<div class="stage"><span class="tag">ЕСТЬ ПОБЕДИТЕЛЬ!</span><div class="trophy">★</div><h2>${escapeHtml(winner.name)}</h2><p>Победа со счётом <b>${winner.score}</b> баллов!</p><div class="final-scores">${sorted.map((team,index) => `<span><i>${index+1}</i>${escapeHtml(team.name)}<b>${team.score}</b></span>`).join("")}</div><button type="button" class="main-button" data-action="home">Сыграть ещё раз <b>↺</b></button></div>`;
+      }
+
+      function render() {
+        if (state.phase === "setup") {
+          screen.innerHTML = setupTemplate();
+          return;
+        }
+        let content = "";
+        if (state.phase === "ready") content = readyTemplate();
+        if (state.phase === "playing" || state.phase === "paused") content = playingTemplate();
+        if (state.phase === "roundEnd") content = roundEndTemplate();
+        if (state.phase === "gameOver") content = gameOverTemplate();
+        screen.innerHTML = `<section class="game">${scoreboardTemplate()}<div class="play-area">${content}</div></section>`;
+      }
+
+      function startGame() {
+        state.teams = state.teams.map((team, index) => ({ ...team, name: team.name.trim() || `Team ${index+1}`, score: 0 }));
+        state.deck = shuffle(wordPool());
+        state.cardIndex = 0;
+        state.currentTeam = 0;
+        state.roundPoints = 0;
+        state.seen = 0;
+        state.timeLeft = state.roundTime;
+        state.phase = "ready";
+        render();
+      }
+      function startRound() { state.roundPoints = 0; state.seen = 0; state.timeLeft = state.roundTime; state.phase = "playing"; render(); startClock(); }
+      function nextCard() { state.seen += 1; if (state.cardIndex >= state.deck.length - 1) { state.deck = shuffle(wordPool()); state.cardIndex = 0; } else state.cardIndex += 1; }
+      function correct() { if (state.phase !== "playing") return; state.teams[state.currentTeam].score += 1; state.roundPoints += 1; nextCard(); render(); }
+      function skip() { if (state.phase !== "playing") return; nextCard(); render(); }
+      function togglePause() { if (state.phase === "playing") { clearClock(); state.phase = "paused"; render(); } else if (state.phase === "paused") { state.phase = "playing"; render(); startClock(); } }
+      function endRound() { clearClock(); state.timeLeft = 0; state.phase = state.teams.some(team => team.score >= state.targetScore) ? "gameOver" : "roundEnd"; render(); }
+      function nextTeam() { state.currentTeam = (state.currentTeam + 1) % state.teams.length; state.timeLeft = state.roundTime; state.phase = "ready"; render(); }
+      function home() { clearClock(); state.teams.forEach(team => { team.score = 0; }); state.phase = "setup"; render(); }
+
+      document.addEventListener("click", event => {
+        const button = event.target.closest("[data-action]");
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === "rules") rulesModal.classList.add("open");
+        if (action === "close-rules") rulesModal.classList.remove("open");
+        if (action === "home") home();
+        if (action === "level") { state.level = button.dataset.level; render(); }
+        if (action === "add-team" && state.teams.length < 4) { const index = state.teams.length; state.teams.push({ name:`Team ${index+1}`, score:0, color:COLORS[index] }); render(); }
+        if (action === "remove-team" && state.teams.length > 2) { state.teams.splice(Number(button.dataset.index),1); render(); }
+        if (action === "start-game") startGame();
+        if (action === "start-round") startRound();
+        if (action === "pause") togglePause();
+        if (action === "correct") correct();
+        if (action === "skip") skip();
+        if (action === "next-team") nextTeam();
+      });
+      document.addEventListener("input", event => {
+        if (event.target.matches("[data-team-input]")) state.teams[Number(event.target.dataset.teamInput)].name = event.target.value;
+      });
+      document.addEventListener("change", event => {
+        if (event.target.id === "roundTime") state.roundTime = Number(event.target.value);
+        if (event.target.id === "targetScore") state.targetScore = Number(event.target.value);
+      });
+      rulesModal.addEventListener("mousedown", event => { if (event.target === rulesModal) rulesModal.classList.remove("open"); });
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") rulesModal.classList.remove("open");
+        if (event.code === "Space" && (state.phase === "playing" || state.phase === "paused") && !/INPUT|SELECT/.test(event.target.tagName)) { event.preventDefault(); togglePause(); }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
