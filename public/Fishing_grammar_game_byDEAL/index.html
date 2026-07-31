@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#087ba8" />
+    <title>Grammar Fishing: There Is / There Are</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/game-icon-192.png?v=1" />
+    <link rel="apple-touch-icon" href="assets/icons/game-icon-192.png?v=1" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="preload" as="image" href="assets/backgrounds/shore-gameplay.webp" />
+    <link rel="stylesheet" href="styles.css?v=16" />
+  </head>
+  <body>
+    <main class="app" aria-label="Grammar Fishing game">
+      <section class="screen start-screen is-active" id="startScreen" aria-labelledby="gameTitle">
+        <div class="start-copy">
+          <h1 id="gameTitle" class="visually-hidden">Grammar Fishing</h1>
+          <img
+            class="start-logo"
+            src="assets/ui/grammar-fishing-title.webp"
+            fetchpriority="high"
+            alt="Grammar Fishing: There is / There are"
+          />
+          <p>Catch the right fish!</p>
+        </div>
+        <img class="start-mascot" src="assets/characters/cat-celebration.webp" alt="Happy ginger cat fisherman" />
+        <div class="volume-control start-volume-control" aria-label="Sound controls">
+          <button class="sound-toggle" id="startSoundToggle" type="button" aria-label="Mute sound" aria-pressed="false">
+            <img id="startSoundIcon" src="assets/ui/sound-on.webp" alt="" />
+          </button>
+          <input class="volume-slider" id="startVolumeSlider" type="range" min="0" max="100" value="65" aria-label="Sound volume" />
+        </div>
+        <button class="start-button" id="startButton" type="button" aria-label="Start fishing">
+          <img src="assets/ui/start-fishing-button.webp" alt="" />
+        </button>
+        <a class="creator-link" href="https://vk.com/deandal" target="_blank" rel="noreferrer">Created by Deandal</a>
+      </section>
+
+      <section class="screen game-screen" id="gameScreen" aria-label="Fishing game">
+        <header class="game-header">
+          <div class="stat-panel">
+            <span>Score</span>
+            <strong id="scoreValue">0</strong>
+          </div>
+          <div class="question-panel">
+            <div class="question" id="questionText">_____ a crab under the pier.</div>
+          </div>
+          <div class="stat-panel">
+            <span>Combo</span>
+            <strong id="comboValue">0</strong>
+          </div>
+        </header>
+
+        <div class="message-panel" id="messageText">Move the hook. Catch the right fish!</div>
+
+        <div class="play-field" id="playField">
+          <div class="clue-layer" id="clueLayer" aria-hidden="true"></div>
+          <div class="fish-layer" id="fishLayer"></div>
+          <div class="effect-layer" id="effectLayer" aria-hidden="true"></div>
+
+          <div class="cat-rig" id="catRig">
+            <img class="cat" id="cat" src="assets/characters/cat-on-pier-v2.webp" alt="Happy ginger cat fisherman sitting on the pier" />
+            <img class="rod" id="rod" src="assets/props/fishing-rod-separate.webp" alt="" />
+          </div>
+
+          <div class="bucket-wrap" id="bucketWrap">
+            <img src="assets/props/bucket.webp" alt="Bucket for caught fish" />
+            <span id="bucketCount">0</span>
+          </div>
+
+          <div class="fishing-line" id="fishingLine" aria-hidden="true"></div>
+          <img class="hook" id="hook" src="assets/props/hook.webp" alt="Fishing hook" />
+        </div>
+
+        <nav class="bottom-bar" aria-label="Game controls">
+          <button id="homeButton" type="button">Menu</button>
+          <button id="replayButton" type="button">Replay</button>
+          <strong id="roundValue">1 / 12</strong>
+          <div class="volume-control" aria-label="Sound controls">
+            <button class="sound-toggle" id="soundToggle" type="button" aria-label="Mute sound" aria-pressed="false">
+              <img id="soundIcon" src="assets/ui/sound-on.webp" alt="" />
+            </button>
+            <input class="volume-slider" id="volumeSlider" type="range" min="0" max="100" value="65" aria-label="Sound volume" />
+          </div>
+          <button id="nextButton" type="button">Next</button>
+        </nav>
+      </section>
+
+      <section class="screen result-screen" id="resultScreen" aria-labelledby="resultTitle">
+        <div class="result-panel">
+          <p class="eyebrow">Fishing trip complete</p>
+          <h2 id="resultTitle">Great catch!</h2>
+          <p class="result-score">Score: <strong id="finalScore">0</strong></p>
+          <div class="result-stars" id="resultStars" aria-label="Result stars"></div>
+          <div class="result-actions">
+            <button class="primary-button" id="playAgainButton" type="button">Play again</button>
+            <button class="secondary-button" id="resultMenuButton" type="button">Menu</button>
+          </div>
+        </div>
+        <a class="creator-link result-credit" href="https://vk.com/deandal" target="_blank" rel="noreferrer">Created by Deandal</a>
+      </section>
+    </main>
+
+    <div class="game-cursor" id="gameCursor" aria-hidden="true">
+      <img src="assets/ui/fishing-cursor.webp" alt="" />
+    </div>
+
+    <script src="game.js?v=16"></script>
+  </body>
+</html>
