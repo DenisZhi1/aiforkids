@@ -59,6 +59,8 @@ const catchSounds = {
   correct: new Audio("assets/audio/correct-catch.mp3"),
   wrong: new Audio("assets/audio/wrong-catch.mp3"),
 };
+const menuMusic = document.getElementById("menuMusic");
+const gameMusic = document.getElementById("gameMusic");
 
 const audioState = {
   volume: 0.65,
@@ -100,6 +102,9 @@ soundControls.forEach((control) => {
   control.toggle.addEventListener("click", toggleSound);
   control.slider.addEventListener("input", changeVolume);
 });
+document.addEventListener("pointerdown", unlockBackgroundAudio, { capture: true, once: true });
+document.addEventListener("click", unlockBackgroundAudio, { capture: true, once: true });
+document.addEventListener("keydown", unlockBackgroundAudio, { capture: true, once: true });
 
 playField.addEventListener("pointermove", moveHookFromPointer);
 playField.addEventListener("pointerdown", moveHookFromPointer);
@@ -143,6 +148,36 @@ function updateAudioControls() {
     control.toggle.setAttribute("aria-pressed", String(audioState.muted));
     control.toggle.setAttribute("aria-label", audioState.muted ? "Turn sound on" : "Mute sound");
   });
+  syncBackgroundMusic();
+}
+
+function unlockBackgroundAudio() {
+  syncBackgroundMusic();
+}
+
+function playMenuMusic() {
+  if (state.screen !== "start" || audioState.muted || audioState.volume === 0) {
+    return;
+  }
+  menuMusic.volume = audioState.volume * 0.55;
+  menuMusic.play().catch(() => {});
+}
+
+function syncBackgroundMusic() {
+  menuMusic.volume = audioState.volume * 0.55;
+  gameMusic.volume = audioState.volume * 0.48;
+
+  if (state.screen === "start" && !audioState.muted && audioState.volume > 0) {
+    playMenuMusic();
+  } else {
+    menuMusic.pause();
+  }
+
+  if (state.screen === "game" && !audioState.muted && audioState.volume > 0) {
+    gameMusic.play().catch(() => {});
+  } else {
+    gameMusic.pause();
+  }
 }
 
 function playCatchSound(type) {
@@ -220,6 +255,7 @@ function showMenu() {
 function showScreen(name) {
   state.screen = name;
   Object.entries(screens).forEach(([key, screen]) => screen.classList.toggle("is-active", key === name));
+  syncBackgroundMusic();
 }
 
 function showQuestion() {
