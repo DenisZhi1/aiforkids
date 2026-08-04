@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An offline A1–B2 English speaking card game for classroom warm-ups.">
+  <meta name="theme-color" content="#211348">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Warm-up Deck — English Speaking Game</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Warm-up Deck">
+        <img class="brand-logo" src="favicon-192.png" width="40" height="40" alt="" aria-hidden="true">
+        <span>WARM-UP <b>DECK</b></span>
+      </div>
+      <p class="top-note">A quick speaking game for English class</p>
+      <div class="top-status" aria-live="polite"><span class="status-dot"></span><span id="cards-left">0 cards left</span></div>
+    </header>
+
+    <section class="headline-row">
+      <div>
+        <p class="eyebrow"><span>●</span> NO-PREP CLASSROOM WARM-UP</p>
+        <h1>Pick a card.<br><em>Start talking.</em></h1>
+      </div>
+      <p class="intro-copy">Choose a level, draw from the deck, and speak for 45 seconds. Flip the question card when a learner needs a little help.</p>
+    </section>
+
+    <nav class="level-picker" id="level-picker" aria-label="Choose English level">
+      <span class="level-label">LEVEL</span>
+      <button class="level-button active" type="button" data-level="ALL" aria-pressed="true">Mix all</button>
+      <button class="level-button" type="button" data-level="A1" aria-pressed="false">A1</button>
+      <button class="level-button" type="button" data-level="A2" aria-pressed="false">A2</button>
+      <button class="level-button" type="button" data-level="B1" aria-pressed="false">B1</button>
+      <button class="level-button" type="button" data-level="B2" aria-pressed="false">B2</button>
+    </nav>
+
+    <section class="game-board" aria-label="Speaking card game">
+      <div class="deck-area">
+        <div class="deck-caption"><span>THE DECK</span><b id="question-total">160 questions</b></div>
+        <button class="deck-stack" id="deck-button" type="button" aria-label="Draw a new question card">
+          <span class="deck-layer layer-three"></span>
+          <span class="deck-layer layer-two"></span>
+          <span class="deck-layer layer-one"></span>
+          <span class="deck-face">
+            <span class="deck-level">A1 — B2</span>
+            <span class="deck-ring" aria-hidden="true"></span>
+            <span class="deck-title">WARM<br><b>UP!</b></span>
+            <span class="deck-action">TAP TO DRAW <i>→</i></span>
+          </span>
+        </button>
+        <p class="deck-hint">No repeats until the deck is empty.</p>
+      </div>
+
+      <div class="card-stage" id="card-stage" aria-live="polite">
+        <div class="stage-tag">CURRENT CARD</div>
+        <button class="card-scene" id="question-card" type="button" aria-label="Flip for a speaking helper" aria-pressed="false">
+          <span class="card-inner">
+            <span class="question-card card-front" id="card-front" data-category="you">
+              <span class="card-topline">
+                <span class="category-pill" id="category">YOU</span>
+                <span class="question-number" id="question-number">#01</span>
+              </span>
+              <span class="level-stamp" id="card-level">A1</span>
+              <span class="question-text" id="question-text">Shuffling the deck…</span>
+              <span class="card-footer"><span><i class="flip-icon">↻</i> Flip for help</span><span>Speak English!</span></span>
+            </span>
+
+            <span class="question-card card-back" id="card-back" data-category="you">
+              <span class="card-topline">
+                <span class="category-pill">SPEAKING HELP</span>
+                <span class="question-number" id="helper-level">A1</span>
+              </span>
+              <span class="helper-block">
+                <span class="helper-label">TRY THIS STARTER</span>
+                <strong id="starter">“I think…”</strong>
+              </span>
+              <span class="follow-block">
+                <span class="helper-label">KEEP TALKING</span>
+                <span id="follow-up">Can you add one more detail?</span>
+              </span>
+              <span class="card-footer"><span><i class="flip-icon">↻</i> Back to question</span><span>You’ve got this.</span></span>
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <aside class="control-panel">
+        <div class="timer-card" id="timer-card">
+          <div class="timer-heading"><span>ANSWER TIMER</span><span class="timer-light"></span></div>
+          <strong id="timer-display">0:45</strong>
+          <div class="timer-track"><span id="timer-progress"></span></div>
+          <button type="button" id="timer-button">Start 45 sec</button>
+        </div>
+
+        <button class="next-button" id="next-button" type="button"><span>Next card</span><i>→</i></button>
+        <button class="reset-button" id="reset-button" type="button">↻ Shuffle a new round</button>
+
+        <div class="how-to">
+          <span class="side-label">HOW TO PLAY</span>
+          <ol>
+            <li><b>1</b><span>Pick a level.</span></li>
+            <li><b>2</b><span>Draw and answer.</span></li>
+            <li><b>3</b><span>Ask the extra question.</span></li>
+          </ol>
+        </div>
+
+        <div class="round-counter"><span>Cards played</span><strong id="played-count">1</strong></div>
+      </aside>
+    </section>
+
+    <footer class="game-footer"><span>160 kid-friendly prompts</span><span class="footer-line"></span><span>A1 → B2</span><span class="footer-line"></span><span>Made for brave speakers</span></footer>
+
+    <div class="creator-wrap">
+      <a class="creator-badge" href="https://vk.ru/deandal" target="_blank" rel="noopener noreferrer" aria-label="Visit DEAL on VK">
+        <span class="creator-vk">VK</span>
+        <span class="creator-copy">
+          <small>CREATED WITH CARE BY</small>
+          <strong>DEAL</strong>
+        </span>
+        <span class="creator-link">MY VK PAGE <i>↗</i></span>
+      </a>
+    </div>
+  </main>
+
+  <noscript>This game needs JavaScript enabled in your browser.</noscript>
+  <script src="questions.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
