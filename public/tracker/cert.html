@@ -354,11 +354,11 @@ const MODULES = {
   '2': {
     title: 'Сертификат — Модуль 2',
     img: 'assets/cert2.png',
-    key: 'aivibe-cert2-v1',
+    key: 'aivibe-cert2-v2',
     defaults: {
-      nameX: 1379, nameY: 935,
-      nameFontFamily: FONTS[0].value, nameFontWeight: '686', nameFontSize: 147,
-      dateX: 1851, dateY: 1181, dateFontWeight: '400', dateFontSize: 50,
+      nameX: 1290, nameY: 780,
+      nameFontFamily: FONTS[0].value, nameFontWeight: '720', nameFontSize: 118,
+      dateX: 1020, dateY: 1230, dateFontWeight: '500', dateFontSize: 36,
     },
   },
 };
@@ -500,7 +500,7 @@ function openModal()  { modal.setAttribute('aria-hidden', 'false'); document.bod
 function closeModal() { modal.setAttribute('aria-hidden', 'true');  document.body.classList.remove('modal-open'); }
 
 function setupModalText() {
-  const base = [
+  const module1Base = [
     'Когда путешествие только начиналось, остров выглядел красивой картинкой: море, пещера, странные знаки, обещание открытий. Но настоящий маршрут начался там, где пришлось пробовать самим: писать запросы, спорить с ответами, собирать звук, изображение, видео и доводить идеи до результата.',
     'По пути были конкурсы, ачивки, красные шарики и сундучок Шермана. Были моменты, когда что-то не получалось с первого раза, и именно в них появлялось настоящее понимание: нейросети раскрываются тем, кто задаёт вопросы точнее и не бросает на полпути.',
     'Вы дошли до финала первого модуля. <span class="modal-gold-word">Сертификат</span> можно считать найденным артефактом с острова AI VIBE.',
@@ -508,19 +508,27 @@ function setupModalText() {
   const body = $('modal-body');
   const offerLink = $('offer-link');
   const reviewLink = $('review-link');
-  const paragraphs = showModule2Offer
+  const module2Paragraphs = [
+    'Второй модуль завершён.',
+    'За этим сертификатом стоят не только уроки, но и собранные реликвии, ночные маршруты, рабочие проекты и моменты, когда сложное всё-таки становилось понятным.',
+    'Поздравляю с финалом этой части путешествия по острову AI VIBE.',
+    'Буду бесконечно рад вашему посту с хештегом #AIVIBE2026 или отзыву.',
+  ];
+  const paragraphs = mod === '2'
+    ? module2Paragraphs
+    : showModule2Offer
     ? [
-        ...base,
+        ...module1Base,
         'Если хочется идти дальше, для второго модуля открыт секретный переход: скидка <strong>30%</strong> по слову <strong>GONEXT</strong>, действует до <strong>2 августа 2026</strong>. Буду бесконечно рад, если напишите пост о курсе в своих соц сетях с хештегом <strong>#AIVIBE2026</strong>.',
       ]
     : [
-        ...base,
+        ...module1Base,
         'Буду бесконечно рад, если напишите пост о курсе в своих соц сетях с хештегом <strong>#AIVIBE2026</strong>.',
       ];
 
   body.innerHTML = paragraphs.map(text => `<p>${text}</p>`).join('');
-  offerLink.hidden = !showModule2Offer;
-  reviewLink.classList.toggle('secondary', showModule2Offer);
+  offerLink.hidden = mod === '2' || !showModule2Offer;
+  reviewLink.classList.toggle('secondary', mod !== '2' && showModule2Offer);
 }
 
 function persist() {
